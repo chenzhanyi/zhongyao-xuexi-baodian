@@ -63,6 +63,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .hcard .effects{font-size:13px;margin-bottom:6px}
 .hcard .dose{font-size:12px;color:var(--primary);font-weight:600}
 .hcard .kw{margin-top:7px;display:inline-block;background:rgba(47,93,58,.08);color:var(--primary);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:500}
+.hcard .alias{font-size:11px;color:var(--muted);margin-top:6px}
 .hcard .taboo{margin-top:8px;border:1px solid rgba(163,48,48,.3);background:rgba(163,48,48,.05);border-radius:7px;padding:6px 9px;font-size:12px;color:rgba(163,48,48,.9)}
 /* 方剂卡片 */
 .fcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
@@ -146,6 +147,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 </div>
 
 <script src="bencao.js"></script>
+<script src="aliases.js"></script>
 <script src="tcm-data.js"></script>
 <script>
 // 本草详注弹窗
@@ -238,7 +240,8 @@ function renderHerbs(){
         <div class="nature">${h.nature} · ${h.meridians}</div>
         <div class="effects">${h.effects}</div>
         <div><span class="dose">用量：${h.dosage}</span></div>
-        <div class="kw">📌 ${h.keyword}</div>${tabooTxt(h)}</div>`;
+        <div class="kw">📌 ${h.keyword}</div>
+        <div class="alias">别名：${typeof ALIAS!=='undefined'&&ALIAS[h.name]?ALIAS[h.name].join('、'):'-'}</div>${tabooTxt(h)}</div>`;
     });
     html+='</div>';
   });

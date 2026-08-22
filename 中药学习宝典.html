@@ -104,6 +104,7 @@ input{font-family:inherit}
 .herb-keyword{background:rgba(47,93,58,.07);border-radius:6px;padding:4px 8px;margin-top:6px}
 .herb-keyword-label{font-size:10px;color:rgba(47,93,58,.65);font-weight:500}
 .herb-keyword-text{font-size:12px;font-weight:500;color:var(--primary);margin-top:1px}
+.herb-alias{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5}
 .herb-taboo{border:1px solid rgba(163,48,48,.3);background:rgba(163,48,48,.05);border-radius:6px;padding:6px 8px;margin-top:6px}
 .herb-taboo-label{font-size:10px;font-weight:600;color:var(--destructive);margin-bottom:2px}
 .herb-taboo-text{font-size:11px;color:rgba(163,48,48,.85);line-height:1.5}
@@ -561,6 +562,7 @@ input{font-family:inherit}
 </div>
 
 <script src="bencao.js"></script>
+<script src="aliases.js"></script>
 <script src="tcm-data.js"></script>
 <script>
 // ==================== STATE ====================
@@ -658,6 +660,7 @@ function renderHerbs(){
         html+='<div class="herb-actions">'+(typeof BENCAO!=='undefined'&&BENCAO[id]?'<button class="btn-sm ben-btn" onclick="openBencao(\''+id+'\')">📖 本草</button>':'')+'<button class="btn-fav'+(isFav?' active':'')+'" onclick="toggleFavHerb(\''+id+'\',this)">';
         html+='<svg width="14" height="14" viewBox="0 0 24 24" fill="'+(isFav?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button></div></div>';
         html+='<div class="herb-keyword"><div class="herb-keyword-label">速记关键词</div><div class="herb-keyword-text">'+o.keyword+'</div></div>';
+        html+='<div class="herb-alias">别名：'+(typeof ALIAS!=='undefined'&&ALIAS[id]?ALIAS[id].join('、'):'-')+'</div>';
         if(tabooDetail(o.taboo))html+='<div class="herb-taboo"><div class="herb-taboo-label">配伍禁忌</div><div class="herb-taboo-text">'+tabooDetail(o.taboo)+'</div></div>';
         html+='</div>';
       });
