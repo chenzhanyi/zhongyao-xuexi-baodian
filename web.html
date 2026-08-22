@@ -174,7 +174,7 @@ function renderCats(){
 function setCat(c){S.cat=c;renderCats();render();}
 function setModule(m){S.m=m;S.q='';$('q').value='';document.querySelectorAll('.mod').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   $('catsTitle').style.display=(m==='herbs')?'block':'none';$('cats').style.display=(m==='herbs')?'flex':'none';
-  $('shenBtn').style.display=(m==='herbs')?'flex':'none';render();}
+  $('shenBtn').style.display=(m==='herbs')?'':'none';render();}
 document.querySelectorAll('.mod').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.m)));
 $('shenBtn').addEventListener('click',()=>{S.shen=!S.shen;$('shenBtn').classList.toggle('on',S.shen);render();});
 $('q').addEventListener('input',e=>{S.q=e.target.value;render();});
