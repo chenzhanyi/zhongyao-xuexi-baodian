@@ -822,7 +822,17 @@ function doSearch(kw){
   searchResults.classList.add('show');
 }
 function closeSearch(){searchResults.classList.remove('show');searchInput.value='';searchClear.classList.remove('show');searchHint.classList.remove('show');}
-function jumpToHerb(name){closeSearch();switchPage('herbs');setTimeout(()=>{const el=document.getElementById('herb-'+name);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),1500);}},100);}
+function jumpToHerb(name){closeSearch();switchPage('herbs');setTimeout(()=>{
+  const el=document.getElementById('herb-'+name);
+  if(el){
+    const card=el.closest('.cat-card');
+    if(card&&!card.classList.contains('open')){
+      card.classList.add('open');
+      if(card.dataset.cat)openCats.add(card.dataset.cat);
+    }
+    setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),1500);},80);
+  }
+},120);}
 function jumpToFormula(name){closeSearch();switchPage('formulas');setTimeout(()=>{const el=document.getElementById('formula-'+name);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),1500);}},100);}
 function jumpToTaboo(type){closeSearch();switchPage('taboos');setTimeout(()=>{const map={'十八反':'eighteen','十九畏':'nineteen','妊娠禁忌':'pregnancy'};const tab=map[type]||'eighteen';document.querySelector('.tab-btn[data-tab="'+tab+'"]').click();},100);}
 
