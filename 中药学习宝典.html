@@ -544,6 +544,43 @@ input{font-family:inherit}
 
 <script src="tcm-data.js"></script>
 <script>
+// ==================== STATE ====================
+const STORE_KEY = 'tcm_learning_progress';
+let store = loadStore();
+let currentPage = 'herbs';
+let shenFilter = false;
+let reciteState = {mode:'herbs',scope:'all',index:0,flipped:false,shuffled:false,items:[]};
+function toggleShenFilter(){
+  shenFilter=!shenFilter;
+  document.getElementById('btnShenFilter').classList.toggle('active',shenFilter);
+  document.getElementById('shenFilterState').textContent=shenFilter?'·筛选已开':'';
+  document.getElementById('shenHint').textContent=shenFilter?'已筛选：仅显示沈常用药，开始背诵会同步只背这些':'点按筛选仅显示沈常用药，开始背诵亦同步生效';
+  renderHerbs();
+}
+function loadStore(){
+  try{const s=localStorage.getItem(STORE_KEY);if(s)return JSON.parse(s);}catch(e){}
+  return {masteredHerbs:[],masteredFormulas:[],favHerbs:[],favFormulas:[],streakDays:0,lastStudyDate:'',settings:{skipMastered:false,showKeyword:true}};
+}
+function saveStore(){try{localStorage.setItem(STORE_KEY,JSON.stringify(store));}catch(e){}}
+function updateStreak(){
+  const today=new Date().toISOString().slice(0,10);
+  if(store.lastStudyDate===today)return;
+  const y=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  store.streakDays=store.lastStudyDate===y?store.streakDays+1:1;
+  store.lastStudyDate=today;saveStore();
+}
+// ==================== PAGE NAV ====================
+function switchPage(page){
+  currentPage=page;
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  closeSearch();
+  window.scrollTo(0,0);
+  if(page==='mine')renderMine();
+}
+document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>switchPage(n.dataset.page)));
+
 
 function herbObj(h){return {name:h[0],pinyin:h[1],nature:h[2],meridians:h[3],effects:h[4],dosage:h[5],keyword:h[6],category:h[7],subCategory:h[8],taboo:h[9],shenCommon:SHEN_COMMON.has(h[0])};}
 

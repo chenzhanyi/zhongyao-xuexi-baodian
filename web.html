@@ -130,7 +130,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 <script>
 const S = {m:'herbs', shen:false, cat:null, q:''};
 const $=id=>document.getElementById(id);
-const isShen=h=>SHEN_COMMON.has(h[0]);
+const isShen=h=>SHEN_COMMON.has(typeof h==='string'?h:h[0]); // 兼容传药名(h[0])或药材数组
 function herbObj(h){return {name:h[0],pinyin:h[1],nature:h[2],meridians:h[3],effects:h[4],dosage:h[5],keyword:h[6],cat:h[7],sub:h[8],taboo:h[9],shen:isShen(h[0])};}
 function match(text,kw){if(!kw)return true;const k=kw.toLowerCase().trim();return text.toLowerCase().includes(k);}
 
