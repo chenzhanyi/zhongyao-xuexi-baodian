@@ -108,6 +108,14 @@ input{font-family:inherit}
 .herb-taboo-label{font-size:10px;font-weight:600;color:var(--destructive);margin-bottom:2px}
 .herb-taboo-text{font-size:11px;color:rgba(163,48,48,.85);line-height:1.5}
 .herb-actions{display:flex;gap:6px;margin-top:6px}
+.ben-modal{position:fixed;inset:0;z-index:300;background:rgba(20,16,8,.46);display:flex;align-items:center;justify-content:center;padding:20px}
+.ben-box{background:var(--card);border:1px solid var(--border);border-radius:12px;max-width:620px;width:100%;max-height:78vh;overflow-y:auto;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.ben-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ben-title{font-size:16px;font-weight:700;color:var(--primary)}
+.ben-close{width:28px;height:28px;border-radius:50%;background:rgba(47,93,58,.08);color:var(--primary);cursor:pointer;font-size:14px;border:none}
+.ben-note{font-size:12.5px;line-height:1.7;color:var(--fg);margin-bottom:10px}
+.ben-note .src{display:block;font-size:11px;color:var(--muted);margin-bottom:2px;font-weight:600}
+
 .btn-sm{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--secondary);color:var(--secondary-fg)}
 .btn-sm.mastered{border-color:rgba(58,125,58,.4);background:rgba(58,125,58,.1);color:var(--success)}
 .btn-fav{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted-fg);flex-shrink:0}
@@ -542,6 +550,14 @@ input{font-family:inherit}
   </div>
 </div>
 
+<div class="ben-modal" id="benModal" style="display:none" onclick="closeBenModal()">
+  <div class="ben-box" onclick="event.stopPropagation()">
+    <div class="ben-head"><span class="ben-title" id="benTitle">本草详注</span><button class="ben-close" onclick="closeBenModal()">✕</button></div>
+    <div class="ben-body" id="benBody"></div>
+  </div>
+</div>
+
+<script src="bencao.js"></script>
 <script src="tcm-data.js"></script>
 <script>
 // ==================== STATE ====================
@@ -631,7 +647,7 @@ function renderHerbs(){
         html+='<div class="herb-meta">'+o.nature+' · '+o.meridians+'</div>';
         html+='<div class="herb-effects">'+o.effects+'</div>';
         html+='<div class="herb-bottom"><span class="herb-dosage">用量：'+o.dosage+'</span>';
-        html+='<div class="herb-actions"><button class="btn-fav'+(isFav?' active':'')+'" onclick="toggleFavHerb(\''+id+'\',this)">';
+        html+='<div class="herb-actions">'+(BENCAO&&BENCAO[id]?'<button class="btn-sm ben-btn" onclick="openBencao(\''+id+'\')">📖 本草</button>':'')+'<button class="btn-fav'+(isFav?' active':'')+'" onclick="toggleFavHerb(\''+id+'\',this)">';
         html+='<svg width="14" height="14" viewBox="0 0 24 24" fill="'+(isFav?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button></div></div>';
         html+='<div class="herb-keyword"><div class="herb-keyword-label">速记关键词</div><div class="herb-keyword-text">'+o.keyword+'</div></div>';
         if(tabooDetail(o.taboo))html+='<div class="herb-taboo"><div class="herb-taboo-label">配伍禁忌</div><div class="herb-taboo-text">'+tabooDetail(o.taboo)+'</div></div>';
@@ -725,6 +741,17 @@ document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>
   document.getElementById('pane-'+b.dataset.tab).classList.add('active');
 }));
 
+// 本草详注弹窗
+function openBencao(name){
+  if(!BENCAO||!BENCAO[name])return;
+  document.getElementById('benTitle').textContent=name+' · 本草详注';
+  let h='';
+  if(BENCAO[name].sn)h+='<div class="ben-note"><span class="src">《神农本草经》</span>'+BENCAO[name].sn+'</div>';
+  if(BENCAO[name].gm)h+='<div class="ben-note"><span class="src">《本草纲目》</span>'+BENCAO[name].gm+'</div>';
+  document.getElementById('benBody').innerHTML=h;
+  document.getElementById('benModal').style.display='flex';
+}
+function closeBenModal(){document.getElementById('benModal').style.display='none';}
 // ==================== SEARCH ====================
 const searchInput=document.getElementById('searchInput');
 const searchClear=document.getElementById('searchClear');
