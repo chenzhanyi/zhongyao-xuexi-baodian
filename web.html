@@ -36,6 +36,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .cat:hover{background:rgba(47,93,58,.07)}
 .cat.on{background:rgba(47,93,58,.12);border-color:rgba(47,93,58,.25);color:var(--primary);font-weight:600}
 .cat .n{font-size:11px;color:var(--muted)}
+.cat.dim{opacity:.45}
 .sidebar-foot{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}
 .legend{display:flex;align-items:center;gap:5px;margin-top:4px}
 .dot-gold{width:8px;height:8px;border-radius:2px;background:var(--gold)}
@@ -163,12 +164,20 @@ function herbObj(h){return {name:h[0],pinyin:h[1],nature:h[2],meridians:h[3],eff
 function match(text,kw){if(!kw)return true;const k=kw.toLowerCase().trim();return text.toLowerCase().includes(k);}
 function benLink(n){return (typeof BENCAO!=='undefined'&&BENCAO[n])?'<a class="ben-link" onclick="openBencao(\''+n+'\')">📖 本草</a>':'';}
 
+function baseList(){
+  return HERBS.filter(h=>{
+    if(S.shen&&!isShen(h))return false;
+    if(!match(h[0]+' '+h[4]+' '+h[3]+' '+h[6]+' '+h[7]+' '+h[2]+' '+h[8]+' '+h[1],S.q))return false;
+    return true;
+  });
+}
 function renderCats(){
   const el=$('cats');let html='';
-  html+=`<div class="cat ${S.cat===null?'on':''}" onclick="setCat(null)"><span>全部</span><span class="n">${HERBS.length}</span></div>`;
+  const base=baseList();
+  html+=`<div class="cat ${S.cat===null?'on':''}" onclick="setCat(null)"><span>全部</span><span class="n">${base.length}</span></div>`;
   CATEGORIES.forEach(c=>{
-    const n=HERBS.filter(h=>h[7]===c.name).length;
-    html+=`<div class="cat ${S.cat===c.name?'on':''}" onclick="setCat('${c.name}')"><span>${c.name}</span><span class="n">${n}</span></div>`;
+    const n=base.filter(h=>h[7]===c.name).length;
+    html+=`<div class="cat ${S.cat===c.name?'on':''}${n===0?' dim':''}" onclick="setCat('${c.name}')"><span>${c.name}</span><span class="n">${n}</span></div>`;
   });
   el.innerHTML=html;
 }
@@ -247,6 +256,7 @@ function renderTaboos(){
   </div>`;
 }
 function render(){
+  renderCats();
   const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌'};
   $('mTitle').textContent=titles[S.m];
   const shenN=HERBS.filter(isShen).length;
