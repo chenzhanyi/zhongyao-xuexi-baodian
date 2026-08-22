@@ -226,7 +226,7 @@ function renderFormulas(){
      <span class="lbl">功用</span><div>${f[3]}</div>
      <span class="lbl">组成</span><div class="comp">${f[2].map((c,i)=>c[0]+'<span class="d"> '+c[1]+'</span>'+(i<f[2].length-1?'，':'')).join('')}</div>
      <span class="lbl">主治</span><div>${f[4]}</div>
-     <div class="orig">${f[5]==='——'?'':'原文：'+f[5]}</div></div>`).join('')+'</div>';
+     ${f[5]==='——'?'':'<div class="orig">原文：'+f[5]+'</div>'}</div>`).join('')+'</div>';
 }
 function renderTaboos(){
   const T=TABOOS;
