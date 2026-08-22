@@ -812,6 +812,8 @@ function doSearch(kw){
     html+='</div></div>';
   }
   srContent.innerHTML=html;
+  const sb=document.getElementById('searchBar');
+  if(sb)searchResults.style.top=(sb.offsetHeight)+'px';
   searchResults.classList.add('show');
 }
 function closeSearch(){searchResults.classList.remove('show');searchInput.value='';searchClear.classList.remove('show');searchHint.classList.remove('show');}
