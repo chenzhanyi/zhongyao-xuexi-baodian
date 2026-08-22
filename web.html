@@ -239,9 +239,9 @@ function renderTaboos(){
     <div class="t-col amber"><h3>十九畏</h3><div class="song">${T.nineteenFear.song}</div>
       ${T.nineteenFear.pairs.map(p=>'<div class="pairrow"><span style="flex:1;text-align:right;font-weight:500">'+p.a+'</span><span class="mid">畏</span><span style="flex:1">'+p.b+'</span></div>').join('')}</div>
     <div class="t-col rose"><h3>妊娠用药禁忌</h3>
-      <div style="margin-bottom:6px"><span class="pill red">禁用 '+T.pregnancy.forbidden.length+'</span></div>
+      <div style="margin-bottom:6px"><span class="pill red">禁用 ${T.pregnancy.forbidden.length}</span></div>
       <div class="pillwrap">${T.pregnancy.forbidden.map(x=>'<span class="pill red">'+x+'</span>').join('')}</div>
-      <div style="margin:6px 0"><span class="pill gold">慎用 '+T.pregnancy.caution.length+'</span></div>
+      <div style="margin:6px 0"><span class="pill gold">慎用 ${T.pregnancy.caution.length}</span></div>
       <div class="pillwrap">${T.pregnancy.caution.map(x=>'<span class="pill">'+x+'</span>').join('')}</div></div>
   </div>`;
 }
