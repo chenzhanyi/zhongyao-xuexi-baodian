@@ -566,6 +566,11 @@ const STORE_KEY = 'tcm_learning_progress';
 let store = loadStore();
 let currentPage = 'herbs';
 let shenFilter = false;
+let openCats = new Set(); // 记录用户已展开的分类（默认全部折叠）
+function toggleCat(btn){
+  const card=btn.parentElement;
+  if(card.classList.toggle('open'))openCats.add(card.dataset.cat||'');else openCats.delete(card.dataset.cat||'');
+}
 let reciteState = {mode:'herbs',scope:'all',index:0,flipped:false,shuffled:false,items:[]};
 function toggleShenFilter(){
   shenFilter=!shenFilter;
@@ -629,8 +634,8 @@ function renderHerbs(){
   CATEGORIES.forEach((cat,ci)=>{
     const catHerbs=src.filter(h=>h[7]===cat.name);
     if(catHerbs.length===0)return;
-    html+='<div class="cat-card'+(ci===0?' open':'')+'" data-cat="'+cat.name+'">';
-    html+='<button class="cat-head" onclick="this.parentElement.classList.toggle(\'open\')">';
+    html+='<div class="cat-card'+(openCats.has(cat.name)?' open':'')+'" data-cat="'+cat.name+'">';
+    html+='<button class="cat-head" onclick="toggleCat(this)">';
     html+='<span><span class="cat-name">'+cat.name+'</span><span class="cat-count">('+catHerbs.length+'味)</span></span>';
     html+='<svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>';
     html+='<div class="cat-body"><div class="cat-body-inner">';
