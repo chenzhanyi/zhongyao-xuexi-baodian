@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中药学习宝典 · 选择版本</title>
+<style>
+:root{
+  --bg:#f3eee2;--fg:#2d2418;--card:#fdfaf3;--line:#d8cdab;
+  --primary:#2f5d3a;--primary-fg:#f0ebe0;--gold:#a67c00;--muted:#8a7d62;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-serif;background:
+  radial-gradient(1200px 600px at 20% -10%, rgba(47,93,58,.10), transparent 60%),
+  radial-gradient(1000px 500px at 100% 110%, rgba(212,160,23,.10), transparent 55%),
+  var(--bg);color:var(--fg);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.wrap{width:100%;max-width:720px;text-align:center}
+.logo{font-size:34px;margin-bottom:6px}
+h1{font-size:28px;color:var(--primary);letter-spacing:2px;margin-bottom:4px}
+.sub{font-size:13px;color:var(--muted);margin-bottom:28px}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{display:flex;flex-direction:column;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 22px;text-decoration:none;color:var(--fg);transition:transform .15s,box-shadow .15s;position:relative}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.08)}
+.card:active{transform:scale(.98)}
+.card .ico{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center}
+.card.mob .ico{background:rgba(47,93,58,.12);color:var(--primary)}
+.card.canm .ico{background:rgba(212,160,23,.14);color:var(--gold)}
+.card h2{font-size:19px;margin-top:2px}
+.card p{font-size:12.5px;color:var(--muted);line-height:1.7}
+.card .go{margin-top:8px;font-size:13px;font-weight:600;border-radius:20px;padding:7px 20px}
+.card.mob .go{background:var(--primary);color:var(--primary-fg)}
+.card.canm .go{background:var(--gold);color:#fff}
+.reco{position:absolute;top:-10px;right:14px;background:var(--gold);color:#fff;font-size:11px;border-radius:12px;padding:2px 10px;font-weight:600}
+.foot{margin-top:30px;font-size:11.5px;color:var(--muted);line-height:1.8}
+.foot b{color:var(--primary)}
+@media(max-width:680px){
+  .cards{grid-template-columns:1fr}
+  h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">🍃</div>
+  <h1>中药学习宝典</h1>
+  <div class="sub">中医用药 · 速记 / 经方 / 禁忌 · 双端自适应</div>
+  <div class="cards">
+    <a class="card mob" href="中药学习宝典.html">
+      <span class="reco" id="recoMob" style="display:none">推荐</span>
+      <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="7" y="2" width="10" height="20" rx="2"/><line x1="10" y1="18" x2="14" y2="18"/></svg></div>
+      <h2>手机版</h2>
+      <p>触屏优化 · 单指滑动<br>背诵卡片 · 学习收藏进度</p>
+      <span class="go">进入手机版</span>
+    </a>
+    <a class="card canm" href="web.html">
+      <span class="reco" id="recoWeb" style="display:none">推荐</span>
+      <div class="ico"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+      <h2>桌面版</h2>
+      <p>宽屏浏览 · 侧栏分类<br>卡片网格 · 沈常用快速筛选</p>
+      <span class="go">进入桌面版</span>
+    </a>
+  </div>
+  <div class="foot">两版共用同一份数据（<b>tcm-data.js</b>），内容自动同步，无需重复维护。
+    <br>仅供学习参考，用药请遵执业中医师辨证指导。</div>
+</div>
+<script>
+// 按屏幕宽度提示更合适的版本（两版始终可进）
+if(window.innerWidth>820){document.getElementById('recoWeb').style.display='block';}
+else{document.getElementById('recoMob').style.display='block';}
+</script>
+</body>
+</html>
