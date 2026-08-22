@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>中药学习宝典</title>
+<style>
+:root{
+  --bg:#f5f0e6;--fg:#2d2418;--card:#faf7f0;--card-fg:#2d2418;
+  --primary:#2f5d3a;--primary-fg:#f0ebe0;--secondary:#e8dfc8;--secondary-fg:#3a2f1e;
+  --muted:#d4c9a8;--muted-fg:#7a6e55;--border:#d4c9a8;--input:#d4c9a8;--ring:#2f5d3a;
+  --destructive:#a33030;--destructive-fg:#faf7f0;--warning:#c47a1a;--success:#3a7d3a;
+  --radius:10px;--shadow:0 2px 12px rgba(0,0,0,.04),0 1px 2px -1px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft Yahei",sans-serif;background:var(--bg);color:var(--fg);-webkit-font-smoothing:antialiased;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font-family:inherit}
+
+/* Layout */
+.app{max-width:640px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;padding-bottom:70px}
+.page{display:none;flex:1}.page.active{display:block}
+
+/* Search */
+.search-bar{position:sticky;top:0;z-index:30;background:rgba(245,240,230,.88);backdrop-filter:blur(10px);padding:10px 14px}
+.search-wrap{position:relative}
+.search-wrap input{width:100%;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--card);padding:0 36px 0 36px;font-size:14px;color:var(--fg);outline:none}
+.search-wrap input:focus{border-color:var(--ring);box-shadow:0 0 0 2px rgba(47,93,58,.15)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted-fg)}
+.search-clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:22px;height:22px;border-radius:50%;display:none;align-items:center;justify-content:center;color:var(--muted-fg)}
+.search-clear.show{display:flex}
+.search-hint{font-size:11px;color:var(--muted-fg);margin-top:4px;display:none}
+.search-hint.show{display:block}
+
+/* Search Results */
+.search-results{position:fixed;inset:57px 0 64px 0;z-index:20;background:var(--bg);overflow-y:auto;padding:0 14px 20px;display:none}
+.search-results.show{display:block}
+.sr-header{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
+.sr-count{font-size:13px;color:var(--muted-fg)}
+.sr-close{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted-fg)}
+.sr-section{margin-bottom:16px}
+.sr-section-title{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;margin-bottom:6px;padding:0 2px}
+.sr-section-title .dot{width:14px;height:14px;display:flex;align-items:center;justify-content:center}
+.sr-list{border:1px solid var(--border);border-radius:10px;background:var(--card);overflow:hidden}
+.sr-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid rgba(212,201,168,.4);text-align:left;width:100%}
+.sr-item:last-child{border-bottom:none}
+.sr-item-info{flex:1;min-width:0}
+.sr-item-title{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sr-item-title.danger{color:var(--destructive)}
+.sr-item-sub{font-size:12px;color:var(--muted-fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+.sr-item-right{font-size:11px;color:var(--muted-fg);flex-shrink:0}
+.sr-item-arrow{width:16px;height:16px;color:var(--muted-fg);flex-shrink:0;opacity:.5}
+.sr-empty{text-align:center;padding:60px 20px;font-size:14px;color:var(--muted-fg)}
+.sr-more{text-align:center;padding:8px;font-size:12px;color:var(--muted-fg)}
+
+/* Page Header */
+.page-header{display:flex;align-items:center;justify-content:space-between;padding:4px 16px 12px}
+.page-title{font-size:20px;font-weight:700}
+.page-sub{font-size:12px;color:var(--muted-fg);margin-top:1px}
+.btn-primary{background:var(--primary);color:var(--primary-fg);padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;display:inline-flex;align-items:center;gap:5px}
+.btn-primary:active{opacity:.85}
+
+/* Category Accordion */
+.cat-list{padding:0 12px;display:flex;flex-direction:column;gap:8px}
+.cat-card{border:1px solid var(--border);border-radius:12px;background:rgba(250,247,240,.75);overflow:hidden}
+.cat-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;width:100%;text-align:left}
+.cat-name{font-size:15px;font-weight:600}
+.cat-count{font-size:12px;color:var(--muted-fg);margin-left:6px}
+.cat-arrow{width:20px;height:20px;color:var(--muted-fg);transition:transform .25s}
+.cat-card.open .cat-arrow{transform:rotate(180deg)}
+.cat-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.cat-card.open .cat-body{max-height:5000px}
+.cat-body-inner{padding:0 12px 12px}
+.subcat{margin-bottom:10px}
+.subcat:last-child{margin-bottom:0}
+.subcat-title{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:500;color:var(--muted-fg);margin-bottom:6px}
+.subcat-bar{width:3px;height:12px;border-radius:2px;background:rgba(47,93,58,.5)}
+.herb-grid{display:flex;flex-direction:column;gap:7px}
+
+/* Herb Card */
+.herb-card{border:1px solid var(--border);border-radius:9px;background:var(--card);padding:10px 12px;position:relative;transition:box-shadow .2s}
+.herb-card.highlight{box-shadow:0 0 0 2px var(--primary)}
+.herb-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.herb-name{font-size:15px;font-weight:600}
+.herb-badges{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:500;white-space:nowrap}
+.badge-danger{background:rgba(163,48,48,.1);color:var(--destructive);border:1px solid rgba(163,48,48,.3)}
+.badge-warn{background:rgba(196,122,26,.1);color:var(--warning);border:1px solid rgba(196,122,26,.3)}
+.badge-success{background:rgba(58,125,58,.1);color:var(--success);border:1px solid rgba(58,125,58,.3)}
+.badge-outline{background:transparent;border:1px solid var(--border);color:var(--muted-fg)}
+.badge-shen{background:rgba(212,160,23,.12);color:#a67c00;border:1px solid rgba(212,160,23,.5);margin-left:5px;vertical-align:middle}
+.shen-filter-bar{display:flex;align-items:center;gap:10px;padding:2px 12px 10px;flex-wrap:wrap}
+.shen-filter-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid rgba(212,160,23,.5);background:rgba(212,160,23,.08);color:#a67c00;font-size:12.5px;font-weight:600;transition:all .2s}
+.shen-filter-btn .shen-num{opacity:.85;font-weight:500}
+.shen-filter-btn .shen-filter-state{font-size:11px;font-weight:400;opacity:.75}
+.shen-filter-btn.active{background:#a67c00;color:#fff;border-color:#a67c00}
+.shen-filter-btn:active{transform:scale(.96)}
+.shen-hint{font-size:11px;color:var(--muted-fg)}
+.herb-meta{font-size:11px;color:var(--muted-fg);margin-top:2px}
+.herb-effects{font-size:13px;margin-top:5px;line-height:1.55}
+.herb-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:6px;gap:8px}
+.herb-dosage{font-size:11px;color:var(--muted-fg)}
+.herb-keyword{background:rgba(47,93,58,.07);border-radius:6px;padding:4px 8px;margin-top:6px}
+.herb-keyword-label{font-size:10px;color:rgba(47,93,58,.65);font-weight:500}
+.herb-keyword-text{font-size:12px;font-weight:500;color:var(--primary);margin-top:1px}
+.herb-taboo{border:1px solid rgba(163,48,48,.3);background:rgba(163,48,48,.05);border-radius:6px;padding:6px 8px;margin-top:6px}
+.herb-taboo-label{font-size:10px;font-weight:600;color:var(--destructive);margin-bottom:2px}
+.herb-taboo-text{font-size:11px;color:rgba(163,48,48,.85);line-height:1.5}
+.herb-actions{display:flex;gap:6px;margin-top:6px}
+.btn-sm{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--secondary);color:var(--secondary-fg)}
+.btn-sm.mastered{border-color:rgba(58,125,58,.4);background:rgba(58,125,58,.1);color:var(--success)}
+.btn-fav{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted-fg);flex-shrink:0}
+.btn-fav.active{color:#d4a017}
+
+/* Formula Card */
+.formula-list{padding:0 12px;display:flex;flex-direction:column;gap:10px}
+.formula-card{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px 14px}
+.formula-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.formula-name{font-size:16px;font-weight:700}
+.formula-source{font-size:11px;color:var(--muted-fg)}
+.formula-section{margin-top:8px}
+.formula-label{font-size:11px;font-weight:600;color:rgba(47,93,58,.7);margin-bottom:2px}
+.formula-text{font-size:13px;line-height:1.55}
+.formula-comp{font-size:12px;line-height:1.6;color:var(--fg)}
+.formula-comp .dose{color:var(--muted-fg)}
+.formula-orig{background:rgba(212,201,168,.3);border-radius:6px;padding:6px 8px;margin-top:8px}
+.formula-orig-label{font-size:10px;color:var(--muted-fg);margin-bottom:2px}
+.formula-orig-text{font-size:11px;color:rgba(45,36,24,.75);font-style:italic;line-height:1.55}
+
+/* Taboos Page */
+.taboos-wrap{padding:0 12px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:0;background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.tab-btn{padding:9px 0;font-size:13px;font-weight:500;color:var(--muted-fg);text-align:center;border-right:1px solid var(--border)}
+.tab-btn:last-child{border-right:none}
+.tab-btn.active{background:var(--primary);color:var(--primary-fg)}
+.tab-pane{display:none}.tab-pane.active{display:block;flex-direction:column;gap:10px}
+
+.song-card{border-radius:10px;padding:12px 14px;margin-bottom:10px}
+.song-card.red{border:1px solid rgba(163,48,48,.3);background:rgba(163,48,48,.05)}
+.song-card.amber{border:1px solid rgba(196,122,26,.3);background:rgba(196,122,26,.05)}
+.song-card.rose{border:1px solid rgba(180,60,90,.3);background:rgba(180,60,90,.05)}
+.song-title{display:flex;align-items:center;gap:6px;font-size:14px;font-weight:600;margin-bottom:6px}
+.song-title.red{color:var(--destructive)}
+.song-title.amber{color:var(--warning)}
+.song-title.rose{color:#b43c5a}
+.song-text{font-size:13px;line-height:1.7}
+
+.taboo-group-card{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:10px 12px;margin-bottom:8px}
+.taboo-group-head{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.taboo-group-main{font-size:14px;font-weight:600}
+.taboo-opp-label{font-size:11px;color:var(--muted-fg);margin-bottom:4px}
+.taboo-opp-list{display:flex;flex-wrap:wrap;gap:5px}
+
+.pair-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(212,201,168,.35)}
+.pair-row:last-child{border-bottom:none}
+.pair-a{flex:1;text-align:right;font-size:13px;font-weight:500}
+.pair-b{flex:1;font-size:13px}
+.pair-mid{font-size:11px;padding:1px 6px;border-radius:4px;flex-shrink:0}
+
+.preg-card{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:10px 12px;margin-bottom:8px}
+.preg-head{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.preg-list{display:flex;flex-wrap:wrap;gap:5px}
+
+.clinical-notes{background:rgba(212,201,168,.25);border-radius:8px;padding:8px 10px;margin-top:8px}
+.clinical-notes-title{font-size:11px;font-weight:600;margin-bottom:4px}
+.clinical-notes ul{padding-left:16px;font-size:11px;color:var(--muted-fg);line-height:1.7}
+
+/* Mine Page */
+.mine-hero{background:linear-gradient(135deg,rgba(47,93,58,.12),rgba(47,93,58,.03),transparent);padding:20px 16px 24px}
+.mine-title{font-size:20px;font-weight:700;margin-bottom:14px}
+.mine-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat-card{border:1px solid var(--border);border-radius:10px;background:rgba(250,247,240,.8);padding:12px 8px;text-align:center}
+.stat-icon{width:20px;height:20px;margin:0 auto 4px}
+.stat-icon.orange{color:#d97706}.stat-icon.green{color:var(--primary)}.stat-icon.amber{color:#d4a017}
+.stat-val{font-size:22px;font-weight:700;line-height:1.2}
+.stat-label{font-size:11px;color:var(--muted-fg);margin-top:2px}
+
+.mine-section{padding:0 12px;margin-top:12px;display:flex;flex-direction:column;gap:10px}
+.section-card{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:12px 14px}
+.section-card-title{font-size:15px;font-weight:600;margin-bottom:10px}
+.progress-row{display:flex;align-items:center;gap:10px;padding:6px 0;cursor:pointer;border-radius:6px}
+.progress-row:active{background:rgba(212,201,168,.2)}
+.progress-icon{width:20px;height:20px;color:var(--primary);flex-shrink:0}
+.progress-info{flex:1;min-width:0}
+.progress-label-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.progress-label{font-size:13px;font-weight:500}
+.progress-num{font-size:11px;color:var(--muted-fg)}
+.progress-bar{height:7px;background:var(--muted);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:var(--primary);border-radius:4px;transition:width .3s}
+.progress-arrow{width:16px;height:16px;color:var(--muted-fg);opacity:.5;flex-shrink:0}
+
+.quick-row{display:flex;align-items:center;gap:10px;padding:7px 4px;cursor:pointer;border-radius:6px}
+.quick-row:active{background:rgba(212,201,168,.2)}
+.quick-icon-wrap{width:32px;height:32px;border-radius:8px;background:rgba(47,93,58,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.quick-icon{width:16px;height:16px;color:var(--primary)}
+.quick-info{flex:1;min-width:0}
+.quick-label{font-size:13px;font-weight:500}
+.quick-sub{font-size:11px;color:var(--muted-fg);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.quick-arrow{width:16px;height:16px;color:var(--muted-fg);opacity:.5;flex-shrink:0}
+
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0}
+.setting-info{flex:1}
+.setting-label{font-size:13px;font-weight:500}
+.setting-desc{font-size:11px;color:var(--muted-fg);margin-top:1px}
+.toggle{width:40px;height:22px;border-radius:11px;background:var(--muted);position:relative;transition:background .2s;flex-shrink:0;cursor:pointer}
+.toggle.on{background:var(--primary)}
+.toggle-knob{width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on .toggle-knob{left:20px}
+
+/* Recite Page */
+.recite-app{position:fixed;inset:0;background:linear-gradient(180deg,var(--bg),rgba(47,93,58,.05),var(--bg));z-index:100;display:flex;flex-direction:column}
+.recite-header{display:flex;align-items:center;height:46px;border-bottom:1px solid rgba(212,201,168,.4);background:rgba(245,240,230,.85);backdrop-filter:blur(8px);padding:0 8px;flex-shrink:0}
+.recite-back{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--fg)}
+.recite-title{flex:1;text-align:center;font-size:14px;font-weight:600}
+.recite-mode-switch{padding:0 14px 8px;flex-shrink:0}
+.mode-tabs{display:flex;gap:6px;background:rgba(250,247,240,.8);border:1px solid var(--border);border-radius:10px;padding:3px}
+.mode-tab{flex:1;padding:7px 0;border-radius:7px;font-size:13px;font-weight:500;color:var(--muted-fg);text-align:center;display:flex;align-items:center;justify-content:center;gap:5px}
+.mode-tab.active{background:var(--primary);color:var(--primary-fg)}
+.recite-scope{padding:0 14px 8px;display:flex;gap:8px;flex-shrink:0}
+.scope-btn{flex:1;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--border);color:var(--muted-fg);text-align:center}
+.scope-btn.active{border-color:var(--primary);background:rgba(47,93,58,.1);color:var(--primary)}
+.recite-progress{padding:0 24px 12px;flex-shrink:0}
+.recite-progress-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--muted-fg);margin-bottom:5px}
+.recite-progress-bar{height:6px;background:var(--muted);border-radius:3px;overflow:hidden}
+.recite-progress-fill{height:100%;background:var(--primary);border-radius:3px;transition:width .3s}
+
+.recite-card-area{flex:1;display:flex;align-items:center;justify-content:center;padding:0 24px 16px;min-height:0}
+.recite-card{width:100%;max-width:420px;height:62vh;max-height:520px;border-radius:16px;border:1px solid var(--border);background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,.08);padding:24px;display:flex;flex-direction:column;cursor:pointer;overflow-y:auto;position:relative}
+.recite-card-front{align-items:center;justify-content:center;text-align:center}
+.recite-cat-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;border:1px solid rgba(47,93,58,.35);color:var(--primary);margin-bottom:12px}
+.recite-big-name{font-size:30px;font-weight:700;letter-spacing:1px}
+.recite-nature{font-size:13px;color:var(--muted-fg);margin-top:8px}
+.recite-keyword-box{display:inline-flex;align-items:center;gap:6px;background:rgba(47,93,58,.1);border-radius:20px;padding:6px 14px;margin-top:24px}
+.recite-keyword-icon{width:16px;height:16px;color:var(--primary)}
+.recite-keyword-text{font-size:13px;font-weight:500;color:var(--primary)}
+.recite-taboo-badges{display:flex;gap:5px;flex-wrap:wrap;justify-content:center;margin-top:20px}
+.recite-hint{margin-top:auto;font-size:11px;color:var(--muted-fg)}
+
+.recite-back-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.recite-back-name{font-size:18px;font-weight:700}
+.recite-back-dose{font-size:11px;color:var(--muted-fg)}
+.recite-back-nature{font-size:11px;color:var(--muted-fg);margin-bottom:10px}
+.recite-back-section{margin-bottom:10px}
+.recite-back-label{font-size:11px;font-weight:600;color:rgba(47,93,58,.7);margin-bottom:3px}
+.recite-back-text{font-size:13px;line-height:1.6}
+.recite-back-keyword{background:rgba(47,93,58,.07);border-radius:6px;padding:6px 8px;margin-bottom:10px}
+.recite-back-keyword .lbl{font-size:10px;color:rgba(47,93,58,.6)}
+.recite-back-keyword .txt{font-size:12px;font-weight:500;color:var(--primary);margin-top:1px}
+.recite-back-taboo{border:1px solid rgba(163,48,48,.3);background:rgba(163,48,48,.05);border-radius:6px;padding:6px 8px;margin-top:auto}
+.recite-back-taboo .lbl{font-size:10px;font-weight:600;color:var(--destructive);margin-bottom:2px;display:flex;align-items:center;gap:3px}
+.recite-back-taboo .txt{font-size:11px;color:rgba(163,48,48,.85);line-height:1.5}
+
+.recite-actions{position:sticky;bottom:0;border-top:1px solid var(--border);background:rgba(250,247,240,.92);backdrop-filter:blur(8px);padding:10px 14px calc(10px + env(safe-area-inset-bottom));flex-shrink:0}
+.recite-actions-row{display:flex;align-items:center;gap:6px;max-width:480px;margin:0 auto}
+.icon-btn{width:38px;height:38px;border-radius:8px;border:1px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;color:var(--fg);flex-shrink:0}
+.icon-btn:active{background:var(--secondary)}
+.icon-btn:disabled{opacity:.35}
+.icon-btn.active{border-color:var(--primary);color:var(--primary)}
+.btn-master{flex:1;padding:8px 0;border-radius:8px;font-size:13px;font-weight:500;background:var(--secondary);color:var(--secondary-fg);border:1px solid var(--border)}
+.btn-master.mastered{border-color:rgba(58,125,58,.4);background:rgba(58,125,58,.1);color:var(--success)}
+.recite-tips{text-align:center;font-size:10px;color:var(--muted-fg);margin-top:6px}
+
+/* Bottom Nav */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:40;background:rgba(250,247,240,.95);backdrop-filter:blur(10px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
+.bottom-nav-inner{max-width:640px;margin:0 auto;display:flex}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 5px;color:var(--muted-fg);text-decoration:none}
+.nav-item.active{color:var(--primary)}
+.nav-item svg{width:22px;height:22px}
+.nav-item span{font-size:10px}
+
+/* Footer */
+.app-footer{margin-top:12px;border-top:1px solid var(--border);background:rgba(212,201,168,.15);padding:10px 16px;text-align:center}
+.footer-text{display:flex;align-items:center;justify-content:center;gap:5px;font-size:11px;color:var(--muted-fg)}
+.footer-icon{width:14px;height:14px;color:#b8860b}
+
+/* Flip animation */
+.flip-enter{animation:flipIn .35s ease}
+@keyframes flipIn{from{opacity:0;transform:rotateY(80deg) scale(.95)}to{opacity:1;transform:rotateY(0) scale(1)}}
+
+/* Responsive */
+@media(min-width:641px){
+  .app{box-shadow:0 0 40px rgba(0,0,0,.06);border-left:1px solid var(--border);border-right:1px solid var(--border)}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+<!-- Search Bar (shared) -->
+<div class="search-bar" id="searchBar">
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="search" id="searchInput" placeholder="搜索中药、经方、禁忌..." autocomplete="off">
+    <button class="search-clear" id="searchClear" aria-label="清除">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div class="search-hint" id="searchHint">支持拼音首字母，如 bz 可搜索「白芷」</div>
+</div>
+
+<!-- Search Results Overlay -->
+<div class="search-results" id="searchResults">
+  <div class="sr-header">
+    <span class="sr-count" id="srCount"></span>
+    <button class="sr-close" id="srClose">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <div id="srContent"></div>
+</div>
+
+<!-- Herbs Page -->
+<div class="page active" id="page-herbs">
+  <div class="page-header">
+    <div>
+      <div class="page-title">中药速记</div>
+      <div class="page-sub" id="herbCount"></div>
+    </div>
+    <button class="btn-primary" onclick="openRecite('herbs')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      开始背诵
+    </button>
+  </div>
+  <div class="shen-filter-bar">
+    <button class="shen-filter-btn" id="btnShenFilter" onclick="toggleShenFilter()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      沈常用 <span class="shen-num" id="shenNum"></span>
+      <span class="shen-filter-state" id="shenFilterState"></span>
+    </button>
+    <span class="shen-hint" id="shenHint">点按筛选仅显示沈常用药，开始背诵亦同步生效</span>
+  </div>
+  <div class="cat-list" id="catList"></div>
+</div>
+
+<!-- Formulas Page -->
+<div class="page" id="page-formulas">
+  <div class="page-header">
+    <div>
+      <div class="page-title">经典经方</div>
+      <div class="page-sub" id="formulaCount"></div>
+    </div>
+    <button class="btn-primary" onclick="openRecite('formulas')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      经方背诵
+    </button>
+  </div>
+  <div class="formula-list" id="formulaList"></div>
+</div>
+
+<!-- Taboos Page -->
+<div class="page" id="page-taboos">
+  <div class="page-header">
+    <div>
+      <div class="page-title">配伍禁忌</div>
+      <div class="page-sub">十八反 · 十九畏 · 妊娠禁忌</div>
+    </div>
+  </div>
+  <div class="taboos-wrap">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="eighteen">十八反</button>
+      <button class="tab-btn" data-tab="nineteen">十九畏</button>
+      <button class="tab-btn" data-tab="pregnancy">妊娠禁忌</button>
+    </div>
+    <div class="tab-pane active" id="pane-eighteen"></div>
+    <div class="tab-pane" id="pane-nineteen"></div>
+    <div class="tab-pane" id="pane-pregnancy"></div>
+  </div>
+</div>
+
+<!-- Mine Page -->
+<div class="page" id="page-mine">
+  <div class="mine-hero">
+    <div class="mine-title">我的学习</div>
+    <div class="mine-stats">
+      <div class="stat-card">
+        <svg class="stat-icon orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>
+        <div class="stat-val" id="statStreak">0</div>
+        <div class="stat-label">连续天数</div>
+      </div>
+      <div class="stat-card">
+        <svg class="stat-icon green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <div class="stat-val" id="statMastered">0</div>
+        <div class="stat-label">已掌握</div>
+      </div>
+      <div class="stat-card">
+        <svg class="stat-icon amber" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        <div class="stat-val" id="statFav">0</div>
+        <div class="stat-label">收藏</div>
+      </div>
+    </div>
+  </div>
+  <div class="mine-section">
+    <div class="section-card">
+      <div class="section-card-title">学习进度</div>
+      <div class="progress-row" onclick="switchPage('herbs')">
+        <svg class="progress-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        <div class="progress-info">
+          <div class="progress-label-row"><span class="progress-label">中药</span><span class="progress-num" id="progHerbNum">0 / 0</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progHerbFill" style="width:0%"></div></div>
+        </div>
+        <svg class="progress-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="progress-row" onclick="switchPage('formulas')">
+        <svg class="progress-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v4l3 3v11H6V10l3-3V3z"/></svg>
+        <div class="progress-info">
+          <div class="progress-label-row"><span class="progress-label">经方</span><span class="progress-num" id="progFormulaNum">0 / 0</span></div>
+          <div class="progress-bar"><div class="progress-fill" id="progFormulaFill" style="width:0%"></div></div>
+        </div>
+        <svg class="progress-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+    <div class="section-card">
+      <div class="section-card-title">快捷背诵</div>
+      <div class="quick-row" onclick="openRecite('herbs')">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></div>
+        <div class="quick-info"><div class="quick-label">中药背诵</div><div class="quick-sub" id="quickHerbSub">全部中药卡片翻转</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="quick-row" onclick="openRecite('formulas')">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v4l3 3v11H6V10l3-3V3z"/></svg></div>
+        <div class="quick-info"><div class="quick-label">经方背诵</div><div class="quick-sub" id="quickFormulaSub">全部经典经方</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="quick-row" onclick="openRecite('herbs','favorites')">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="quick-info"><div class="quick-label">收藏夹 · 中药</div><div class="quick-sub" id="quickFavHerbSub">0 味收藏</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+      <div class="quick-row" onclick="openRecite('formulas','favorites')">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <div class="quick-info"><div class="quick-label">收藏夹 · 经方</div><div class="quick-sub" id="quickFavFormulaSub">0 首收藏</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
+    <div class="section-card">
+      <div class="section-card-title" style="display:flex;align-items:center;gap:6px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        学习设置
+      </div>
+      <div class="setting-row">
+        <div class="setting-info"><div class="setting-label">跳过已掌握</div><div class="setting-desc">背诵时自动跳过已标记的内容</div></div>
+        <div class="toggle" id="toggleSkip" onclick="toggleSetting('skipMastered')"><div class="toggle-knob"></div></div>
+      </div>
+      <div class="setting-row">
+        <div class="setting-info"><div class="setting-label">显示速记关键词</div><div class="setting-desc">卡片正面是否显示关键词提示</div></div>
+        <div class="toggle on" id="toggleKeyword" onclick="toggleSetting('showKeyword')"><div class="toggle-knob"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="app-footer">
+  <div class="footer-text">
+    <svg class="footer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    本工具仅供学习参考，临床用药请遵执业中医师辨证指导
+  </div>
+</div>
+
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="nav-item active" data-page="herbs">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+      <span>中药</span>
+    </button>
+    <button class="nav-item" data-page="formulas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v4l3 3v11H6V10l3-3V3z"/></svg>
+      <span>经方</span>
+    </button>
+    <button class="nav-item" data-page="taboos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m10.29 3.86-1.82 3.69-4.1.6a1 1 0 0 0-.55 1.7l2.97 2.89-.7 4.08a1 1 0 0 0 1.45 1.05l3.66-1.92 3.66 1.92a1 1 0 0 0 1.45-1.05l-.7-4.08 2.97-2.89a1 1 0 0 0-.55-1.7l-4.1-.6-1.82-3.69a1 1 0 0 0-1.79 0z"/></svg>
+      <span>禁忌</span>
+    </button>
+    <button class="nav-item" data-page="mine">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>我的</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Recite Page (fullscreen overlay) -->
+<div class="recite-app" id="reciteApp" style="display:none">
+  <div class="recite-header">
+    <button class="recite-back" onclick="closeRecite()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+    </button>
+    <div class="recite-title" id="reciteTitle">背诵模式</div>
+    <div style="width:36px"></div>
+  </div>
+  <div class="recite-mode-switch">
+    <div class="mode-tabs">
+      <button class="mode-tab active" id="modeHerbs" onclick="setReciteMode('herbs')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        中药
+      </button>
+      <button class="mode-tab" id="modeFormulas" onclick="setReciteMode('formulas')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6v4l3 3v11H6V10l3-3V3z"/></svg>
+        经方
+      </button>
+    </div>
+  </div>
+  <div class="recite-scope">
+    <button class="scope-btn active" id="scopeAll" onclick="setReciteScope('all')">全部</button>
+    <button class="scope-btn" id="scopeFav" onclick="setReciteScope('favorites')">⭐ 收藏</button>
+  </div>
+  <div class="recite-progress">
+    <div class="recite-progress-row">
+      <span id="recitePos">第 1 / 0 张</span>
+      <span id="recitePercent">0%</span>
+    </div>
+    <div class="recite-progress-bar"><div class="recite-progress-fill" id="reciteFill" style="width:0%"></div></div>
+  </div>
+  <div class="recite-card-area" id="reciteCardArea">
+    <div class="recite-card recite-card-front" id="reciteCard" onclick="flipCard()">
+      <div style="text-align:center;color:var(--muted-fg)">暂无内容</div>
+    </div>
+  </div>
+  <div class="recite-actions">
+    <div class="recite-actions-row">
+      <button class="icon-btn" id="btnPrev" onclick="recitePrev()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="icon-btn" id="btnShuffle" onclick="reciteShuffle()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+      </button>
+      <button class="icon-btn" onclick="reciteReset()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+      </button>
+      <button class="btn-master" id="btnMaster" onclick="reciteToggleMaster()">标记掌握</button>
+      <button class="icon-btn" id="btnFav" onclick="reciteToggleFav()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      </button>
+      <button class="icon-btn" id="btnNext" onclick="reciteNext()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="recite-tips">左右滑动切换 · 点击卡片翻转 · 空格键翻卡</div>
+  </div>
+</div>
+
+<script src="tcm-data.js"></script>
+<script>
+
+function herbObj(h){return {name:h[0],pinyin:h[1],nature:h[2],meridians:h[3],effects:h[4],dosage:h[5],keyword:h[6],category:h[7],subCategory:h[8],taboo:h[9],shenCommon:SHEN_COMMON.has(h[0])};}
+
+function tabooBadges(t){
+  const b=[];
+  if(t.eighteenInverse&&t.eighteenInverse.length)b.push('<span class="badge badge-danger">十八反</span>');
+  if(t.nineteenFear&&t.nineteenFear.length)b.push('<span class="badge badge-warn">十九畏</span>');
+  if(t.pregnancy==='forbidden')b.push('<span class="badge badge-danger">妊娠禁用</span>');
+  else if(t.pregnancy==='caution')b.push('<span class="badge badge-warn">妊娠慎用</span>');
+  return b.join('');
+}
+
+function tabooDetail(t){
+  const parts=[];
+  if(t.eighteenInverse&&t.eighteenInverse.length)parts.push('<div>十八反：'+t.eighteenInverse.join('、')+'</div>');
+  if(t.nineteenFear&&t.nineteenFear.length)parts.push('<div>十九畏：'+t.nineteenFear.join('、')+'</div>');
+  if(t.pregnancy)parts.push('<div>妊娠：'+(t.pregnancy==='forbidden'?'禁用':'慎用')+'</div>');
+  return parts.join('');
+}
+
+function renderHerbs(){
+  const src=shenFilter?HERBS.filter(h=>SHEN_COMMON.has(h[0])):HERBS;
+  document.getElementById('herbCount').textContent=(shenFilter?'沈常用 ':'共 ')+src.length+' 味 · 按功效分类';
+  const shenNumEl=document.getElementById('shenNum');
+  if(shenNumEl)shenNumEl.textContent=HERBS.filter(h=>SHEN_COMMON.has(h[0])).length+'味';
+  const list=document.getElementById('catList');
+  let html='';
+  if(src.length===0)html='<div class="sr-empty">暂无符合条件的药</div>';
+  CATEGORIES.forEach((cat,ci)=>{
+    const catHerbs=src.filter(h=>h[7]===cat.name);
+    if(catHerbs.length===0)return;
+    html+='<div class="cat-card'+(ci===0?' open':'')+'" data-cat="'+cat.name+'">';
+    html+='<button class="cat-head" onclick="this.parentElement.classList.toggle(\'open\')">';
+    html+='<span><span class="cat-name">'+cat.name+'</span><span class="cat-count">('+catHerbs.length+'味)</span></span>';
+    html+='<svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button>';
+    html+='<div class="cat-body"><div class="cat-body-inner">';
+    cat.subs.forEach(sub=>{
+      const subHerbs=catHerbs.filter(h=>h[8]===sub);
+      if(subHerbs.length===0)return;
+      html+='<div class="subcat"><div class="subcat-title"><span class="subcat-bar"></span>'+sub+'<span style="margin-left:4px">('+subHerbs.length+')</span></div>';
+      html+='<div class="herb-grid">';
+      subHerbs.forEach(h=>{
+        const o=herbObj(h);const id=o.name;
+        const isFav=store.favHerbs.includes(id);
+        html+='<div class="herb-card" id="herb-'+id+'">';
+        html+='<div class="herb-top"><div class="herb-name">'+o.name+(o.shenCommon?'<span class="badge badge-shen">沈常用</span>':'')+'</div>';
+        html+='<div class="herb-badges">'+tabooBadges(o.taboo)+'</div></div>';
+        html+='<div class="herb-meta">'+o.nature+' · '+o.meridians+'</div>';
+        html+='<div class="herb-effects">'+o.effects+'</div>';
+        html+='<div class="herb-bottom"><span class="herb-dosage">用量：'+o.dosage+'</span>';
+        html+='<div class="herb-actions"><button class="btn-fav'+(isFav?' active':'')+'" onclick="toggleFavHerb(\''+id+'\',this)">';
+        html+='<svg width="14" height="14" viewBox="0 0 24 24" fill="'+(isFav?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button></div></div>';
+        html+='<div class="herb-keyword"><div class="herb-keyword-label">速记关键词</div><div class="herb-keyword-text">'+o.keyword+'</div></div>';
+        if(tabooDetail(o.taboo))html+='<div class="herb-taboo"><div class="herb-taboo-label">配伍禁忌</div><div class="herb-taboo-text">'+tabooDetail(o.taboo)+'</div></div>';
+        html+='</div>';
+      });
+      html+='</div></div>';
+    });
+    html+='</div></div></div>';
+  });
+  list.innerHTML=html;
+}
+
+function toggleFavHerb(id,btn){
+  const i=store.favHerbs.indexOf(id);
+  if(i>=0)store.favHerbs.splice(i,1);else store.favHerbs.push(id);
+  saveStore();
+  if(btn){btn.classList.toggle('active');btn.querySelector('svg').setAttribute('fill',store.favHerbs.includes(id)?'currentColor':'none');}
+}
+
+// ==================== FORMULA RENDERING ====================
+function renderFormulas(){
+  document.getElementById('formulaCount').textContent='共 '+FORMULAS.length+' 首 · 含组成与原文';
+  const list=document.getElementById('formulaList');
+  let html='';
+  FORMULAS.forEach(f=>{
+    const id=f[0];const isFav=store.favFormulas.includes(id);
+    const isMastered=store.masteredFormulas.includes(id);
+    html+='<div class="formula-card" id="formula-'+id+'">';
+    html+='<div class="formula-head"><div class="formula-name">'+f[0]+'</div>';
+    html+='<div style="display:flex;align-items:center;gap:6px">';
+    if(isMastered)html+='<span class="badge badge-success">已掌握</span>';
+    html+='<button class="btn-fav'+(isFav?' active':'')+'" onclick="toggleFavFormula(\''+id+'\',this)">';
+    html+='<svg width="14" height="14" viewBox="0 0 24 24" fill="'+(isFav?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button></div></div>';
+    html+='<div class="formula-source">'+f[6]+'</div>';
+    html+='<div class="formula-section"><div class="formula-label">功用</div><div class="formula-text">'+f[3]+'</div></div>';
+    html+='<div class="formula-section"><div class="formula-label">组成</div><div class="formula-comp">';
+    f[2].forEach((c,i)=>{html+=c[0]+'<span class="dose"> '+c[1]+'</span>'+(i<f[2].length-1?'，':'');});
+    html+='</div></div>';
+    html+='<div class="formula-section"><div class="formula-label">主治</div><div class="formula-text" style="font-size:12px">'+f[4]+'</div></div>';
+    html+='<div class="formula-orig"><div class="formula-orig-label">原文</div><div class="formula-orig-text">'+f[5]+'</div></div>';
+    html+='<div style="display:flex;justify-content:flex-end;margin-top:8px"><button class="btn-sm'+(isMastered?' mastered':'')+'" onclick="toggleMasterFormula(\''+id+'\')">'+(isMastered?'已掌握':'标掌握')+'</button></div>';
+    html+='</div>';
+  });
+  list.innerHTML=html;
+}
+function toggleFavFormula(id,btn){const i=store.favFormulas.indexOf(id);if(i>=0)store.favFormulas.splice(i,1);else store.favFormulas.push(id);saveStore();if(btn){btn.classList.toggle('active');btn.querySelector('svg').setAttribute('fill',store.favFormulas.includes(id)?'currentColor':'none');}}
+function toggleMasterFormula(id){const i=store.masteredFormulas.indexOf(id);if(i>=0)store.masteredFormulas.splice(i,1);else{store.masteredFormulas.push(id);updateStreak();}saveStore();renderFormulas();}
+
+// ==================== TABOO RENDERING ====================
+function renderTaboos(){
+  // 十八反
+  let h='<div class="song-card red"><div class="song-title red">';
+  h+='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>十八反歌诀</div>';
+  h+='<div class="song-text">'+TABOOS.eighteenInverse.song+'</div></div>';
+  TABOOS.eighteenInverse.groups.forEach(g=>{
+    h+='<div class="taboo-group-card"><div class="taboo-group-head"><span class="badge badge-danger">'+g.main+'</span><span class="taboo-group-main">'+g.mainHerbs.join('、')+'</span></div>';
+    h+='<div class="taboo-opp-label">反：</div><div class="taboo-opp-list">';
+    g.opposite.forEach(o=>{h+='<span class="badge badge-danger">'+o+'</span>';});
+    h+='</div></div>';
+  });
+  h+='<div class="clinical-notes"><div class="clinical-notes-title">临床要点</div><ul>';
+  TABOOS.eighteenInverse.clinicalNotes.forEach(n=>{h+='<li>'+n+'</li>';});
+  h+='</ul></div>';
+  document.getElementById('pane-eighteen').innerHTML=h;
+
+  // 十九畏
+  h='<div class="song-card amber"><div class="song-title amber">';
+  h+='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>十九畏歌诀</div>';
+  h+='<div class="song-text">'+TABOOS.nineteenFear.song+'</div></div>';
+  h+='<div class="taboo-group-card"><div style="padding:4px 0">';
+  TABOOS.nineteenFear.pairs.forEach(p=>{
+    h+='<div class="pair-row"><span class="pair-a">'+p.a+'</span><span class="pair-mid badge badge-warn">畏</span><span class="pair-b">'+p.b+'</span></div>';
+  });
+  h+='</div></div>';
+  document.getElementById('pane-nineteen').innerHTML=h;
+
+  // 妊娠
+  h='<div class="song-card rose"><div class="song-title rose">';
+  h+='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>妊娠用药禁忌</div>';
+  h+='<div class="song-text" style="font-size:12px">孕妇用药需格外谨慎，禁用及慎用药物如下：</div></div>';
+  h+='<div class="preg-card"><div class="preg-head"><span class="badge badge-danger">禁用</span><span style="font-size:11px;color:var(--muted-fg)">（绝对不用）</span></div>';
+  h+='<div class="preg-list">';TABOOS.pregnancy.forbidden.forEach(x=>{h+='<span class="badge badge-danger">'+x+'</span>';});h+='</div></div>';
+  h+='<div class="preg-card"><div class="preg-head"><span class="badge badge-warn">慎用</span><span style="font-size:11px;color:var(--muted-fg)">（辨证酌用）</span></div>';
+  h+='<div class="preg-list">';TABOOS.pregnancy.caution.forEach(x=>{h+='<span class="badge badge-warn">'+x+'</span>';});h+='</div></div>';
+  document.getElementById('pane-pregnancy').innerHTML=h;
+}
+document.querySelectorAll('.tab-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.tab-pane').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');
+  document.getElementById('pane-'+b.dataset.tab).classList.add('active');
+}));
+
+// ==================== SEARCH ====================
+const searchInput=document.getElementById('searchInput');
+const searchClear=document.getElementById('searchClear');
+const searchHint=document.getElementById('searchHint');
+const searchResults=document.getElementById('searchResults');
+const srContent=document.getElementById('srContent');
+const srCount=document.getElementById('srCount');
+
+function matchText(text,kw,py){
+  if(!kw)return false;const k=kw.toLowerCase().trim();if(!k)return false;
+  if(text.toLowerCase().includes(k))return true;
+  if(py&&py.toLowerCase().includes(k))return true;
+  if(py&&k.length<=py.length&&py.toLowerCase().startsWith(k))return true;
+  return false;
+}
+
+function doSearch(kw){
+  if(!kw.trim()){closeSearch();return;}
+  const herbs=HERBS.filter(h=>{const o=herbObj(h);return matchText(o.name+' '+o.effects+' '+o.meridians+' '+o.keyword+' '+o.category+' '+o.nature,kw,o.pinyin);});
+  const formulas=FORMULAS.filter(f=>{const comp=f[2].map(c=>c[0]).join(' ');return matchText(f[0]+' '+f[3]+' '+f[4]+' '+f[6]+' '+comp,kw,f[1]);});
+  const taboos=[];
+  TABOOS.eighteenInverse.groups.forEach(g=>{
+    g.mainHerbs.forEach(m=>{if(m.toLowerCase().includes(kw.toLowerCase()))taboos.push({type:'十八反',name:m,detail:'反：'+g.opposite.join('、')});});
+    g.opposite.forEach(o=>{if(o.toLowerCase().includes(kw.toLowerCase()))taboos.push({type:'十八反',name:o,detail:'反：'+g.mainHerbs.join('、')+'（'+g.main+'）'});});
+  });
+  TABOOS.nineteenFear.pairs.forEach(p=>{
+    if(p.a.toLowerCase().includes(kw.toLowerCase()))taboos.push({type:'十九畏',name:p.a,detail:'畏：'+p.b});
+    if(p.b.toLowerCase().includes(kw.toLowerCase()))taboos.push({type:'十九畏',name:p.b,detail:'畏：'+p.a});
+  });
+  TABOOS.pregnancy.forbidden.forEach(h=>{if(h.toLowerCase().includes(kw.toLowerCase()))taboos.push({type:'妊娠禁忌',name:h,detail:'禁用'});});
+  TABOOS.pregnancy.caution.forEach(h=>{if(h.toLowerCase().includes(kw.toLowerCase()))taboos.push({type:'妊娠禁忌',name:h,detail:'慎用'});});
+
+  const total=herbs.length+formulas.length+taboos.length;
+  srCount.textContent='找到 '+total+' 条结果';
+  let html='';
+  if(total===0){html='<div class="sr-empty">未找到「'+kw+'」相关结果</div>';}
+  if(herbs.length){
+    html+='<div class="sr-section"><div class="sr-section-title"><span class="dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span>中药<span style="color:var(--muted-fg);font-weight:400">('+herbs.length+')</span></div><div class="sr-list">';
+    herbs.slice(0,20).forEach(h=>{
+      html+='<button class="sr-item" onclick="jumpToHerb(\''+h[0]+'\')"><div class="sr-item-info"><div class="sr-item-title">'+h[0]+(SHEN_COMMON.has(h[0])?'<span class="badge badge-shen">沈常用</span>':'')+'</div><div class="sr-item-sub">'+h[6]+'</div></div><div class="sr-item-right">'+h[7]+'</div><svg class="sr-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>';
+    });
+    if(herbs.length>20)html+='<div class="sr-more">还有 '+(herbs.length-20)+' 味，输入更精准关键词缩小范围</div>';
+    html+='</div></div>';
+  }
+  if(formulas.length){
+    html+='<div class="sr-section"><div class="sr-section-title"><span class="dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2"><path d="M9 3h6v4l3 3v11H6V10l3-3V3z"/></svg></span>经方<span style="color:var(--muted-fg);font-weight:400">('+formulas.length+')</span></div><div class="sr-list">';
+    formulas.forEach(f=>{
+      html+='<button class="sr-item" onclick="jumpToFormula(\''+f[0]+'\')"><div class="sr-item-info"><div class="sr-item-title">'+f[0]+'</div><div class="sr-item-sub">'+f[3]+'</div></div><div class="sr-item-right">'+f[6]+'</div><svg class="sr-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>';
+    });
+    html+='</div></div>';
+  }
+  if(taboos.length){
+    html+='<div class="sr-section"><div class="sr-section-title"><span class="dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--destructive)" stroke-width="2"><path d="m10.29 3.86-1.82 3.69-4.1.6a1 1 0 0 0-.55 1.7l2.97 2.89-.7 4.08a1 1 0 0 0 1.45 1.05l3.66-1.92 3.66 1.92a1 1 0 0 0 1.45-1.05l-.7-4.08 2.97-2.89a1 1 0 0 0-.55-1.7l-4.1-.6-1.82-3.69a1 1 0 0 0-1.79 0z"/></svg></span>禁忌<span style="color:var(--muted-fg);font-weight:400">('+taboos.length+')</span></div><div class="sr-list">';
+    taboos.forEach((t,i)=>{
+      html+='<button class="sr-item" onclick="jumpToTaboo(\''+t.type+'\')"><div class="sr-item-info"><div class="sr-item-title danger">'+t.type+' · '+t.name+'</div><div class="sr-item-sub">'+t.detail+'</div></div><svg class="sr-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>';
+    });
+    html+='</div></div>';
+  }
+  srContent.innerHTML=html;
+  searchResults.classList.add('show');
+}
+function closeSearch(){searchResults.classList.remove('show');searchInput.value='';searchClear.classList.remove('show');searchHint.classList.remove('show');}
+function jumpToHerb(name){closeSearch();switchPage('herbs');setTimeout(()=>{const el=document.getElementById('herb-'+name);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),1500);}},100);}
+function jumpToFormula(name){closeSearch();switchPage('formulas');setTimeout(()=>{const el=document.getElementById('formula-'+name);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.classList.add('highlight');setTimeout(()=>el.classList.remove('highlight'),1500);}},100);}
+function jumpToTaboo(type){closeSearch();switchPage('taboos');setTimeout(()=>{const map={'十八反':'eighteen','十九畏':'nineteen','妊娠禁忌':'pregnancy'};const tab=map[type]||'eighteen';document.querySelector('.tab-btn[data-tab="'+tab+'"]').click();},100);}
+
+searchInput.addEventListener('input',e=>{const v=e.target.value;searchClear.classList.toggle('show',!!v);searchHint.classList.toggle('show',!!v);if(v.trim())doSearch(v);else closeSearch();});
+searchClear.addEventListener('click',closeSearch);
+document.getElementById('srClose').addEventListener('click',closeSearch);
+
+// ==================== MINE PAGE ====================
+function renderMine(){
+  document.getElementById('statStreak').textContent=store.streakDays;
+  document.getElementById('statMastered').textContent=store.masteredHerbs.length+store.masteredFormulas.length;
+  document.getElementById('statFav').textContent=store.favHerbs.length+store.favFormulas.length;
+  const hp=HERBS.length>0?Math.round(store.masteredHerbs.length/HERBS.length*100):0;
+  const fp=FORMULAS.length>0?Math.round(store.masteredFormulas.length/FORMULAS.length*100):0;
+  document.getElementById('progHerbNum').textContent=store.masteredHerbs.length+' / '+HERBS.length;
+  document.getElementById('progFormulaNum').textContent=store.masteredFormulas.length+' / '+FORMULAS.length;
+  document.getElementById('progHerbFill').style.width=hp+'%';
+  document.getElementById('progFormulaFill').style.width=fp+'%';
+  document.getElementById('quickHerbSub').textContent=HERBS.length+'味中药卡片翻转';
+  document.getElementById('quickFormulaSub').textContent=FORMULAS.length+'首经典经方';
+  document.getElementById('quickFavHerbSub').textContent=store.favHerbs.length+' 味收藏';
+  document.getElementById('quickFavFormulaSub').textContent=store.favFormulas.length+' 首收藏';
+  document.getElementById('toggleSkip').classList.toggle('on',store.settings.skipMastered);
+  document.getElementById('toggleKeyword').classList.toggle('on',store.settings.showKeyword);
+}
+function toggleSetting(key){store.settings[key]=!store.settings[key];saveStore();renderMine();}
+
+// ==================== RECITE MODE ====================
+function openRecite(mode,scope){
+  reciteState.mode=mode||'herbs';
+  reciteState.scope=scope||'all';
+  reciteState.index=0;reciteState.flipped=false;reciteState.shuffled=false;
+  document.getElementById('reciteTitle').textContent=(reciteState.mode==='herbs'&&shenFilter?'沈常用 · 中药背诵':'背诵模式');
+  buildReciteItems();
+  document.getElementById('reciteApp').style.display='flex';
+  document.getElementById('modeHerbs').classList.toggle('active',reciteState.mode==='herbs');
+  document.getElementById('modeFormulas').classList.toggle('active',reciteState.mode==='formulas');
+  document.getElementById('scopeAll').classList.toggle('active',reciteState.scope==='all');
+  document.getElementById('scopeFav').classList.toggle('active',reciteState.scope==='favorites');
+  renderReciteCard();
+}
+function closeRecite(){document.getElementById('reciteApp').style.display='none';}
+function setReciteMode(m){reciteState.mode=m;reciteState.index=0;reciteState.flipped=false;buildReciteItems();document.getElementById('modeHerbs').classList.toggle('active',m==='herbs');document.getElementById('modeFormulas').classList.toggle('active',m==='formulas');renderReciteCard();}
+function setReciteScope(s){reciteState.scope=s;reciteState.index=0;reciteState.flipped=false;buildReciteItems();document.getElementById('scopeAll').classList.toggle('active',s==='all');document.getElementById('scopeFav').classList.toggle('active',s==='favorites');renderReciteCard();}
+function buildReciteItems(){
+  let items=[];
+  if(reciteState.mode==='herbs'){
+    items=HERBS.map(h=>({type:'herb',data:herbObj(h)}));
+    if(shenFilter)items=items.filter(i=>i.data.shenCommon);
+    if(reciteState.scope==='favorites')items=items.filter(i=>store.favHerbs.includes(i.data.name));
+    if(store.settings.skipMastered)items=items.filter(i=>!store.masteredHerbs.includes(i.data.name));
+  }else{
+    items=FORMULAS.map(f=>({type:'formula',data:{name:f[0],effects:f[3],composition:f[2],indications:f[4],originalText:f[5],source:f[6]}}));
+    if(reciteState.scope==='favorites')items=items.filter(i=>store.favFormulas.includes(i.data.name));
+    if(store.settings.skipMastered)items=items.filter(i=>!store.masteredFormulas.includes(i.data.name));
+  }
+  if(reciteState.shuffled)items=items.sort(()=>Math.random()-0.5);
+  reciteState.items=items;
+}
+function renderReciteCard(){
+  const items=reciteState.items;
+  const card=document.getElementById('reciteCard');
+  if(items.length===0){card.innerHTML='<div style="text-align:center;color:var(--muted-fg)"><div style="font-size:32px;margin-bottom:8px">📭</div><div style="font-size:15px;font-weight:600;margin-bottom:4px">暂无内容</div><div style="font-size:12px">'+(reciteState.scope==='favorites'?'收藏夹为空，先去收藏一些内容吧':'已掌握内容已全部跳过')+'</div></div>';
+    document.getElementById('recitePos').textContent='第 0 / 0 张';document.getElementById('recitePercent').textContent='0%';document.getElementById('reciteFill').style.width='0%';return;}
+  const idx=Math.min(reciteState.index,items.length-1);
+  const item=items[idx];
+  const total=items.length;const pct=Math.round((idx+1)/total*100);
+  document.getElementById('recitePos').textContent='第 '+(idx+1)+' / '+total+' 张';
+  document.getElementById('recitePercent').textContent=pct+'%';
+  document.getElementById('reciteFill').style.width=pct+'%';
+  document.getElementById('btnPrev').disabled=idx===0;
+  document.getElementById('btnNext').disabled=idx>=total-1;
+
+  let isMastered,isFav;
+  if(item.type==='herb'){isMastered=store.masteredHerbs.includes(item.data.name);isFav=store.favHerbs.includes(item.data.name);}
+  else{isMastered=store.masteredFormulas.includes(item.data.name);isFav=store.favFormulas.includes(item.data.name);}
+  document.getElementById('btnMaster').textContent=isMastered?'已掌握':'标记掌握';
+  document.getElementById('btnMaster').classList.toggle('mastered',isMastered);
+  document.getElementById('btnFav').classList.toggle('active',isFav);
+  document.getElementById('btnFav').querySelector('svg').setAttribute('fill',isFav?'currentColor':'none');
+  document.getElementById('btnShuffle').classList.toggle('active',reciteState.shuffled);
+
+  let html='';
+  if(!reciteState.flipped){
+    card.className='recite-card recite-card-front flip-enter';
+    if(item.type==='herb'){
+      const h=item.data;
+      html+='<span class="recite-cat-badge">'+h.category+' · '+h.subCategory+'</span>';
+      html+='<div class="recite-big-name">'+h.name+(h.shenCommon?'<span class="badge badge-shen">沈常用</span>':'')+'</div>';
+      html+='<div class="recite-nature">'+h.nature+' · '+h.meridians+'</div>';
+      if(store.settings.showKeyword)html+='<div class="recite-keyword-box"><svg class="recite-keyword-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7V17h8v-2.3A7 7 0 0 0 12 2z"/></svg><span class="recite-keyword-text">'+h.keyword+'</span></div>';
+      const tb=tabooBadges(h.taboo);if(tb)html+='<div class="recite-taboo-badges">'+tb+'</div>';
+    }else{
+      const f=item.data;
+      html+='<span class="recite-cat-badge">'+f.source+'</span>';
+      html+='<div class="recite-big-name">'+f.name+'</div>';
+      html+='<div class="recite-nature">'+f.effects+'</div>';
+    }
+    html+='<div class="recite-hint">点击卡片查看'+(item.type==='herb'?'功效用量':'组成主治')+'</div>';
+  }else{
+    card.className='recite-card flip-enter';
+    if(item.type==='herb'){
+      const h=item.data;
+      html+='<div class="recite-back-head"><div class="recite-back-name">'+h.name+'</div><div style="font-size:11px;color:var(--muted-fg)">'+h.dosage+'</div></div>';
+      html+='<div class="recite-back-nature">'+h.nature+' · '+h.meridians+'</div>';
+      html+='<div class="recite-back-section"><div class="recite-back-label">功效</div><div class="recite-back-text">'+h.effects+'</div></div>';
+      html+='<div class="recite-back-keyword"><div class="lbl">速记关键词</div><div class="txt">'+h.keyword+'</div></div>';
+      const td=tabooDetail(h.taboo);if(td)html+='<div class="recite-back-taboo"><div class="lbl"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/></svg>配伍禁忌</div><div class="txt">'+td+'</div></div>';
+    }else{
+      const f=item.data;
+      html+='<div class="recite-back-head"><div class="recite-back-name">'+f.name+'</div><div style="font-size:11px;color:var(--muted-fg)">'+f.source+'</div></div>';
+      html+='<div class="recite-back-section"><div class="recite-back-label">功用</div><div class="recite-back-text">'+f.effects+'</div></div>';
+      html+='<div class="recite-back-section"><div class="recite-back-label">组成</div><div class="recite-back-text" style="font-size:12px">';
+      f.composition.forEach((c,i)=>{html+=c[0]+'<span style="color:var(--muted-fg)"> '+c[1]+'</span>'+(i<f.composition.length-1?'，':'');});
+      html+='</div></div>';
+      html+='<div class="recite-back-section"><div class="recite-back-label">主治</div><div class="recite-back-text" style="font-size:12px">'+f.indications+'</div></div>';
+      html+='<div style="margin-top:auto;background:rgba(212,201,168,.25);border-radius:6px;padding:6px 8px"><div style="font-size:10px;color:var(--muted-fg);margin-bottom:2px">原文</div><div style="font-size:11px;color:rgba(45,36,24,.75);font-style:italic;line-height:1.55">'+f.originalText+'</div></div>';
+    }
+  }
+  card.innerHTML=html;
+}
+function flipCard(){reciteState.flipped=!reciteState.flipped;renderReciteCard();}
+function reciteNext(){if(reciteState.index<reciteState.items.length-1){reciteState.flipped=false;reciteState.index++;renderReciteCard();}}
+function recitePrev(){if(reciteState.index>0){reciteState.flipped=false;reciteState.index--;renderReciteCard();}}
+function reciteShuffle(){reciteState.shuffled=!reciteState.shuffled;reciteState.index=0;reciteState.flipped=false;buildReciteItems();renderReciteCard();}
+function reciteReset(){reciteState.index=0;reciteState.flipped=false;renderReciteCard();}
+function reciteToggleMaster(){
+  const item=reciteState.items[reciteState.index];if(!item)return;
+  if(item.type==='herb'){const i=store.masteredHerbs.indexOf(item.data.name);if(i>=0)store.masteredHerbs.splice(i,1);else{store.masteredHerbs.push(item.data.name);updateStreak();}}
+  else{const i=store.masteredFormulas.indexOf(item.data.name);if(i>=0)store.masteredFormulas.splice(i,1);else{store.masteredFormulas.push(item.data.name);updateStreak();}}
+  saveStore();renderReciteCard();
+}
+function reciteToggleFav(){
+  const item=reciteState.items[reciteState.index];if(!item)return;
+  if(item.type==='herb'){const i=store.favHerbs.indexOf(item.data.name);if(i>=0)store.favHerbs.splice(i,1);else store.favHerbs.push(item.data.name);}
+  else{const i=store.favFormulas.indexOf(item.data.name);if(i>=0)store.favFormulas.splice(i,1);else store.favFormulas.push(item.data.name);}
+  saveStore();renderReciteCard();
+}
+// Touch swipe
+let touchStartX=null;
+document.getElementById('reciteCardArea').addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;});
+document.getElementById('reciteCardArea').addEventListener('touchend',e=>{if(touchStartX===null)return;const dx=e.changedTouches[0].clientX-touchStartX;if(dx>60)recitePrev();else if(dx<-60)reciteNext();touchStartX=null;});
+// Keyboard
+document.addEventListener('keydown',e=>{
+  if(document.getElementById('reciteApp').style.display!=='flex')return;
+  if(e.key==='ArrowRight')reciteNext();else if(e.key==='ArrowLeft')recitePrev();else if(e.key===' '){e.preventDefault();flipCard();}
+});
+
+// ==================== INIT ====================
+renderHerbs();
+renderFormulas();
+renderTaboos();
+</script>
+</body>
+</html>

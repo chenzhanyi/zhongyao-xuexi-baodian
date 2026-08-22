@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中药学习宝典 · 桌面版</title>
+<style>
+:root{
+  --bg:#f3eee2;--fg:#2d2418;--card:#fdfaf3;--line:#d8cdab;
+  --primary:#2f5d3a;--primary-fg:#f0ebe0;--gold:#a67c00;--gold-bg:rgba(212,160,23,.12);
+  --danger:#a33030;--warn:#c47a1a;--muted:#8a7d62;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-serif;background:var(--bg);color:var(--fg);font-size:14px;line-height:1.6}
+.layout{display:flex;min-height:100vh;max-width:1500px;margin:0 auto}
+/* ---------- 侧栏 ---------- */
+.sidebar{width:268px;flex-shrink:0;background:var(--card);border-right:1px solid var(--line);padding:20px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.brand{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.brand h1{font-size:20px;color:var(--primary)}
+.brand small{color:var(--muted);font-size:12px}
+.brand-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+.search-box{position:relative;margin-bottom:14px}
+.search-box input{width:100%;height:38px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 12px 0 34px;font-size:13px;color:var(--fg);outline:none}
+.search-box input:focus{border-color:var(--primary);box-shadow:0 0 0 2px rgba(47,93,58,.14)}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted)}
+.moduls{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
+.mod{height:34px;border:1px solid var(--line);background:#fff;border-radius:8px;color:var(--fg);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.mod.on{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.shen-toggle{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.shen-toggle button{flex:1;height:34px;border:1px solid rgba(212,160,23,.55);background:var(--gold-bg);color:var(--gold);border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
+.shen-toggle button.on{background:var(--gold);color:#fff}
+.cats-title{font-size:12px;color:var(--muted);margin:0 2px 8px}
+.cats{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow-y:auto;padding-right:2px}
+.cat{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--fg);border:1px solid transparent}
+.cat:hover{background:rgba(47,93,58,.07)}
+.cat.on{background:rgba(47,93,58,.12);border-color:rgba(47,93,58,.25);color:var(--primary);font-weight:600}
+.cat .n{font-size:11px;color:var(--muted)}
+.sidebar-foot{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}
+.legend{display:flex;align-items:center;gap:5px;margin-top:4px}
+.dot-gold{width:8px;height:8px;border-radius:2px;background:var(--gold)}
+/* ---------- 主区 ---------- */
+.main{flex:1;min-width:0;padding:22px 28px}
+.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.head h2{font-size:22px;color:var(--primary)}
+.stats{display:flex;gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px 10px;font-size:12px;color:var(--muted)}
+.stat b{color:var(--fg);font-size:13px}
+.empty{padding:60px 20px;text-align:center;color:var(--muted)}
+/* 卡片 */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.hcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:13px 15px;transition:box-shadow .15s,transform .15s}
+.hcard:hover{box-shadow:0 6px 18px rgba(0,0,0,.07);transform:translateY(-1px)}
+.hcard .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:3px}
+.hcard .nm{font-size:17px;font-weight:700}
+.hcard .badge{display:inline-flex;align-items:center;padding:1px 7px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid currentColor}
+.b-shen{color:var(--gold);background:var(--gold-bg);border-color:rgba(212,160,23,.55)!important}
+.b-dang{color:var(--danger);border-color:rgba(163,48,48,.35)!important}
+.b-warn{color:var(--warn);border-color:rgba(196,122,26,.4)!important}
+.hcard .cat-tag{font-size:11px;color:var(--muted);margin-left:auto}
+.hcard .nature{font-size:12px;color:var(--muted);margin-bottom:6px}
+.hcard .effects{font-size:13px;margin-bottom:6px}
+.hcard .dose{font-size:12px;color:var(--primary);font-weight:600}
+.hcard .kw{margin-top:7px;display:inline-block;background:rgba(47,93,58,.08);color:var(--primary);border-radius:6px;padding:2px 8px;font-size:12px;font-weight:500}
+.hcard .taboo{margin-top:8px;border:1px solid rgba(163,48,48,.3);background:rgba(163,48,48,.05);border-radius:7px;padding:6px 9px;font-size:12px;color:rgba(163,48,48,.9)}
+/* 方剂卡片 */
+.fcard{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.fcard h3{font-size:16px;color:var(--primary);margin-bottom:2px}
+.fcard .src{font-size:11px;color:var(--muted);margin-bottom:8px}
+.fcard .sec{margin:7px 0;font-size:12.5px}
+.fcard .lbl{font-size:11px;font-weight:600;color:rgba(47,93,58,.75);display:block;margin-bottom:1px}
+.fcard .comp{font-size:12.5px;color:var(--fg)}
+.fcard .comp .d{color:var(--muted)}
+.fcard .orig{background:rgba(216,205,171,.28);border-radius:7px;padding:6px 9px;margin-top:8px;font-size:11.5px;color:rgba(45,36,24,.72);font-style:italic}
+/* 禁忌 */
+.taboo-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:12px}
+.t-col{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.t-col h3{font-size:15px;margin-bottom:8px}
+.t-col.red h3{color:var(--danger)} .t-col.amber h3{color:var(--warn)} .t-col.rose h3{color:#b43c5a}
+.song{font-size:13px;line-height:1.9;background:rgba(216,205,171,.25);border-radius:8px;padding:9px 11px;margin-bottom:10px}
+.pillwrap{display:flex;flex-wrap:wrap;gap:5px;margin:5px 0 9px}
+.pill{font-size:11.5px;border-radius:5px;padding:2px 8px;border:1px solid var(--line)}
+.pill.red{color:var(--danger);border-color:rgba(163,48,48,.35)}.pill.gold{color:var(--gold);border-color:rgba(212,160,23,.5)}
+.pairrow{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;border-bottom:1px dashed rgba(216,205,171,.6)}
+.pairrow:last-child{border-bottom:none}
+.pairrow .mid{font-size:11px;color:var(--warn);padding:0 6px;border:1px solid rgba(196,122,26,.4);border-radius:4px}
+.notes{font-size:12px;color:var(--muted);margin-top:8px}
+.notes li{margin-left:16px;padding:1px 0}
+@media(max-width:820px){
+  .layout{flex-direction:column}
+  .sidebar{width:100%;height:auto;position:static;max-height:none}
+  .cats{max-height:180px}
+  .main{padding:16px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><h1>中药学习宝典</h1><small>桌面版</small></div>
+    <div class="brand-sub">数据源 tcm-data.js，与手机版同步</div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input id="q" type="search" placeholder="搜索药名/拼音/功效/归经/方剂…" autocomplete="off">
+    </div>
+    <div class="moduls">
+      <button class="mod on" data-m="herbs">中药</button>
+      <button class="mod" data-m="formulas">经方</button>
+      <button class="mod" data-m="taboos">禁忌</button>
+    </div>
+    <div class="shen-toggle"><button id="shenBtn">⭐ 沈常用 <span id="shenCnt"></span></button></div>
+    <div class="cats-title" id="catsTitle">全部类别</div>
+    <nav class="cats" id="cats"></nav>
+    <div class="sidebar-foot">
+      <div class="legend"><span class="dot-gold"></span> 沈常用（采购买入，见去重表）</div>
+      仅供学习参考，用药请遵执证中医师辨证指导。
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="head">
+      <h2 id="mTitle">中药速记</h2>
+      <div class="stats" id="statBar"></div>
+    </div>
+    <div id="content"></div>
+  </main>
+</div>
+
+<script src="tcm-data.js"></script>
+<script>
+const S = {m:'herbs', shen:false, cat:null, q:''};
+const $=id=>document.getElementById(id);
+const isShen=h=>SHEN_COMMON.has(h[0]);
+function herbObj(h){return {name:h[0],pinyin:h[1],nature:h[2],meridians:h[3],effects:h[4],dosage:h[5],keyword:h[6],cat:h[7],sub:h[8],taboo:h[9],shen:isShen(h[0])};}
+function match(text,kw){if(!kw)return true;const k=kw.toLowerCase().trim();return text.toLowerCase().includes(k);}
+
+function renderCats(){
+  const el=$('cats');let html='';
+  html+=`<div class="cat ${S.cat===null?'on':''}" onclick="setCat(null)"><span>全部</span><span class="n">${HERBS.length}</span></div>`;
+  CATEGORIES.forEach(c=>{
+    const n=HERBS.filter(h=>h[7]===c.name).length;
+    html+=`<div class="cat ${S.cat===c.name?'on':''}" onclick="setCat('${c.name}')"><span>${c.name}</span><span class="n">${n}</span></div>`;
+  });
+  el.innerHTML=html;
+}
+function setCat(c){S.cat=c;renderCats();render();}
+function setModule(m){S.m=m;S.q='';$('q').value='';document.querySelectorAll('.mod').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  $('catsTitle').style.display=(m==='herbs')?'block':'none';$('cats').style.display=(m==='herbs')?'flex':'none';
+  $('shenBtn').style.display=(m==='herbs')?'flex':'none';render();}
+document.querySelectorAll('.mod').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.m)));
+$('shenBtn').addEventListener('click',()=>{S.shen=!S.shen;$('shenBtn').classList.toggle('on',S.shen);render();});
+$('q').addEventListener('input',e=>{S.q=e.target.value;render();});
+
+function badgeHTML(h){
+  let b=[];if(h.shen)b.push('<span class="badge b-shen">沈常用</span>');
+  if(h.taboo.eighteenInverse.length)b.push('<span class="badge b-dang">十八反</span>');
+  if(h.taboo.nineteenFear.length)b.push('<span class="badge b-dang">十九畏</span>');
+  if(h.taboo.pregnancy==='forbidden')b.push('<span class="badge b-dang">妊娠禁用</span>');
+  else if(h.taboo.pregnancy==='caution')b.push('<span class="badge b-warn">妊娠慎用</span>');
+  return b.join('');
+}
+function tabooTxt(h){const p=[];if(h.taboo.eighteenInverse.length)p.push('十八反：'+h.taboo.eighteenInverse.join('、'));
+  if(h.taboo.nineteenFear.length)p.push('十九畏：'+h.taboo.nineteenFear.join('、'));
+  if(h.taboo.pregnancy)p.push('妊娠：'+(h.taboo.pregnancy==='forbidden'?'禁用':'慎用'));
+  return p.length?('<div class="taboo">⚠ '+p.join('　')+'</div>'):'';}
+
+function renderHerbs(){
+  const list=HERBS.map(herbObj).filter(h=>{
+    if(S.shen&&!h.shen)return false;
+    if(S.cat&&h.cat!==S.cat)return false;
+    if(!match(h.name+' '+h.effects+' '+h.meridians+' '+h.keyword+' '+h.cat+' '+h.nature+' '+h.sub+' '+h.pinyin,S.q))return false;
+    return true;
+  });
+  const byCat={};
+  list.forEach(h=>{(byCat[h.cat]=byCat[h.cat]||[]).push(h);});
+  let html='';
+  if(list.length===0){$('content').innerHTML='<div class="empty">未找到匹配的中药</div>';return;}
+  const order=CATEGORIES.map(c=>c.name);
+  Object.keys(byCat).sort((a,b)=>order.indexOf(a)-order.indexOf(b)).forEach(cat=>{
+    html+=`<h3 style="color:var(--primary);margin:16px 0 8px;font-size:15px">${cat} <span style="color:var(--muted);font-size:12px">${byCat[cat].length}</span></h3><div class="grid">`;
+    byCat[cat].forEach(h=>{
+      html+=`<div class="hcard"><div class="top"><span class="nm">${h.name}</span>${badgeHTML(h)}
+        <span class="cat-tag">${h.sub}</span></div>
+        <div class="nature">${h.nature} · ${h.meridians}</div>
+        <div class="effects">${h.effects}</div>
+        <div><span class="dose">用量：${h.dosage}</span></div>
+        <div class="kw">📌 ${h.keyword}</div>${tabooTxt(h)}</div>`;
+    });
+    html+='</div>';
+  });
+  $('content').innerHTML=html;
+}
+function renderFormulas(){
+  const list=FORMULAS.filter(f=>match(f[0]+' '+f[3]+' '+f[4]+' '+f[6]+' '+f[2].map(c=>c[0]).join(' '),S.q));
+  if(list.length===0){$('content').innerHTML='<div class="empty">未找到匹配的方剂</div>';return;}
+  $('content').innerHTML='<div class="grid">'+list.map(f=>
+    `<div class="fcard"><h3>${f[0]}</h3><div class="src">${f[6]}</div>
+     <span class="lbl">功用</span><div>${f[3]}</div>
+     <span class="lbl">组成</span><div class="comp">${f[2].map((c,i)=>c[0]+'<span class="d"> '+c[1]+'</span>'+(i<f[2].length-1?'，':'')).join('')}</div>
+     <span class="lbl">主治</span><div>${f[4]}</div>
+     <div class="orig">${f[5]==='——'?'':'原文：'+f[5]}</div></div>`).join('')+'</div>';
+}
+function renderTaboos(){
+  const T=TABOOS;
+  const opp=(g)=>'<div class="pillwrap">'+g.opposite.map(o=>'<span class="pill red">'+o+'</span>').join('')+'</div>';
+  $('content').innerHTML=`
+  <div class="taboo-cols">
+    <div class="t-col red"><h3>十八反</h3><div class="song">${T.eighteenInverse.song}</div>
+      ${T.eighteenInverse.groups.map(g=>'<div style="margin-bottom:8px"><b style="font-size:13px">'+g.main+'（'+g.mainHerbs.join('、')+'）反：</b>'+opp(g)+'</div>').join('')}
+      <ul class="notes">${T.eighteenInverse.clinicalNotes.map(n=>'<li>'+n+'</li>').join('')}</ul></div>
+    <div class="t-col amber"><h3>十九畏</h3><div class="song">${T.nineteenFear.song}</div>
+      ${T.nineteenFear.pairs.map(p=>'<div class="pairrow"><span style="flex:1;text-align:right;font-weight:500">'+p.a+'</span><span class="mid">畏</span><span style="flex:1">'+p.b+'</span></div>').join('')}</div>
+    <div class="t-col rose"><h3>妊娠用药禁忌</h3>
+      <div style="margin-bottom:6px"><span class="pill red">禁用 '+T.pregnancy.forbidden.length+'</span></div>
+      <div class="pillwrap">${T.pregnancy.forbidden.map(x=>'<span class="pill red">'+x+'</span>').join('')}</div>
+      <div style="margin:6px 0"><span class="pill gold">慎用 '+T.pregnancy.caution.length+'</span></div>
+      <div class="pillwrap">${T.pregnancy.caution.map(x=>'<span class="pill">'+x+'</span>').join('')}</div></div>
+  </div>`;
+}
+function render(){
+  const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌'};
+  $('mTitle').textContent=titles[S.m];
+  const shenN=HERBS.filter(isShen).length;
+  $('shenCnt').textContent=shenN+'味';
+  if(S.m==='herbs')renderHerbs();else if(S.m==='formulas')renderFormulas();else renderTaboos();
+  let showFiltered = S.m==='herbs';
+  $('statBar').innerHTML = (S.m==='herbs'
+    ? `<span class="stat">中药 <b>${HERBS.length}</b> 味</span><span class="stat">沈常用 <b>${shenN}</b></span>${S.shen?'<span class="stat">已筛选 <b>沈常用</b></span>':''}`
+    : S.m==='formulas'? `<span class="stat">经方 <b>${FORMULAS.length}</b> 首</span>`:`<span class="stat">十八反/十九畏/妊娠禁忌</span>`);
+}
+// init
+renderCats();render();
+</script>
+</body>
+</html>
