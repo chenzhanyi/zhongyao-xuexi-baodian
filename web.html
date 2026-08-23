@@ -158,6 +158,13 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 <script src="bencao.js"></script>
 <script src="aliases.js"></script>
 <script src="fufang_bencao.js"></script>
+<div class="ben-modal" id="ffModal" style="display:none" onclick="ffClose()">
+  <div class="ben-box" onclick="event.stopPropagation()">
+    <div class="ben-head"><span class="ben-title" id="ffTitle">本草纲目 · 附方</span><button class="ben-close" onclick="ffClose()">✕</button></div>
+    <div class="ben-body" id="ffBody"></div>
+  </div>
+</div>
+
 <script src="tcm-data.js"></script>
 <script>
 // 本草详注弹窗
@@ -283,7 +290,15 @@ function ftabHTML(){
 }
 function fbClassic(){S.fmode='classic';render();}
 function fbFufang(){S.fmode='fufang';render();}
-function ffOpen(el){el.parentElement.classList.toggle('open');}
+function htmlAttr(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function ffShow(el){
+  var k=el.getAttribute('data-n');
+  if(!k||typeof FUFANG==='undefined'||!FUFANG[k])return;
+  document.getElementById('ffTitle').textContent='本草纲目 · 附方 · '+k;
+  document.getElementById('ffBody').innerHTML='<div class="ben-note" style="font-size:15px">'+FUFANG[k]+'</div>';
+  document.getElementById('ffModal').style.display='flex';
+}
+function ffClose(){document.getElementById('ffModal').style.display='none';}
 function renderFufang(){
   const FF=typeof FUFANG!=='undefined'?FUFANG:{};
   const keys=Object.keys(FF).sort();
@@ -291,7 +306,7 @@ function renderFufang(){
   const shown=filt.slice(0,320);
   let html=ftabHTML();
   if(!shown.length){$('content').innerHTML=html+'<div class="empty">未找到匹配的药材附方</div>';return;}
-  html+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(360px,1fr))">'+shown.map(k=>'<div class="ffcard"><div class="ffhead" onclick="ffOpen(this)"><b>'+k+'</b><span class="ffcnt">'+FF[k].split('；').length+' 段</span></div><div class="ffbody">'+FF[k]+'</div></div>').join('')+'</div>';
+  html+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(360px,1fr))">'+shown.map(k=>'<div class="ffcard"><div class="ffhead" onclick="ffShow(this)" data-n="'+htmlAttr(k)+'"><b>'+k+'</b><span class="ffcnt">'+FF[k].split('；').length+' 段 · 点击查看</span></div></div>').join('')+'</div>';
   if(filt.length>320)html+='<div class="sr-more">还有 '+(filt.length-320)+' 味，输入药名缩小范围</div>';
   $('content').innerHTML=html;
 }
