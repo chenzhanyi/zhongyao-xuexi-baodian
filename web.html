@@ -261,7 +261,7 @@ function setModule(m){S.m=m;S.q='';$('q').value='';document.querySelectorAll('.m
   $('shenBtn').style.display=(m==='herbs')?'':'none';render();}
 document.querySelectorAll('.mod').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.m)));
 $('shenBtn').addEventListener('click',()=>{S.shen=!S.shen;$('shenBtn').classList.toggle('on',S.shen);render();});
-$('q').addEventListener('input',e=>{S.q=e.target.value;render();});
+$('q').addEventListener('input',e=>{S.q=e.target.value;if(S.q.trim()!=='')S.cat=null;render();});
 
 function badgeHTML(h){
   let b=[];if(h.shen)b.push('<span class="badge b-shen">沈常用</span>');
