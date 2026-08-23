@@ -151,6 +151,23 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 <script src="tcm-data.js"></script>
 <script>
 // 本草详注弹窗
+const GI={'橘皮':'陈皮','生甘草':'甘草','苦桔梗':'桔梗','荆芥穗':'荆芥','半夏曲':'半夏','藿香':'广藿香','紫苏':'紫苏叶','干地黄':'生地黄'};
+function herbOfIng(ing){
+  if(GI[ing])return GI[ing];
+  const AL=typeof ALIAS!=='undefined'?ALIAS:{};
+  for(const hh in AL){if(AL[hh]&&AL[hh].includes(ing))return hh;}
+  return ing;
+}
+function herbFormulas(name){
+  return FORMULAS.filter(function(f){
+    return f[2].some(function(c){
+      var ing=c[0],hr=herbOfIng(ing);
+      if(hr===name)return true;
+      if(name==='甘草'&&(ing==='生甘草'||ing==='炙甘草'))return true;
+      return false;
+    });
+  });
+}
 function bencaoHTML(name){
   const b=BENCAO&&BENCAO[name]; if(!b)return '';
   let h='';
@@ -165,6 +182,8 @@ function bencaoHTML(name){
     if(g.s)secs.push(['释名',g.s]);
     if(secs.length)h+='<div class="ben-gm"><div class="ben-gm-title">《本草纲目》</div>'+secs.map(x=>'<div class="ben-note"><span class="src">'+x[0]+'</span>'+x[1]+'</div>').join('')+'</div>';
   }
+  const rel=herbFormulas(name);
+  if(rel.length)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">相关经方 · '+rel.length+' 首</div>'+rel.map(function(f){return '<div class="ben-note"><span class="src">'+f[6]+'</span><b>'+f[0]+'</b>　'+f[2].map(function(c){return c[0]+(c[1]?' '+c[1]:'');}).join('、')+'</div>';}).join('')+'</div>';
   return h;
 }
 function openBencao(name){
