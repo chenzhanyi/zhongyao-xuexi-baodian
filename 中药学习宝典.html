@@ -90,6 +90,7 @@ input{font-family:inherit}
 .part-label{width:96px;flex-shrink:0;font-size:13.5px;font-weight:600;color:var(--fg)}
 .part-organ{font-size:10.5px;color:var(--muted);font-weight:400}
 .part-select{flex:1;height:36px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13.5px;color:var(--fg);padding:0 8px;appearance:auto}
+.part-select.part-force{flex:0 0 96px;font-size:12.5px;color:var(--muted)}
 .pulse-note-input{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13px;color:var(--fg);padding:9px 10px;margin-top:10px;resize:vertical;min-height:64px;line-height:1.6}
 .pulse-btn-row{display:flex;gap:8px;margin-top:12px}
 .pulse-btn{flex:1;height:42px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--primary)}
@@ -489,7 +490,7 @@ input{font-family:inherit}
       <div class="section-card-title">学习工具</div>
       <div class="quick-row" onclick="switchPage('pulse')">
         <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg></div>
-        <div class="quick-info"><div class="quick-label">脉诊速记</div><div class="quick-sub">28脉手感速记 · 六部选脉生成记录</div></div>
+        <div class="quick-info"><div class="quick-label">脉诊速记</div><div class="quick-sub">28脉手感速记 · 三部九候分层选脉</div></div>
         <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
@@ -1259,15 +1260,27 @@ const PULSE_GROUPS=[
   ['短','脉体短，只在关部，寸尺不足','气亏气滞']]}
 ];
 const PULSE_PARTS=[['左寸','心'],['左关','肝'],['左尺','肾'],['右寸','肺'],['右关','脾'],['右尺','命门']];
+const PULSE_LAYERS=[['浮','浮取（轻按）'],['中','中取（中按）'],['沉','沉取（重按）']];
+const PULSE_FORCES=['','有力','中等','无力（不足）'];
 let pulseSel={};
+let pulseForce={};
 let pulseNote='',pulseReportText='';
 function renderPulse(){
-  // 六部选择
+  // 六部选择: 每部按浮/中/沉三层, 各层记脉象+力度
   const pp=document.getElementById('pulseParts');
   const allNames=PULSE_GROUPS.reduce(function(a,g){return a.concat(g.list.map(function(x){return x[0];}));},[]);
+  const pulseOpts=['<option value="">未记录</option>'].concat(allNames.map(function(m){return '<option>'+m+'</option>';})).join('');
+  const forceOpts=PULSE_FORCES.map(function(f,i){return '<option value="'+f+'"'+(i===0?'':'')+'>'+(f||'未记力度')+'</option>';}).join('');
   pp.innerHTML=PULSE_PARTS.map(function(p){
-    const opts=['<option value="">未记录</option>'].concat(allNames.map(function(m){return '<option'+(pulseSel[p[0]]===m?' selected':'')+'>'+m+'</option>';})).join('');
-    return '<div class="part-row"><span class="part-label">'+p[0]+'<span class="part-organ">（'+p[1]+'）</span></span><select class="part-select" data-part="'+p[0]+'" onchange="pulsePartChange(this)">'+opts+'</select></div>';
+    const sel=pulseSel[p[0]]||{};
+    const rows=PULSE_LAYERS.map(function(l){
+      const cur=sel[l[0]]||'';
+      const force=(pulseForce[p[0]]&&pulseForce[p[0]][l[0]])||'';
+      const popts=pulseOpts.replace('<option>'+cur+'</option>','<option selected>'+cur+'</option>');
+      const fopts=forceOpts.replace('value="'+force+'"','value="'+force+'" selected');
+      return '<div class="part-row"><span class="part-label">'+l[1]+'</span><select class="part-select" data-part="'+p[0]+'" data-layer="'+l[0]+'" data-kind="pulse" onchange="pulsePartChange(this)">'+popts+'</select><select class="part-select part-force" data-part="'+p[0]+'" data-layer="'+l[0]+'" data-kind="force" onchange="pulsePartChange(this)">'+fopts+'</select></div>';
+    }).join('');
+    return '<div class="cat-card open" data-part="'+p[0]+'"><button class="cat-head" onclick="toggleCat(this)"><span><span class="cat-name">'+p[0]+'</span><span class="cat-count">（'+p[1]+'）</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner" style="padding-top:8px">'+rows+'</div></div></div>';
   }).join('');
   // 速记参考
   const ref=document.getElementById('pulseRef');
@@ -1280,10 +1293,37 @@ function renderPulse(){
   if(note){note.value=pulseNote||'';note.oninput=noteInputHandler;}
   // 若已有报告则刷新展示
   if(pulseReportText)genPulseReport(true);
+  PULSE_PARTS.forEach(function(p){pulsePartSummary(p[0]);});
 }
 function pulsePartChange(sel){
-  pulseSel[sel.dataset.part]=sel.value;
-  try{localStorage.setItem('tcm_pulse_sel',JSON.stringify(pulseSel));}catch(e){}
+  const part=sel.dataset.part, layer=sel.dataset.layer;
+  if(sel.dataset.kind==='force'){
+    if(!pulseForce[part])pulseForce[part]={};
+    pulseForce[part][layer]=sel.value;
+    try{localStorage.setItem('tcm_pulse_force',JSON.stringify(pulseForce));}catch(e){}
+  }else{
+    if(!pulseSel[part])pulseSel[part]={};
+    pulseSel[part][layer]=sel.value;
+    try{localStorage.setItem('tcm_pulse_sel',JSON.stringify(pulseSel));}catch(e){}
+  }
+  pulsePartSummary(part);
+}
+function pulsePartSummary(part){
+  const card=document.querySelector('#pulseParts .cat-card[data-part=\"'+part+'\"]');
+  if(!card)return;
+  const sel=pulseSel[part]||{}, force=pulseForce[part]||{};
+  const sum=PULSE_LAYERS.map(function(l){
+    const v=sel[l[0]];
+    if(!v)return '';
+    const f=force[l[0]];
+    return (l[0]==='浮'?'浮':'')+(l[0]==='中'?'中':'')+(l[0]==='沉'?'沉':'')+v+(f?('·'+f):'');
+  }).filter(Boolean).join(' ');
+  const cc=card.querySelector('.cat-count');
+  if(cc)cc.textContent='（'+pulsePartOrgan(part)+'）'+(sum?'　'+sum:'');
+}
+function pulsePartOrgan(part){
+  for(let i=0;i<PULSE_PARTS.length;i++)if(PULSE_PARTS[i][0]===part)return PULSE_PARTS[i][1];
+  return '';
 }
 function noteInputHandler(){
   pulseNote=document.getElementById('pulseNote').value;
@@ -1294,7 +1334,14 @@ function genPulseReport(silent){
   const pad=function(x){return x<10?'0'+x:''+x;};
   let txt='【脉诊记录】'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+'\n';
   PULSE_PARTS.forEach(function(p){
-    txt+=p[0]+'（'+p[1]+'）：'+(pulseSel[p[0]]?pulseSel[p[0]]+'脉':'未记录')+'\n';
+    const sel=pulseSel[p[0]]||{}, force=pulseForce[p[0]]||{};
+    const seg=PULSE_LAYERS.map(function(l){
+      const v=sel[l[0]];
+      if(!v)return l[0]+'取：未记录';
+      const f=force[l[0]];
+      return l[0]+'取：'+v+'脉'+(f?'（'+f+'）':'');
+    }).join('；');
+    txt+=p[0]+'（'+p[1]+'）：'+seg+'\n';
   });
   txt+='备注：'+(pulseNote&&pulseNote.trim()?pulseNote.trim():'无')+'\n';
   txt+='（以上为脉诊记录，仅供学习交流，请结合四诊合参）';
@@ -1329,7 +1376,16 @@ function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
 
 renderFormulas();
 renderTaboos();
-try{pulseSel=JSON.parse(localStorage.getItem('tcm_pulse_sel')||'{}')||{};}catch(e){pulseSel={};}
+try{
+  const old=JSON.parse(localStorage.getItem('tcm_pulse_sel')||'{}')||{};
+  pulseSel={};
+  PULSE_PARTS.forEach(function(p){
+    const v=old[p[0]];
+    if(typeof v==='string'&&v){pulseSel[p[0]]={中:v};}        // 旧版单脉数据迁移到中取
+    else if(v&&typeof v==='object'){pulseSel[p[0]]=v;}
+  });
+}catch(e){pulseSel={};}
+try{pulseForce=JSON.parse(localStorage.getItem('tcm_pulse_force')||'{}')||{};}catch(e){pulseForce={};}
 pulseNote=localStorage.getItem('tcm_pulse_note')||'';
 </script>
 </body>
