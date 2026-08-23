@@ -103,7 +103,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .ben-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .ben-title{font-size:19px;font-weight:700;color:var(--primary)}
 .ben-close{width:28px;height:28px;border-radius:50%;background:rgba(47,93,58,.08);color:var(--primary);cursor:pointer;font-size:14px;border:none}
-.ben-note{font-size:15.5px;line-height:1.9;color:var(--fg);margin-bottom:13px}
+.ben-note{font-size:15.5px;line-height:1.9;color:var(--fg);margin-bottom:13px;white-space:pre-line}
 .ben-note .src{display:block;font-size:12.5px;color:var(--muted);margin-bottom:2px;font-weight:600}
 .ben-gm{margin-top:4px;border-top:1px solid var(--line);padding-top:12px}
 .ben-gm-title{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:9px}
@@ -203,7 +203,7 @@ function herbFormulas(name){
 function bencaoHTML(name){
   const b=BENCAO&&BENCAO[name]; if(!b)return '';
   let h='';
-  if(b.sn)h+='<div class="ben-note"><span class="src">《神农本草经》</span>'+b.sn+'</div>';
+  if(b.sn)h+='<div class="ben-note"><span class="src">《神农本草经》</span>'+esc(b.sn)+'</div>';
   if(b.gm){
     const g=b.gm,secs=[];
     if(g.w)secs.push(['气味',g.w]);
@@ -212,13 +212,13 @@ function bencaoHTML(name){
     if(g.p)secs.push(['附方·方剂',g.p]);
     if(g.j)secs.push(['集解·描述',g.j]);
     if(g.s)secs.push(['释名',g.s]);
-    if(secs.length)h+='<div class="ben-gm"><div class="ben-gm-title">《本草纲目》</div>'+secs.map(x=>'<div class="ben-note"><span class="src">'+x[0]+'</span>'+x[1]+'</div>').join('')+'</div>';
+    if(secs.length)h+='<div class="ben-gm"><div class="ben-gm-title">《本草纲目》</div>'+secs.map(x=>'<div class="ben-note"><span class="src">'+x[0]+'</span>'+esc(x[1])+'</div>').join('')+'</div>';
   }
-  if(typeof FUFANG!=='undefined'&&FUFANG[name])h+='<div class="ben-note" style="margin-top:6px"><span class="src">《本草纲目》· 附方</span>'+FUFANG[name]+'</div>';
+  if(typeof FUFANG!=='undefined'&&FUFANG[name])h+='<div class="ben-note" style="margin-top:6px"><span class="src">《本草纲目》· 附方</span>'+esc(FUFANG[name])+'</div>';
   const rel=herbFormulas(name);
   if(rel.length)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">相关经方 · '+rel.length+' 首</div>'+rel.map(function(f){return '<div class="ben-note"><span class="src">'+f[6]+'</span><b>'+f[0]+'</b>　'+f[2].map(function(c){return c[0]+(c[1]?' '+c[1]:'');}).join('、')+'</div>';}).join('')+'</div>';
   var bn=bbFind(name);
-  if(bn)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">《本草备要》'+(BEIBAO[bn].o!==bn?'（原书药名：'+BEIBAO[bn].o+'）':'')+'</div><div class="ben-note" style="font-size:14px">'+BEIBAO[bn].c+'</div></div>';
+  if(bn)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">《本草备要》'+(BEIBAO[bn].o!==bn?'（原书药名：'+esc(BEIBAO[bn].o)+'）':'')+'</div><div class="ben-note" style="font-size:14px">'+esc(BEIBAO[bn].c)+'</div></div>';
   return h;
 }
 function openBencao(name){
@@ -319,7 +319,7 @@ function kzWeb(el){
   if(typeof KZ!=='undefined'&&KZ[k]){
     var e=KZ[k];
     document.getElementById('ffTitle').textContent='拓展典籍 · '+k;
-    document.getElementById('ffBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">来源：'+e.src.join('、')+(e.o&&e.o[0]?('　原书药名：'+e.o[0]):'')+'</div><div class="ben-note">'+e.d+'</div>';
+    document.getElementById('ffBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">来源：'+e.src.join('、')+(e.o&&e.o[0]?('　原书药名：'+e.o[0]):'')+'</div><div class="ben-note">'+esc(e.d)+'</div>';
     document.getElementById('ffModal').style.display='flex';
   }
 }
@@ -350,18 +350,19 @@ function renderBenbei(){
 function bbWeb(el){
   var k=el.getAttribute('data-n');
   if(typeof BEIBAO!=='undefined'&&BEIBAO[k]){
-    var o=BEIBAO[k].o!==k?('<span style="color:var(--muted);font-size:12px;font-weight:500">原书名：'+BEIBAO[k].o+'</span>'):'';
+    var o=BEIBAO[k].o!==k?('<span style="color:var(--muted);font-size:12px;font-weight:500">原书名：'+esc(BEIBAO[k].o)+'</span>'):'';
     document.getElementById('ffTitle').textContent='本草备要 · '+k;
-    document.getElementById('ffBody').innerHTML=o+'<div class="ben-note" style="font-size:14.5px;margin-top:6px">'+BEIBAO[k].c+'</div>';
+    document.getElementById('ffBody').innerHTML=o+'<div class="ben-note" style="font-size:14.5px;margin-top:6px">'+esc(BEIBAO[k].c)+'</div>';
     document.getElementById('ffModal').style.display='flex';
   }
 }
+function esc(x){return String(x==null?'x':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function htmlAttr(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function ffShow(el){
   var k=el.getAttribute('data-n');
   if(!k||typeof FUFANG==='undefined'||!FUFANG[k])return;
   document.getElementById('ffTitle').textContent='本草纲目 · 附方 · '+k;
-  document.getElementById('ffBody').innerHTML='<div class="ben-note" style="font-size:15px">'+FUFANG[k]+'</div>';
+  document.getElementById('ffBody').innerHTML='<div class="ben-note" style="font-size:15px">'+esc(FUFANG[k])+'</div>';
   document.getElementById('ffModal').style.display='flex';
 }
 function ffClose(){document.getElementById('ffModal').style.display='none';}

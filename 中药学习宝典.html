@@ -115,7 +115,7 @@ input{font-family:inherit}
 .ben-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .ben-title{font-size:19px;font-weight:700;color:var(--primary)}
 .ben-close{width:28px;height:28px;border-radius:50%;background:rgba(47,93,58,.08);color:var(--primary);cursor:pointer;font-size:14px;border:none}
-.ben-note{font-size:15.5px;line-height:1.9;color:var(--fg);margin-bottom:13px}
+.ben-note{font-size:15.5px;line-height:1.9;color:var(--fg);margin-bottom:13px;white-space:pre-line}
 .ben-note .src{display:block;font-size:12.5px;color:var(--muted);margin-bottom:2px;font-weight:600}
 .ben-gm{margin-top:4px;border-top:1px solid var(--border);padding-top:12px}
 .ben-gm-title{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:9px}
@@ -577,6 +577,7 @@ input{font-family:inherit}
 <script src="kuozhan.js"></script>
 <script src="tcm-data.js"></script>
 <script>
+function esc(x){return String(x==null?'x':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 // ==================== STATE ====================
 const STORE_KEY = 'tcm_learning_progress';
 let store = loadStore();
@@ -689,7 +690,7 @@ function renderHerbs(){
       html+='<div class="cat-card"><button class="cat-head" onclick="this.parentElement.classList.toggle(\'open\')"><span><span class="cat-name">拓展典籍药（本草纲目·本草备要）</span><span class="cat-count">('+kznn.length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner"><div class="herb-grid">';
       kznn.slice(0,1200).forEach(function(k){
         var e=KZ[k];
-        html+='<div class="herb-card" onclick="kzShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+(e.o&&e.o[0]?('原书：'+e.o[0]):'')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+(e.d||'').slice(0,50)+'…</div></div>';
+        html+='<div class="herb-card" onclick="kzShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+(e.o&&e.o[0]?('原书：'+esc(e.o[0])):'')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+esc((e.d||'').slice(0,50))+'…</div></div>';
       });
       html+='</div></div></div></div>';
     }
@@ -700,7 +701,7 @@ function kzShow(k){
   if(typeof KZ==='undefined'||!KZ[k])return;
   var e=KZ[k];
   document.getElementById('benTitle').textContent='拓展典籍 · '+k;
-  document.getElementById('benBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">来源：'+e.src.join('、')+(e.o&&e.o[0]?('　原书药名：'+e.o[0]):'')+'</div><div class="ben-note">'+e.d+'</div>';
+  document.getElementById('benBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">来源：'+e.src.join('、')+(e.o&&e.o[0]?('　原书药名：'+e.o[0]):'')+'</div><div class="ben-note">'+esc(e.d)+'</div>';
   document.getElementById('benModal').style.display='flex';
 }
 
@@ -709,9 +710,9 @@ function fmlFufang(){fMode='fufang';renderFormulas();}
 function fmlBenbei(){fMode='benbei';renderFormulas();}
 function bbeiShow(k){
   if(typeof BEIBAO==='undefined'||!BEIBAO[k])return;
-  var o=BEIBAO[k].o!==k?('<div style="font-size:12px;color:var(--muted);margin-bottom:4px">原书名：'+BEIBAO[k].o+'</div>'):'';
+  var o=BEIBAO[k].o!==k?('<div style="font-size:12px;color:var(--muted);margin-bottom:4px">原书名：'+esc(BEIBAO[k].o)+'</div>'):'';
   document.getElementById('benTitle').textContent='本草备要 · '+k;
-  document.getElementById('benBody').innerHTML=o+'<div style="font-size:14.5px;line-height:1.9">'+BEIBAO[k].c+'</div>';
+  document.getElementById('benBody').innerHTML=o+'<div style="font-size:14.5px;line-height:1.9">'+esc(BEIBAO[k].c)+'</div>';
   document.getElementById('benModal').style.display='flex';
 }
 function toggleFavHerb(id,btn){
@@ -857,7 +858,7 @@ function herbFormulas(name){
 function bencaoHTML(name){
   const b=BENCAO&&BENCAO[name]; if(!b)return '';
   let h='';
-  if(b.sn)h+='<div class="ben-note"><span class="src">《神农本草经》</span>'+b.sn+'</div>';
+  if(b.sn)h+='<div class="ben-note"><span class="src">《神农本草经》</span>'+esc(b.sn)+'</div>';
   if(b.gm){
     const g=b.gm,secs=[];
     if(g.w)secs.push(['气味',g.w]);
@@ -866,13 +867,13 @@ function bencaoHTML(name){
     if(g.p)secs.push(['附方·方剂',g.p]);
     if(g.j)secs.push(['集解·描述',g.j]);
     if(g.s)secs.push(['释名',g.s]);
-    if(secs.length)h+='<div class="ben-gm"><div class="ben-gm-title">《本草纲目》</div>'+secs.map(x=>'<div class="ben-note"><span class="src">'+x[0]+'</span>'+x[1]+'</div>').join('')+'</div>';
+    if(secs.length)h+='<div class="ben-gm"><div class="ben-gm-title">《本草纲目》</div>'+secs.map(x=>'<div class="ben-note"><span class="src">'+x[0]+'</span>'+esc(x[1])+'</div>').join('')+'</div>';
   }
-  if(typeof FUFANG!=='undefined'&&FUFANG[name])h+='<div class="ben-note" style="margin-top:6px"><span class="src">《本草纲目》· 附方</span>'+FUFANG[name]+'</div>';
+  if(typeof FUFANG!=='undefined'&&FUFANG[name])h+='<div class="ben-note" style="margin-top:6px"><span class="src">《本草纲目》· 附方</span>'+esc(FUFANG[name])+'</div>';
   const rel=herbFormulas(name);
   if(rel.length)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">相关经方 · '+rel.length+' 首</div>'+rel.map(function(f){return '<div class="ben-note"><span class="src">'+f[6]+'</span><b>'+f[0]+'</b>　'+f[2].map(function(c){return c[0]+(c[1]?' '+c[1]:'');}).join('、')+'</div>';}).join('')+'</div>';
   var bn=bbFind(name);
-  if(bn)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">《本草备要》'+(BEIBAO[bn].o!==bn?'（原书药名：'+BEIBAO[bn].o+'）':'')+'</div><div class="ben-note" style="font-size:14px">'+BEIBAO[bn].c+'</div></div>';
+  if(bn)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">《本草备要》'+(BEIBAO[bn].o!==bn?'（原书药名：'+esc(BEIBAO[bn].o)+'）':'')+'</div><div class="ben-note" style="font-size:14px">'+esc(BEIBAO[bn].c)+'</div></div>';
   return h;
 }
 function openBencao(name){
@@ -948,7 +949,7 @@ function doSearch(kw){
     html+='<div class="sr-section"><div class="sr-section-title"><span class="dot"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M12 2a5 5 0 0 1 3 9v2a2 2 0 0 0 2 2h1a2 2 0 0 1 2 2v1h-2" opacity=".4"/></svg></span>拓展典籍药<span style="color:var(--muted-fg);font-weight:400">('+kzs.length+')</span></div><div class="sr-list">';
     kzs.slice(0,20).forEach(function(k){
       var e=KZ[k];
-      html+='<button class="sr-item" onclick="closeSearch();kzShow(\''+k+'\')"><div class="sr-item-info"><div class="sr-item-title">'+k+'<span class="badge badge-shen">'+(e.src.join('、'))+'</span></div><div class="sr-item-sub">'+(e.d||e.o.join('、')).slice(0,30)+'</div></div><div class="sr-item-right">拓展典籍</div><svg class="sr-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>';
+      html+='<button class="sr-item" onclick="closeSearch();kzShow(\''+k+'\')"><div class="sr-item-info"><div class="sr-item-title">'+k+'<span class="badge badge-shen">'+(e.src.join('、'))+'</span></div><div class="sr-item-sub">'+esc((e.d||e.o.join('、')).slice(0,30))+'</div></div><div class="sr-item-right">拓展典籍</div><svg class="sr-item-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>';
     });
     if(kzs.length>20)html+='<div class="sr-more">还有 '+(kzs.length-20)+' 味拓展药，输入更精准关键词</div>';
     html+='</div></div>';
