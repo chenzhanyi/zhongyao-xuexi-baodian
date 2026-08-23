@@ -564,7 +564,7 @@ input{font-family:inherit}
           <button class="pulse-btn primary" style="height:auto;flex:none;padding:6px 18px" onclick="closePulsePick()">完成</button>
         </div>
       </div>
-      <div class="pulse-pick-tip">基础脉可多选，组合成相兼脉（如：弦+滑、浮+紧）；复合脉已含多个要素，直接点选即可。选中的脉会标注构成显示在行内与报告中。</div>
+      <div class="pulse-pick-tip">基础脉可多选，组合成相兼脉（如：弦+滑、浮+紧）；点复合脉会自动勾选对应基础脉并带出力度（如洪→浮+大+有力），再次点击取消。报告只显示复合脉名，其覆盖的基础脉不再重复。</div>
       <div class="pulse-pick-group-title">基础脉（单要素 · 可多选组合）</div>
       <div class="pulse-chip-wrap" id="pulseChipsBase"></div>
       <div class="pulse-pick-group-title">复合脉（括号内为构成）</div>
@@ -1300,6 +1300,8 @@ const PULSE_FORCES=['','有力','中等','无力（不足）'];
 const PULSE_BASE=[['浮','脉位居表'],['沉','脉位居里'],['迟','至数慢'],['数','至数快'],['疾','至数极快'],['缓','从容和缓'],['大','脉宽大'],['细','脉窄如线'],['长','脉体过长'],['短','脉体不及'],['滑','流利如珠'],['涩','艰涩不畅'],['弦','端直紧张'],['紧','绷急弹指'],['结','迟而时止'],['代','止有定数'],['促','数而时止']];
 const PULSE_COMP=[['洪','浮+大+有力'],['芤','浮+大+中空'],['革','浮+弦+外坚中空'],['濡','浮+细+软'],['散','浮+散乱无根'],['弱','沉+细+软'],['牢','沉+实+大+弦+长'],['伏','沉极推筋着骨'],['微','极细+极软+无力'],['动','滑+数+有力(关部)']];
 const compOf={};PULSE_COMP.forEach(function(x){compOf[x[0]]=x[1];});
+const compBases={洪:['浮','大'],芤:['浮','大'],革:['浮','弦'],濡:['浮','细'],散:['浮'],弱:['沉','细'],牢:['沉','大','弦','长'],伏:['沉'],微:['细'],动:['滑','数','短']};
+const compForce={洪:'有力',芤:'',革:'',濡:'无力',散:'',弱:'无力',牢:'有力',伏:'',微:'无力',动:'有力'};
 let pulseSel={};
 let pulseForce={};
 let pulseNote='',pulseReportText='';
@@ -1360,19 +1362,42 @@ function pulsePickToggle(el){
   if(!pulseSel[pulsePick.part])pulseSel[pulsePick.part]={};
   const arr=pulseSel[pulsePick.part][pulsePick.layer]||[];
   const i=arr.indexOf(name);
-  if(i>=0)arr.splice(i,1);else arr.push(name);
+  if(i>=0){arr.splice(i,1);}else{
+    arr.push(name);
+    if(compBases[name]){
+      // 复合脉: 自动勾选对应基础脉
+      compBases[name].forEach(function(b){if(arr.indexOf(b)<0)arr.push(b);});
+      // 自动带出力度
+      if(compForce[name])setLayerForce(pulsePick.part,pulsePick.layer,compForce[name]);
+    }
+  }
   pulseSel[pulsePick.part][pulsePick.layer]=arr;
   try{localStorage.setItem('tcm_pulse_sel',JSON.stringify(pulseSel));}catch(e){}
-  el.classList.toggle('on',i<0);
+  renderPulsePickPanel();          // 刷新全部chip勾选态
   updatePulseRowLabel();
   pulsePartSummary(pulsePick.part);
+}
+function setLayerForce(part,layer,val){
+  if(!pulseForce[part])pulseForce[part]={};
+  pulseForce[part][layer]=val;
+  try{localStorage.setItem('tcm_pulse_force',JSON.stringify(pulseForce));}catch(e){}
+  const sel=document.querySelector('#pulseParts select.part-force[data-part=\"'+part+'\"][data-layer=\"'+layer+'\"]');
+  if(sel)sel.value=val;
+}
+function pulseLayerLabel(part,layer){
+  const arr=(pulseSel[part]&&pulseSel[part][layer])||[];
+  const comps=arr.filter(function(m){return compOf[m];});
+  const covered={};
+  comps.forEach(function(c){(compBases[c]||[]).forEach(function(b){covered[b]=true;});});
+  const extra=arr.filter(function(m){return !compOf[m]&&!covered[m];});
+  return comps.concat(extra).map(function(m){return m+'脉';}).join('、');
 }
 function updatePulseRowLabel(){
   const btn=document.querySelector('#pulseParts button.part-pulse-btn[data-part=\"'+pulsePick.part+'\"][data-layer=\"'+pulsePick.layer+'\"]');
   if(!btn)return;
-  const arr=(pulseSel[pulsePick.part]&&pulseSel[pulsePick.part][pulsePick.layer])||[];
-  btn.textContent=arr.length?arr.map(function(m){return m+(compOf[m]?'脉('+compOf[m]+')':'脉');}).join(' · '):'点击选脉';
-  btn.classList.toggle('has',!!arr.length);
+  const label=pulseLayerLabel(pulsePick.part,pulsePick.layer);
+  btn.textContent=label||'点击选脉';
+  btn.classList.toggle('has',!!label);
 }
 function clearPulsePick(){
   if(!pulsePick)return;
@@ -1402,7 +1427,7 @@ function pulsePartSummary(part){
     const arr=sel[l[0]]||[];
     if(!arr.length)return '';
     const f=force[l[0]];
-    return l[0]+arr.join('+')+(f?('·'+f):'');
+    return l[0]+pulseLayerLabel(part,l[0]).replace(/脉/g,'')+(f?('·'+f):'');
   }).filter(Boolean).join(' ');
   const cc=card.querySelector('.cat-count');
   if(cc)cc.textContent='（'+pulsePartOrgan(part)+'）'+(sum?'　'+sum:'');
@@ -1427,7 +1452,7 @@ function genPulseReport(silent){
       const arr=sel[l[0]]||[];
       if(!arr.length)return;               // 未记录的层不显示
       const f=force[l[0]];
-      segs.push(l[0]+'取：'+arr.map(pulseLabel).join('、')+(f?'（'+f+'）':''));
+      segs.push(l[0]+'取：'+pulseLayerLabel(p[0],l[0])+(f?'（'+f+'）':''));
     });
     if(segs.length)txt+=p[0]+'（'+p[1]+'）：'+segs.join('；')+'\n';
   });
