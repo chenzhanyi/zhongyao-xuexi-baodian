@@ -706,14 +706,6 @@ function kzShow(k){
 
 function fmlClassic(){fMode='classic';renderFormulas();}
 function fmlFufang(){fMode='fufang';renderFormulas();}
-function fmlBenbei(){fMode='benbei';renderFormulas();}
-function bbeiShow(k){
-  if(typeof BEIBAO==='undefined'||!BEIBAO[k])return;
-  var o=BEIBAO[k].o!==k?('<div style="font-size:12px;color:var(--muted);margin-bottom:4px">原书名：'+BEIBAO[k].o+'</div>'):'';
-  document.getElementById('benTitle').textContent='本草备要 · '+k;
-  document.getElementById('benBody').innerHTML=o+'<div style="font-size:14.5px;line-height:1.9">'+BEIBAO[k].c+'</div>';
-  document.getElementById('benModal').style.display='flex';
-}
 function toggleFavHerb(id,btn){
   const i=store.favHerbs.indexOf(id);
   if(i>=0)store.favHerbs.splice(i,1);else store.favHerbs.push(id);
@@ -725,26 +717,7 @@ function toggleFavHerb(id,btn){
 function renderFormulas(){
   document.getElementById('formulaCount').textContent=(fMode==='classic'?'共 '+FORMULAS.length+' 首 · 含组成与原文':'本草纲目 · 附方');
   const list=document.getElementById('formulaList');
-  let html='<div class="ftab"><button class="'+(fMode==='classic'?'on':'')+'" onclick="fmlClassic()">经典经方</button><button class="'+(fMode==='fufang'?'on':'')+'" onclick="fmlFufang()">本草纲目附方</button><button class="'+(fMode==='benbei'?'on':'')+'" onclick="fmlBenbei()">本草备要</button></div>';
-  if(fMode==='benbei'){
-    const BB=typeof BEIBAO!=='undefined'?BEIBAO:{};
-    const keys=Object.keys(BB).sort();
-    const qq=document.getElementById('q');
-    const qv=qq&&qq.value?qq.value.trim():'';
-    const ks=qv?keys.filter(k=>k.indexOf(qv)>-1||(BB[k].o&&BB[k].o.indexOf(qv)>-1)):keys;
-    const shown=ks.slice(0,600);
-    const g={};
-    shown.forEach(function(k){var gg=(BB[k].g||'其他');(g[gg]=g[gg]||[]).push(k);});
-    const order=['解表药','清热药','泻下药','祛风湿药','化湿药','利水渗湿药','温里药','理气药','消食药','驱虫药','止血药','活血化瘀药','化痰止咳平喘药','安神药','平肝息风药','开窍药','补虚药','收涩药','其他'];
-    Object.keys(g).sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);}).forEach(function(gg){
-      html+='<div style="font-size:14px;font-weight:700;color:var(--primary);margin:12px 2px 6px">'+gg+'（'+g[gg].length+'）</div>';
-      g[gg].forEach(function(k){
-        html+='<div class="ffcard"><div class="ffhead" onclick="bbeiShow(\''+k+'\')"><span>'+k+'</span><span class="ffcnt">'+(BB[k].o!==k?('原·'+BB[k].o):'查看')+'</span></div></div>';
-      });
-    });
-    if(shown.length===0)html+='<div class="sr-empty">暂无数据</div>';
-    list.innerHTML=html;return;
-  }
+  let html='<div class="ftab"><button class="'+(fMode==='classic'?'on':'')+'" onclick="fmlClassic()">经典经方</button><button class="'+(fMode==='fufang'?'on':'')+'" onclick="fmlFufang()">本草纲目附方</button><button class="'+(fMode==='benbei'?'on':'')+'" </div>';
   if(fMode==='fufang'){
     const FF=typeof FUFANG!=='undefined'?FUFANG:{};
     const keys=Object.keys(FF).sort().slice(0,400);
