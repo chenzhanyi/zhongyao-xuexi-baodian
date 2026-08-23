@@ -706,11 +706,21 @@ function renderFormulas(){
   let html='<div class="ftab"><button class="'+(fMode==='classic'?'on':'')+'" onclick="fmlClassic()">经典经方</button><button class="'+(fMode==='fufang'?'on':'')+'" onclick="fmlFufang()">本草纲目附方</button><button class="'+(fMode==='benbei'?'on':'')+'" onclick="fmlBenbei()">本草备要</button></div>';
   if(fMode==='benbei'){
     const BB=typeof BEIBAO!=='undefined'?BEIBAO:{};
-    const ks=Object.keys(BB).sort().slice(0,500);
-    ks.forEach(k=>{
-      html+='<div class="ffcard"><div class="ffhead" onclick="bbeiShow(\''+k+'\')"><span>'+k+'</span><span class="ffcnt">'+(BB[k].o!==k?('原·'+BB[k].o):'查看')+'</span></div></div>';
+    const keys=Object.keys(BB).sort();
+    const qq=document.getElementById('q');
+    const qv=qq&&qq.value?qq.value.trim():'';
+    const ks=qv?keys.filter(k=>k.indexOf(qv)>-1||(BB[k].o&&BB[k].o.indexOf(qv)>-1)):keys;
+    const shown=ks.slice(0,600);
+    const g={};
+    shown.forEach(function(k){var gg=(BB[k].g||'其他');(g[gg]=g[gg]||[]).push(k);});
+    const order=['解表药','清热药','泻下药','祛风湿药','化湿药','利水渗湿药','温里药','理气药','消食药','驱虫药','止血药','活血化瘀药','化痰止咳平喘药','安神药','平肝息风药','开窍药','补虚药','收涩药','其他'];
+    Object.keys(g).sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);}).forEach(function(gg){
+      html+='<div style="font-size:14px;font-weight:700;color:var(--primary);margin:12px 2px 6px">'+gg+'（'+g[gg].length+'）</div>';
+      g[gg].forEach(function(k){
+        html+='<div class="ffcard"><div class="ffhead" onclick="bbeiShow(\''+k+'\')"><span>'+k+'</span><span class="ffcnt">'+(BB[k].o!==k?('原·'+BB[k].o):'查看')+'</span></div></div>';
+      });
     });
-    if(ks.length===0)html+='<div class="sr-empty">暂无数据</div>';
+    if(shown.length===0)html+='<div class="sr-empty">暂无数据</div>';
     list.innerHTML=html;return;
   }
   if(fMode==='fufang'){
@@ -799,6 +809,18 @@ function herbOfIng(ing){
   for(const hh in AL){if(AL[hh]&&AL[hh].includes(ing))return hh;}
   return ing;
 }
+function bbFind(name){
+  if(typeof BEIBAO==='undefined')return null;
+  if(BEIBAO[name])return name;
+  var al=typeof ALIAS!=='undefined'?ALIAS:{};
+  var ks=Object.keys(BEIBAO), i, k, o;
+  for(i=0;i<ks.length;i++){
+    k=ks[i]; o=BEIBAO[k]&&BEIBAO[k].o;
+    if(k===name||o===name)return k;
+    if(al[name]&&((al[name].indexOf(k)>-1)||(o&&al[name].indexOf(o)>-1)))return k;
+  }
+  return null;
+}
 function herbFormulas(name){
   return FORMULAS.filter(function(f){
     return f[2].some(function(c){
@@ -826,6 +848,8 @@ function bencaoHTML(name){
   if(typeof FUFANG!=='undefined'&&FUFANG[name])h+='<div class="ben-note" style="margin-top:6px"><span class="src">《本草纲目》· 附方</span>'+FUFANG[name]+'</div>';
   const rel=herbFormulas(name);
   if(rel.length)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">相关经方 · '+rel.length+' 首</div>'+rel.map(function(f){return '<div class="ben-note"><span class="src">'+f[6]+'</span><b>'+f[0]+'</b>　'+f[2].map(function(c){return c[0]+(c[1]?' '+c[1]:'');}).join('、')+'</div>';}).join('')+'</div>';
+  var bn=bbFind(name);
+  if(bn)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">《本草备要》'+(BEIBAO[bn].o!==bn?'（原书药名：'+BEIBAO[bn].o+'）':'')+'</div><div class="ben-note" style="font-size:14px">'+BEIBAO[bn].c+'</div></div>';
   return h;
 }
 function openBencao(name){
