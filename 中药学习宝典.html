@@ -70,7 +70,9 @@ input{font-family:inherit}
 .cat-arrow{width:20px;height:20px;color:var(--muted-fg);transition:transform .25s}
 .cat-card.open .cat-arrow{transform:rotate(180deg)}
 .cat-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
-.cat-card.open .cat-body{max-height:5000px}
+.cat-card.open .cat-body{max-height:20000px}
+.kz-more-btn{display:inline-block;margin:6px auto 0;padding:9px 22px;border:1px solid var(--border);border-radius:20px;background:var(--card);color:var(--primary);font-size:13.5px;font-weight:500;cursor:pointer}
+.kz-more-btn:active{opacity:.75}
 .cat-body-inner{padding:0 12px 12px}
 .subcat{margin-bottom:10px}
 .subcat:last-child{margin-bottom:0}
@@ -153,7 +155,7 @@ input{font-family:inherit}
 .ffhead{display:flex;align-items:center;gap:6px;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--primary)}
 .ffcnt{font-size:11px;color:var(--warning);margin-left:auto}
 .ffbody{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:12.5px;line-height:1.8;color:var(--fg)}
-.ffcard.open .ffbody{max-height:900px;padding:0 12px 12px}
+.ffcard.open .ffbody{max-height:20000px;padding:0 12px 12px}
 .tab-pane{display:none}.tab-pane.active{display:block;flex-direction:column;gap:10px}
 
 .song-card{border-radius:10px;padding:12px 14px;margin-bottom:10px}
@@ -586,9 +588,22 @@ let shenFilter = false;
 let openCats = new Set(); // 记录用户已展开的分类（默认全部折叠）
 function toggleCat(btn){
   const card=btn.parentElement;
-  if(card.classList.toggle('open'))openCats.add(card.dataset.cat||'');else openCats.delete(card.dataset.cat||'');
+  const body=card.querySelector('.cat-body');
+  const open=card.classList.toggle('open');
+  if(open)openCats.add(card.dataset.cat||'');else openCats.delete(card.dataset.cat||'');
+  // 动态高度: 打开时解除上限, 收起时先冻结当前高度再动画归零(避免固定上限截断长列表)
+  if(body){
+    if(open){
+      body.style.maxHeight='none';
+    }else{
+      body.style.maxHeight=body.scrollHeight+'px';
+      requestAnimationFrame(function(){body.style.maxHeight='0px';});
+      setTimeout(function(){body.style.maxHeight='';},330);
+    }
+  }
 }
 let reciteState = {mode:'herbs',scope:'all',index:0,flipped:false,shuffled:false,items:[]};
+let kzList=null,kzLoaded=0; // 拓展典籍药分批加载状态
 let fMode='classic';
 function toggleShenFilter(){
   shenFilter=!shenFilter;
@@ -687,15 +702,33 @@ function renderHerbs(){
     var qkk=document.getElementById('searchInput')&&document.getElementById('searchInput').value?document.getElementById('searchInput').value.trim().toLowerCase():'';
     var kznn=Object.keys(KZ).filter(function(k){return !qkk||k.toLowerCase().indexOf(qkk)>-1;});
     if(kznn.length){
-      html+='<div class="cat-card"><button class="cat-head" onclick="this.parentElement.classList.toggle(\'open\')"><span><span class="cat-name">拓展典籍药（本草纲目·本草备要）</span><span class="cat-count">('+kznn.length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner"><div class="herb-grid">';
-      kznn.slice(0,1200).forEach(function(k){
-        var e=KZ[k];
-        html+='<div class="herb-card" onclick="kzShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+(e.o&&e.o[0]?('原书：'+esc(e.o[0])):'')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+esc((e.d||'').slice(0,50))+'…</div></div>';
-      });
-      html+='</div></div></div></div>';
+      kzList=kznn;kzLoaded=0;
+      html+='<div class="cat-card"><button class="cat-head" onclick="toggleCat(this)"><span><span class="cat-name">拓展典籍药（本草纲目·本草备要）</span><span class="cat-count">('+kznn.length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner"><div class="herb-grid" id="kzGrid"></div><div id="kzMore" style="text-align:center;padding:2px 0 6px"></div></div></div></div>';
     }
   }
   list.innerHTML=html;
+  if(kzList&&kzList.length)kzLoadMore(true);
+}
+// 拓展典籍药分批渲染(每次60味, 点"加载更多"追加, 避免一次渲染数百卡片卡顿/超高度截断)
+function kzLoadMore(init){
+  const grid=document.getElementById('kzGrid');
+  const more=document.getElementById('kzMore');
+  if(!grid||!more||!kzList||kzLoaded>=kzList.length)return;
+  if(init)kzLoaded=0;
+  const end=Math.min(kzLoaded+60,kzList.length);
+  let h='';
+  for(let i=kzLoaded;i<end;i++){
+    const k=kzList[i];
+    const e=KZ[k];
+    h+='<div class="herb-card" onclick="kzShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+(e.o&&e.o[0]?('原书：'+esc(e.o[0])):'')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+esc((e.d||'').slice(0,50))+'…</div></div>';
+  }
+  grid.insertAdjacentHTML('beforeend',h);
+  kzLoaded=end;
+  if(kzLoaded>=kzList.length){
+    more.innerHTML='<div style="font-size:12px;color:var(--muted-fg);padding:4px 0">已显示全部 '+kzList.length+' 味 · 也可用顶部搜索直接找任意一味</div>';
+  }else{
+    more.innerHTML='<button class="kz-more-btn" onclick="kzLoadMore()">加载更多（已显示 '+kzLoaded+' / '+kzList.length+'）</button>';
+  }
 }
 function kzShow(k){
   if(typeof KZ==='undefined'||!KZ[k])return;
@@ -738,7 +771,7 @@ function renderFormulas(){
     shown.forEach(function(k){var gg=(BB[k].g||'其他');(g[gg]=g[gg]||[]).push(k);});
     const order=['解表药','清热药','泻下药','祛风湿药','化湿药','利水渗湿药','温里药','理气药','消食药','驱虫药','止血药','活血化瘀药','化痰止咳平喘药','安神药','平肝息风药','开窍药','补虚药','收涩药','其他'];
     Object.keys(g).sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);}).forEach(function(gg, gi){
-      html+='<div class="cat-card'+(gi===0?' open':'')+'"><button class="cat-head" onclick="this.parentElement.classList.toggle(\'open\')"><span><span class="cat-name">'+gg+'</span><span class="cat-count">('+g[gg].length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner">';
+      html+='<div class="cat-card'+(gi===0?' open':'')+'"><button class="cat-head" onclick="toggleCat(this)"><span><span class="cat-name">'+gg+'</span><span class="cat-count">('+g[gg].length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner">';
       g[gg].forEach(function(k){
         html+='<div class="ffcard" style="margin-bottom:4px"><div class="ffhead" onclick="bbeiShow(\''+k+'\')"><span>'+k+'</span><span class="ffcnt">'+(BB[k].o!==k?('原·'+BB[k].o):'查看')+'</span></div></div>';
       });
