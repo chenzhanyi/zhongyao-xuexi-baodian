@@ -73,6 +73,9 @@ input{font-family:inherit}
 .cat-card.open .cat-body{max-height:20000px}
 .kz-more-btn{display:inline-block;margin:6px auto 0;padding:9px 22px;border:1px solid var(--border);border-radius:20px;background:var(--card);color:var(--primary);font-size:13.5px;font-weight:500;cursor:pointer}
 .kz-more-btn:active{opacity:.75}
+.to-top-ball{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:15;width:44px;height:44px;border-radius:50%;background:rgba(47,93,58,.92);color:#fff;border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 14px rgba(20,40,25,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
+.to-top-ball.show{opacity:1;pointer-events:auto;transform:translateY(0)}
+.to-top-ball:active{transform:scale(.9)}
 .cat-body-inner{padding:0 12px 12px}
 .subcat{margin-bottom:10px}
 .subcat:last-child{margin-bottom:0}
@@ -483,6 +486,7 @@ input{font-family:inherit}
 
 </div>
 
+<button class="to-top-ball" id="toTopBall" aria-label="回到顶部" onclick="toTop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="18 15 12 9 6 15"/></svg></button>
 <!-- Bottom Nav -->
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
@@ -1154,6 +1158,10 @@ document.addEventListener('keydown',e=>{
 
 // ==================== INIT ====================
 renderHerbs();
+// 右下角回到顶部浮球
+function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
+(function(){const b=document.getElementById('toTopBall');if(!b)return;window.addEventListener('scroll',function(){b.classList.toggle('show',(window.scrollY||document.documentElement.scrollTop)>300);},{passive:true});})();
+
 renderFormulas();
 renderTaboos();
 </script>
