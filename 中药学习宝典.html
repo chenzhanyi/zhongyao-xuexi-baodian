@@ -736,11 +736,12 @@ function renderFormulas(){
     const g={};
     shown.forEach(function(k){var gg=(BB[k].g||'其他');(g[gg]=g[gg]||[]).push(k);});
     const order=['解表药','清热药','泻下药','祛风湿药','化湿药','利水渗湿药','温里药','理气药','消食药','驱虫药','止血药','活血化瘀药','化痰止咳平喘药','安神药','平肝息风药','开窍药','补虚药','收涩药','其他'];
-    Object.keys(g).sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);}).forEach(function(gg){
-      html+='<div style="font-size:14px;font-weight:700;color:var(--primary);margin:12px 2px 6px">'+gg+'（'+g[gg].length+'）</div>';
+    Object.keys(g).sort(function(a,b){var ia=order.indexOf(a),ib=order.indexOf(b);return (ia<0?99:ia)-(ib<0?99:ib);}).forEach(function(gg, gi){
+      html+='<div class="cat-card'+(gi===0?' open':'')+'"><button class="cat-head" onclick="this.parentElement.classList.toggle(\'open\')"><span><span class="cat-name">'+gg+'</span><span class="cat-count">('+g[gg].length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner">';
       g[gg].forEach(function(k){
-        html+='<div class="ffcard"><div class="ffhead" onclick="bbeiShow(\''+k+'\')"><span>'+k+'</span><span class="ffcnt">'+(BB[k].o!==k?('原·'+BB[k].o):'查看')+'</span></div></div>';
+        html+='<div class="ffcard" style="margin-bottom:4px"><div class="ffhead" onclick="bbeiShow(\''+k+'\')"><span>'+k+'</span><span class="ffcnt">'+(BB[k].o!==k?('原·'+BB[k].o):'查看')+'</span></div></div>';
       });
+      html+='</div></div></div>';
     });
     if(shown.length===0)html+='<div class="sr-empty">暂无数据</div>';
     list.innerHTML=html;return;
