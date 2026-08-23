@@ -1418,29 +1418,19 @@ function noteInputHandler(){
 function genPulseReport(silent){
   const d=new Date();
   const pad=function(x){return x<10?'0'+x:''+x;};
-  const catOf={};
-  PULSE_GROUPS.forEach(function(g){g.list.forEach(function(x){catOf[x[0]]=g.name.split('（')[0];});});
-  const pulseLabel=function(m){return m+'脉'+(compOf[m]?'（'+compOf[m]+'）':'');};
+  const pulseLabel=function(m){return m+'脉';};
   let txt='【脉诊记录】'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+'\n';
-  const seen={};
   PULSE_PARTS.forEach(function(p){
     const sel=pulseSel[p[0]]||{}, force=pulseForce[p[0]]||{};
-    const seg=PULSE_LAYERS.map(function(l){
+    const segs=[];
+    PULSE_LAYERS.forEach(function(l){
       const arr=sel[l[0]]||[];
-      if(!arr.length)return l[0]+'取：未记录';
+      if(!arr.length)return;               // 未记录的层不显示
       const f=force[l[0]];
-      arr.forEach(function(m){seen[catOf[m]]=seen[catOf[m]]||{};seen[catOf[m]][m]=true;});
-      return l[0]+'取：'+arr.map(pulseLabel).join('、')+(f?'（'+f+'）':'');
-    }).join('；');
-    txt+=p[0]+'（'+p[1]+'）：'+seg+'\n';
+      segs.push(l[0]+'取：'+arr.map(pulseLabel).join('、')+(f?'（'+f+'）':''));
+    });
+    if(segs.length)txt+=p[0]+'（'+p[1]+'）：'+segs.join('；')+'\n';
   });
-  // 脉象归类汇总
-  const catOrder=PULSE_GROUPS.map(function(g){return g.name.split('（')[0];});
-  const cats=catOrder.filter(function(c){return seen[c];});
-  if(cats.length){
-    txt+='\n—— 脉象归类 ——\n';
-    txt+=cats.map(function(c){return c+'：'+Object.keys(seen[c]).map(pulseLabel).join('、');}).join('；')+'\n';
-  }
   txt+='备注：'+(pulseNote&&pulseNote.trim()?pulseNote.trim():'无')+'\n';
   txt+='（以上为脉诊记录，仅供学习交流，请结合四诊合参）';
   pulseReportText=txt;
