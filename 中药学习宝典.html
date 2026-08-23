@@ -99,6 +99,7 @@ input{font-family:inherit}
 .pulse-report{margin-top:12px;border:1px solid var(--border);border-radius:10px;background:#fdfcf8;padding:12px}
 .pulse-report-title{font-size:12px;color:var(--muted);margin-bottom:6px}
 .pulse-report pre{font-size:13.5px;line-height:1.85;color:var(--fg);white-space:pre-wrap;word-break:break-all;font-family:inherit;margin:0}
+#pulseParts,#pulseRef{display:flex;flex-direction:column;gap:8px}
 
 .to-top-ball{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:15;width:44px;height:44px;border-radius:50%;background:rgba(47,93,58,.92);color:#fff;border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 14px rgba(20,40,25,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
 .to-top-ball.show{opacity:1;pointer-events:auto;transform:translateY(0)}
@@ -1332,17 +1333,29 @@ function noteInputHandler(){
 function genPulseReport(silent){
   const d=new Date();
   const pad=function(x){return x<10?'0'+x:''+x;};
+  const catOf={};
+  PULSE_GROUPS.forEach(function(g){g.list.forEach(function(x){catOf[x[0]]=g.name.split('（')[0];});});
   let txt='【脉诊记录】'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+'\n';
+  const seen={};
   PULSE_PARTS.forEach(function(p){
     const sel=pulseSel[p[0]]||{}, force=pulseForce[p[0]]||{};
     const seg=PULSE_LAYERS.map(function(l){
       const v=sel[l[0]];
       if(!v)return l[0]+'取：未记录';
       const f=force[l[0]];
-      return l[0]+'取：'+v+'脉'+(f?'（'+f+'）':'');
+      seen[catOf[v]]=seen[catOf[v]]||{};
+      seen[catOf[v]][v]=true;
+      return l[0]+'取：'+v+'脉（'+catOf[v]+(f?'，'+f:'')+'）';
     }).join('；');
     txt+=p[0]+'（'+p[1]+'）：'+seg+'\n';
   });
+  // 脉象归类汇总
+  const catOrder=PULSE_GROUPS.map(function(g){return g.name.split('（')[0];});
+  const cats=catOrder.filter(function(c){return seen[c];});
+  if(cats.length){
+    txt+='\n—— 脉象归类 ——\n';
+    txt+=cats.map(function(c){return c+'：'+Object.keys(seen[c]).join('、');}).join('；')+'\n';
+  }
   txt+='备注：'+(pulseNote&&pulseNote.trim()?pulseNote.trim():'无')+'\n';
   txt+='（以上为脉诊记录，仅供学习交流，请结合四诊合参）';
   pulseReportText=txt;
