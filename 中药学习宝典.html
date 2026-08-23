@@ -569,6 +569,8 @@ input{font-family:inherit}
       <div class="pulse-chip-wrap" id="pulseChipsBase"></div>
       <div class="pulse-pick-group-title">复合脉（括号内为构成）</div>
       <div class="pulse-chip-wrap" id="pulseChipsComp"></div>
+      <div class="pulse-pick-group-title">力度（单选，再点取消）</div>
+      <div class="pulse-chip-wrap" id="pulseChipsForce"></div>
     </div>
   </div>
 </div>
@@ -1308,15 +1310,12 @@ let pulseNote='',pulseReportText='';
 function renderPulse(){
   // 六部选择: 每部按浮/中/沉三层, 脉象可多选(基础脉组合/复合脉直选)+力度
   const pp=document.getElementById('pulseParts');
-  const forceOpts=PULSE_FORCES.map(function(f){return '<option value="'+f+'">'+(f||'未记力度')+'</option>';}).join('');
   pp.innerHTML=PULSE_PARTS.map(function(p){
     const sel=pulseSel[p[0]]||{};
     const rows=PULSE_LAYERS.map(function(l){
       const arr=sel[l[0]]||[];
-      const force=(pulseForce[p[0]]&&pulseForce[p[0]][l[0]])||'';
-      const fopts=forceOpts.replace('value="'+force+'"','value="'+force+'" selected');
       const label=arr.length?arr.map(function(m){return m+(compOf[m]?'脉('+compOf[m]+')':'脉');}).join(' · '):'点击选脉';
-      return '<div class="part-row"><span class="part-label">'+l[1]+'</span><button class="part-pulse-btn'+(arr.length?' has':'')+'" data-part="'+p[0]+'" data-layer="'+l[0]+'" onclick="openPulsePick(this)">'+label+'</button><select class="part-select part-force" data-part="'+p[0]+'" data-layer="'+l[0]+'" onchange="pulsePartChange(this)">'+fopts+'</select></div>';
+      return '<div class="part-row"><span class="part-label">'+l[1]+'</span><button class="part-pulse-btn'+(arr.length?' has':'')+'" data-part="'+p[0]+'" data-layer="'+l[0]+'" onclick="openPulsePick(this)">'+label+'</button></div>';
     }).join('');
     return '<div class="cat-card open" data-part="'+p[0]+'"><button class="cat-head" onclick="toggleCat(this)"><span><span class="cat-name">'+p[0]+'</span><span class="cat-count">（'+p[1]+'）</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner" style="padding-top:8px">'+rows+'</div></div></div>';
   }).join('');
@@ -1332,13 +1331,6 @@ function renderPulse(){
   // 若已有报告则刷新展示
   if(pulseReportText)genPulseReport(true);
   PULSE_PARTS.forEach(function(p){pulsePartSummary(p[0]);});
-}
-function pulsePartChange(sel){
-  const part=sel.dataset.part, layer=sel.dataset.layer;
-  if(!pulseForce[part])pulseForce[part]={};
-  pulseForce[part][layer]=sel.value;
-  try{localStorage.setItem('tcm_pulse_force',JSON.stringify(pulseForce));}catch(e){}
-  pulsePartSummary(part);
 }
 // ---- 选脉面板(基础脉多选组合 / 复合脉直选) ----
 let pulsePick=null;
@@ -1356,6 +1348,19 @@ function renderPulsePickPanel(){
   };
   document.getElementById('pulseChipsBase').innerHTML=PULSE_BASE.map(function(x){return chip(x[0],x[1]);}).join('');
   document.getElementById('pulseChipsComp').innerHTML=PULSE_COMP.map(function(x){return chip(x[0],x[1]);}).join('');
+  const fcur=(pulseForce[pulsePick.part]&&pulseForce[pulsePick.part][pulsePick.layer])||'';
+  document.getElementById('pulseChipsForce').innerHTML=PULSE_FORCES.slice(1).map(function(f){
+    return '<button class="pulse-chip'+(fcur===f?' on':'')+'" onclick="pulseForceToggle(this)" data-name="'+f+'">'+f+'</button>';
+  }).join('');
+}
+function pulseForceToggle(el){
+  const val=el.dataset.name;
+  if(!pulseForce[pulsePick.part])pulseForce[pulsePick.part]={};
+  pulseForce[pulsePick.part][pulsePick.layer]=(pulseForce[pulsePick.part][pulsePick.layer]===val)?'':val;
+  try{localStorage.setItem('tcm_pulse_force',JSON.stringify(pulseForce));}catch(e){}
+  renderPulsePickPanel();
+  updatePulseRowLabel();
+  pulsePartSummary(pulsePick.part);
 }
 function pulsePickToggle(el){
   const name=el.dataset.name;
@@ -1381,8 +1386,7 @@ function setLayerForce(part,layer,val){
   if(!pulseForce[part])pulseForce[part]={};
   pulseForce[part][layer]=val;
   try{localStorage.setItem('tcm_pulse_force',JSON.stringify(pulseForce));}catch(e){}
-  const sel=document.querySelector('#pulseParts select.part-force[data-part=\"'+part+'\"][data-layer=\"'+layer+'\"]');
-  if(sel)sel.value=val;
+  if(pulsePick&&pulsePick.part===part&&pulsePick.layer===layer)renderPulsePickPanel();
 }
 function pulseLayerLabel(part,layer){
   const arr=(pulseSel[part]&&pulseSel[part][layer])||[];
@@ -1396,14 +1400,20 @@ function updatePulseRowLabel(){
   const btn=document.querySelector('#pulseParts button.part-pulse-btn[data-part=\"'+pulsePick.part+'\"][data-layer=\"'+pulsePick.layer+'\"]');
   if(!btn)return;
   const label=pulseLayerLabel(pulsePick.part,pulsePick.layer);
-  btn.textContent=label||'点击选脉';
-  btn.classList.toggle('has',!!label);
+  const f=(pulseForce[pulsePick.part]&&pulseForce[pulsePick.part][pulsePick.layer])||'';
+  btn.textContent=(label?label+'（'+f+'）':(f?'未选脉（'+f+'）':'点击选脉'));
+  btn.classList.toggle('has',!!(label||f));
 }
 function clearPulsePick(){
   if(!pulsePick)return;
   if(!pulseSel[pulsePick.part])pulseSel[pulsePick.part]={};
   pulseSel[pulsePick.part][pulsePick.layer]=[];
-  try{localStorage.setItem('tcm_pulse_sel',JSON.stringify(pulseSel));}catch(e){}
+  if(!pulseForce[pulsePick.part])pulseForce[pulsePick.part]={};
+  pulseForce[pulsePick.part][pulsePick.layer]='';
+  try{
+    localStorage.setItem('tcm_pulse_sel',JSON.stringify(pulseSel));
+    localStorage.setItem('tcm_pulse_force',JSON.stringify(pulseForce));
+  }catch(e){}
   renderPulsePickPanel();updatePulseRowLabel();pulsePartSummary(pulsePick.part);
 }
 function closePulsePick(){document.getElementById('pulsePickPanel').style.display='none';pulsePick=null;}
