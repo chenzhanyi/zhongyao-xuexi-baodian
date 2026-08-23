@@ -572,6 +572,7 @@ input{font-family:inherit}
 <script src="bencao.js"></script>
 <script src="aliases.js"></script>
 <script src="fufang_bencao.js"></script>
+<script src="benbei.js"></script>
 <script src="tcm-data.js"></script>
 <script>
 // ==================== STATE ====================
@@ -683,6 +684,14 @@ function renderHerbs(){
 
 function fmlClassic(){fMode='classic';renderFormulas();}
 function fmlFufang(){fMode='fufang';renderFormulas();}
+function fmlBenbei(){fMode='benbei';renderFormulas();}
+function bbeiShow(k){
+  if(typeof BEIBAO==='undefined'||!BEIBAO[k])return;
+  var o=BEIBAO[k].o!==k?('<div style="font-size:12px;color:var(--muted);margin-bottom:4px">原书名：'+BEIBAO[k].o+'</div>'):'';
+  document.getElementById('benTitle').textContent='本草备要 · '+k;
+  document.getElementById('benBody').innerHTML=o+'<div style="font-size:14.5px;line-height:1.9">'+BEIBAO[k].c+'</div>';
+  document.getElementById('benModal').style.display='flex';
+}
 function toggleFavHerb(id,btn){
   const i=store.favHerbs.indexOf(id);
   if(i>=0)store.favHerbs.splice(i,1);else store.favHerbs.push(id);
@@ -694,7 +703,16 @@ function toggleFavHerb(id,btn){
 function renderFormulas(){
   document.getElementById('formulaCount').textContent=(fMode==='classic'?'共 '+FORMULAS.length+' 首 · 含组成与原文':'本草纲目 · 附方');
   const list=document.getElementById('formulaList');
-  let html='<div class="ftab"><button class="'+(fMode==='classic'?'on':'')+'" onclick="fmlClassic()">经典经方</button><button class="'+(fMode==='fufang'?'on':'')+'" onclick="fmlFufang()">本草纲目·附方</button></div>';
+  let html='<div class="ftab"><button class="'+(fMode==='classic'?'on':'')+'" onclick="fmlClassic()">经典经方</button><button class="'+(fMode==='fufang'?'on':'')+'" onclick="fmlFufang()">本草纲目附方</button><button class="'+(fMode==='benbei'?'on':'')+'" onclick="fmlBenbei()">本草备要</button></div>';
+  if(fMode==='benbei'){
+    const BB=typeof BEIBAO!=='undefined'?BEIBAO:{};
+    const ks=Object.keys(BB).sort().slice(0,500);
+    ks.forEach(k=>{
+      html+='<div class="ffcard"><div class="ffhead" onclick="bbeiShow(\''+k+'\')"><span>'+k+'</span><span class="ffcnt">'+(BB[k].o!==k?('原·'+BB[k].o):'查看')+'</span></div></div>';
+    });
+    if(ks.length===0)html+='<div class="sr-empty">暂无数据</div>';
+    list.innerHTML=html;return;
+  }
   if(fMode==='fufang'){
     const FF=typeof FUFANG!=='undefined'?FUFANG:{};
     const keys=Object.keys(FF).sort().slice(0,400);

@@ -158,6 +158,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 <script src="bencao.js"></script>
 <script src="aliases.js"></script>
 <script src="fufang_bencao.js"></script>
+<script src="benbei.js"></script>
 <div class="ben-modal" id="ffModal" style="display:none" onclick="ffClose()">
   <div class="ben-box" onclick="event.stopPropagation()">
     <div class="ben-head"><span class="ben-title" id="ffTitle">本草纲目 · 附方</span><button class="ben-close" onclick="ffClose()">✕</button></div>
@@ -286,10 +287,30 @@ function renderHerbs(){
 }
 function ftabHTML(){
   const nf=typeof FUFANG!=='undefined'?Object.keys(FUFANG).length:0;
-  return '<div class="ftab"><button class="'+(S.fmode==='classic'?'on':'')+'" onclick="fbClassic()">经典经方 '+FORMULAS.length+'</button><button class="'+(S.fmode==='fufang'?'on':'')+'" onclick="fbFufang()">本草纲目·附方 '+nf+'</button></div>';
+  return '<div class="ftab"><button class="'+(S.fmode==='classic'?'on':'')+'" onclick="fbClassic()">经典经方 '+FORMULAS.length+'</button><button class="'+(S.fmode==='fufang'?'on':'')+'" onclick="fbFufang()">本草纲目·附方 '+nf+'</button><button class="'+(S.fmode==='benbei'?'on':'')+'" onclick="fbBenbei()">本草备要 '+(typeof BEIBAO!=='undefined'?Object.keys(BEIBAO).length:0)+'</button></div>';
 }
 function fbClassic(){S.fmode='classic';render();}
 function fbFufang(){S.fmode='fufang';render();}
+function fbBenbei(){S.fmode='benbei';render();}
+function renderBenbei(){
+  const BB=typeof BEIBAO!=='undefined'?BEIBAO:{};
+  const keys=Object.keys(BB).sort();
+  const q=S.q, filt=q?keys.filter(k=>k.includes(q)||BB[k].o.includes(q)):keys;
+  const shown=filt.slice(0,400);
+  let html=ftabHTML();
+  if(!shown.length){$('content').innerHTML=html+'<div class="empty">未找到匹配药材</div>';return;}
+  html+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))">'+shown.map(k=>'<div class="ffcard"><div class="ffhead" onclick="bbShow(this)" data-n="'+htmlAttr(k)+'"><b>'+k+'</b><span class="ffcnt">'+(BB[k].o!==k?'原·'+BB[k].o+' · ':'')+'查看</span></div></div>').join('')+'</div>';
+  if(filt.length>400)html+='<div class="sr-more">还有 '+(filt.length-400)+' 味，输入药名缩小范围</div>';
+  $('content').innerHTML=html;
+}
+function bbShow(el){
+  var k=el.getAttribute('data-n');
+  if(!k||typeof BEIBAO==='undefined'||!BEIBAO[k])return;
+  var o=BEIBAO[k].o!==k?('<span style="color:var(--muted);font-size:12px;font-weight:500">原书名：'+BEIBAO[k].o+'</span>'):'';
+  document.getElementById('ffTitle').textContent='本草备要 · '+k;
+  document.getElementById('ffBody').innerHTML=o+'<div class="ben-note" style="font-size:14.5px;margin-top:6px">'+BEIBAO[k].c+'</div>';
+  document.getElementById('ffModal').style.display='flex';
+}
 function htmlAttr(x){return String(x==null?'':x).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function ffShow(el){
   var k=el.getAttribute('data-n');
@@ -311,6 +332,7 @@ function renderFufang(){
   $('content').innerHTML=html;
 }
 function renderFormulas(){
+  if(S.fmode==='benbei'){renderBenbei();return;}
   if(S.fmode==='fufang'){renderFufang();return;}
   const list=FORMULAS.filter(f=>match(f[0]+' '+f[3]+' '+f[4]+' '+f[6]+' '+f[2].map(c=>c[0]).join(' '),S.q));
   $('content').innerHTML=ftabHTML()+(list.length===0?'<div class="empty">未找到匹配的方剂</div>':'<div class="grid">'+list.map(f=>
