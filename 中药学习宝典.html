@@ -1394,7 +1394,7 @@ function pulseLayerLabel(part,layer){
   const covered={};
   comps.forEach(function(c){(compBases[c]||[]).forEach(function(b){covered[b]=true;});});
   const extra=arr.filter(function(m){return !compOf[m]&&!covered[m];});
-  return comps.concat(extra).map(function(m){return m+'脉';}).join('、');
+  return comps.concat(extra).join('、');
 }
 function updatePulseRowLabel(){
   const btn=document.querySelector('#pulseParts button.part-pulse-btn[data-part=\"'+pulsePick.part+'\"][data-layer=\"'+pulsePick.layer+'\"]');
