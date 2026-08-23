@@ -90,6 +90,7 @@ input{font-family:inherit}
 .badge-success{background:rgba(58,125,58,.1);color:var(--success);border:1px solid rgba(58,125,58,.3)}
 .badge-outline{background:transparent;border:1px solid var(--border);color:var(--muted-fg)}
 .badge-shen{background:rgba(212,160,23,.12);color:#a67c00;border:1px solid rgba(212,160,23,.5);margin-left:5px;vertical-align:middle}
+.badge-dian{background:rgba(47,93,58,.1);color:var(--primary);border:1px solid rgba(47,93,58,.35);margin-left:5px;vertical-align:middle}
 .shen-filter-bar{display:flex;align-items:center;gap:10px;padding:2px 12px 10px;flex-wrap:wrap}
 .shen-filter-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:20px;border:1px solid rgba(212,160,23,.5);background:rgba(212,160,23,.08);color:#a67c00;font-size:12.5px;font-weight:600;transition:all .2s}
 .shen-filter-btn .shen-num{opacity:.85;font-weight:500}
@@ -573,6 +574,7 @@ input{font-family:inherit}
 <script src="aliases.js"></script>
 <script src="fufang_bencao.js"></script>
 <script src="benbei.js"></script>
+<script src="kuozhan.js"></script>
 <script src="tcm-data.js"></script>
 <script>
 // ==================== STATE ====================
@@ -640,7 +642,7 @@ function tabooDetail(t){
 
 function renderHerbs(){
   const src=shenFilter?HERBS.filter(h=>SHEN_COMMON.has(h[0])):HERBS;
-  document.getElementById('herbCount').textContent=(shenFilter?'沈常用 ':'共 ')+src.length+' 味 · 按功效分类';
+  document.getElementById('herbCount').textContent=(shenFilter?'沈常用 ':'共 ')+(src.length+(typeof KZ!=='undefined'&&!shenFilter?Object.keys(KZ).length:0))+' 味 · 按功效分类（拓展典籍药置底部）';
   const shenNumEl=document.getElementById('shenNum');
   if(shenNumEl)shenNumEl.textContent=HERBS.filter(h=>SHEN_COMMON.has(h[0])).length+'味';
   const list=document.getElementById('catList');
@@ -663,7 +665,7 @@ function renderHerbs(){
         const o=herbObj(h);const id=o.name;
         const isFav=store.favHerbs.includes(id);
         html+='<div class="herb-card" id="herb-'+id+'">';
-        html+='<div class="herb-top"><div class="herb-name">'+o.name+(o.shenCommon?'<span class="badge badge-shen">沈常用</span>':'')+'</div>';
+        html+='<div class="herb-top"><div class="herb-name">'+o.name+(o.shenCommon?'<span class="badge badge-shen">沈常用</span>':'')+'<span class="badge badge-dian">药典常用</span></div>';
         html+='<div class="herb-badges">'+tabooBadges(o.taboo)+'</div></div>';
         html+='<div class="herb-meta">'+o.nature+' · '+o.meridians+'</div>';
         html+='<div class="herb-effects">'+o.effects+'</div>';
@@ -679,7 +681,27 @@ function renderHerbs(){
     });
     html+='</div></div></div>';
   });
+  // 拓展典籍药（本草纲目/本草备要）
+  if(typeof KZ!=='undefined'&&Object.keys(KZ).length){
+    var qkk=document.getElementById('searchInput')&&document.getElementById('searchInput').value?document.getElementById('searchInput').value.trim().toLowerCase():'';
+    var kznn=Object.keys(KZ).filter(function(k){return !qkk||k.toLowerCase().indexOf(qkk)>-1;});
+    if(kznn.length){
+      html+='<div class="cat-card"><button class="cat-head" onclick="this.parentElement.classList.toggle(\'open\')"><span><span class="cat-name">拓展典籍药（本草纲目·本草备要）</span><span class="cat-count">('+kznn.length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner"><div class="herb-grid">';
+      kznn.slice(0,1200).forEach(function(k){
+        var e=KZ[k];
+        html+='<div class="herb-card" onclick="kzShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+(e.o&&e.o[0]?('原书：'+e.o[0]):'')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+(e.d||'').slice(0,50)+'…</div></div>';
+      });
+      html+='</div></div></div></div>';
+    }
+  }
   list.innerHTML=html;
+}
+function kzShow(k){
+  if(typeof KZ==='undefined'||!KZ[k])return;
+  var e=KZ[k];
+  document.getElementById('benTitle').textContent='拓展典籍 · '+k;
+  document.getElementById('benBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">来源：'+e.src.join('、')+(e.o&&e.o[0]?('　原书药名：'+e.o[0]):'')+'</div><div class="ben-note">'+e.d+'</div>';
+  document.getElementById('benModal').style.display='flex';
 }
 
 function fmlClassic(){fMode='classic';renderFormulas();}

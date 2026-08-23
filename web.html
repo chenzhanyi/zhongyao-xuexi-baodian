@@ -56,6 +56,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .hcard .nm{font-size:17px;font-weight:700}
 .hcard .badge{display:inline-flex;align-items:center;padding:1px 7px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid currentColor}
 .b-shen{color:var(--gold);background:var(--gold-bg);border-color:rgba(212,160,23,.55)!important}
+.b-dian{color:var(--primary);background:rgba(47,93,58,.08);border-color:rgba(47,93,58,.4)!important}
 .b-dang{color:var(--danger);border-color:rgba(163,48,48,.35)!important}
 .b-warn{color:var(--warn);border-color:rgba(196,122,26,.4)!important}
 .hcard .cat-tag{font-size:11px;color:var(--muted);margin-left:auto}
@@ -159,6 +160,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 <script src="aliases.js"></script>
 <script src="fufang_bencao.js"></script>
 <script src="benbei.js"></script>
+<script src="kuozhan.js"></script>
 <div class="ben-modal" id="ffModal" style="display:none" onclick="ffClose()">
   <div class="ben-box" onclick="event.stopPropagation()">
     <div class="ben-head"><span class="ben-title" id="ffTitle">本草纲目 · 附方</span><button class="ben-close" onclick="ffClose()">✕</button></div>
@@ -287,7 +289,7 @@ function renderHerbs(){
   Object.keys(byCat).sort((a,b)=>order.indexOf(a)-order.indexOf(b)).forEach(cat=>{
     html+=`<h3 style="color:var(--primary);margin:16px 0 8px;font-size:15px">${cat} <span style="color:var(--muted);font-size:12px">${byCat[cat].length}</span></h3><div class="grid">`;
     byCat[cat].forEach(h=>{
-      html+=`<div class="hcard"><div class="top"><span class="nm">${h.name}</span>${benLink(h.name)}${badgeHTML(h)}
+      html+=`<div class="hcard"><div class="top"><span class="nm">${h.name}</span><span class="badge b-dian">药典常用</span>${benLink(h.name)}${badgeHTML(h)}
         <span class="cat-tag">${h.sub}</span></div>
         <div class="nature">${h.nature} · ${h.meridians}</div>
         <div class="effects">${h.effects}</div>
@@ -297,7 +299,28 @@ function renderHerbs(){
     });
     html+='</div>';
   });
+  // 拓展典籍药（本草纲目/本草备要）
+  if(typeof KZ!=='undefined'&&Object.keys(KZ).length){
+    const kzn=Object.keys(KZ).filter(k=>!S.q||k.toLowerCase().includes(S.q.toLowerCase())).slice(0,1200);
+    if(kzn.length){
+      html+='<h3 style="color:var(--primary);margin:16px 0 8px;font-size:15px">拓展典籍药（本草纲目·本草备要） <span style="color:var(--muted);font-size:12px">'+kzn.length+'</span></h3><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(340px,1fr))">';
+      kzn.forEach(function(k){
+        var e=KZ[k];
+        html+='<div class="ffcard"><div class="ffhead" onclick="kzWeb(this)" data-n="'+htmlAttr(k)+'"><b>'+k+'</b><span class="ffcnt">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div></div>';
+      });
+      html+='</div>';
+    }
+  }
   $('content').innerHTML=html;
+}
+function kzWeb(el){
+  var k=el.getAttribute('data-n');
+  if(typeof KZ!=='undefined'&&KZ[k]){
+    var e=KZ[k];
+    document.getElementById('ffTitle').textContent='拓展典籍 · '+k;
+    document.getElementById('ffBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">来源：'+e.src.join('、')+(e.o&&e.o[0]?('　原书药名：'+e.o[0]):'')+'</div><div class="ben-note">'+e.d+'</div>';
+    document.getElementById('ffModal').style.display='flex';
+  }
 }
 function ftabHTML(){
   const nf=typeof FUFANG!=='undefined'?Object.keys(FUFANG).length:0;
@@ -388,7 +411,7 @@ function render(){
   if(S.m==='herbs')renderHerbs();else if(S.m==='formulas')renderFormulas();else renderTaboos();
   let showFiltered = S.m==='herbs';
   $('statBar').innerHTML = (S.m==='herbs'
-    ? `<span class="stat">中药 <b>${HERBS.length}</b> 味</span><span class="stat">沈常用 <b>${shenN}</b></span>${S.shen?'<span class="stat">已筛选 <b>沈常用</b></span>':''}`
+    ? `<span class="stat">中药 <b>${HERBS.length+(typeof KZ!=='undefined'?Object.keys(KZ).length:0)}</b> 味</span><span class="stat">沈常用 <b>${shenN}</b></span>${S.shen?'<span class="stat">已筛选 <b>沈常用</b></span>':''}`
     : S.m==='formulas'? `<span class="stat">经方 <b>${FORMULAS.length}</b> 首</span>`:`<span class="stat">十八反/十九畏/妊娠禁忌</span>`);
 }
 // init
