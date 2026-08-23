@@ -145,6 +145,14 @@ input{font-family:inherit}
 .tab-btn{padding:9px 0;font-size:13px;font-weight:500;color:var(--muted-fg);text-align:center;border-right:1px solid var(--border)}
 .tab-btn:last-child{border-right:none}
 .tab-btn.active{background:var(--primary);color:var(--primary-fg)}
+.ftab{display:flex;gap:6px;margin-bottom:10px}
+.ftab button{flex:1;padding:8px 0;border-radius:20px;border:1px solid var(--border);background:var(--card);color:var(--muted-fg);font-size:13px;font-weight:600;cursor:pointer}
+.ftab button.on{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.ffcard{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+.ffhead{display:flex;align-items:center;gap:6px;padding:10px 12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--primary)}
+.ffcnt{font-size:11px;color:var(--warning);margin-left:auto}
+.ffbody{max-height:0;overflow:hidden;transition:max-height .3s ease;font-size:12.5px;line-height:1.8;color:var(--fg)}
+.ffcard.open .ffbody{max-height:900px;padding:0 12px 12px}
 .tab-pane{display:none}.tab-pane.active{display:block;flex-direction:column;gap:10px}
 
 .song-card{border-radius:10px;padding:12px 14px;margin-bottom:10px}
@@ -563,6 +571,7 @@ input{font-family:inherit}
 
 <script src="bencao.js"></script>
 <script src="aliases.js"></script>
+<script src="fufang_bencao.js"></script>
 <script src="tcm-data.js"></script>
 <script>
 // ==================== STATE ====================
@@ -576,6 +585,7 @@ function toggleCat(btn){
   if(card.classList.toggle('open'))openCats.add(card.dataset.cat||'');else openCats.delete(card.dataset.cat||'');
 }
 let reciteState = {mode:'herbs',scope:'all',index:0,flipped:false,shuffled:false,items:[]};
+let fMode='classic';
 function toggleShenFilter(){
   shenFilter=!shenFilter;
   document.getElementById('btnShenFilter').classList.toggle('active',shenFilter);
@@ -671,6 +681,8 @@ function renderHerbs(){
   list.innerHTML=html;
 }
 
+function fmlClassic(){fMode='classic';renderFormulas();}
+function fmlFufang(){fMode='fufang';renderFormulas();}
 function toggleFavHerb(id,btn){
   const i=store.favHerbs.indexOf(id);
   if(i>=0)store.favHerbs.splice(i,1);else store.favHerbs.push(id);
@@ -680,9 +692,18 @@ function toggleFavHerb(id,btn){
 
 // ==================== FORMULA RENDERING ====================
 function renderFormulas(){
-  document.getElementById('formulaCount').textContent='共 '+FORMULAS.length+' 首 · 含组成与原文';
+  document.getElementById('formulaCount').textContent=(fMode==='classic'?'共 '+FORMULAS.length+' 首 · 含组成与原文':'本草纲目 · 附方');
   const list=document.getElementById('formulaList');
-  let html='';
+  let html='<div class="ftab"><button class="'+(fMode==='classic'?'on':'')+'" onclick="fmlClassic()">经典经方</button><button class="'+(fMode==='fufang'?'on':'')+'" onclick="fmlFufang()">本草纲目·附方</button></div>';
+  if(fMode==='fufang'){
+    const FF=typeof FUFANG!=='undefined'?FUFANG:{};
+    const keys=Object.keys(FF).sort().slice(0,400);
+    keys.forEach(k=>{
+      html+='<div class="ffcard"><div class="ffhead" onclick="this.parentElement.classList.toggle(\'open\')"><span>'+k+'</span><span class="ffcnt">'+FF[k].split('；').length+'段</span></div><div class="ffbody">'+FF[k]+'</div></div>';
+    });
+    if(keys.length===0)html+='<div class="sr-empty">暂无附方数据</div>';
+    list.innerHTML=html;return;
+  }
   FORMULAS.forEach(f=>{
     const id=f[0];const isFav=store.favFormulas.includes(id);
     const isMastered=store.masteredFormulas.includes(id);
@@ -784,6 +805,7 @@ function bencaoHTML(name){
     if(g.s)secs.push(['释名',g.s]);
     if(secs.length)h+='<div class="ben-gm"><div class="ben-gm-title">《本草纲目》</div>'+secs.map(x=>'<div class="ben-note"><span class="src">'+x[0]+'</span>'+x[1]+'</div>').join('')+'</div>';
   }
+  if(typeof FUFANG!=='undefined'&&FUFANG[name])h+='<div class="ben-note" style="margin-top:6px"><span class="src">《本草纲目》· 附方</span>'+FUFANG[name]+'</div>';
   const rel=herbFormulas(name);
   if(rel.length)h+='<div class="ben-gm" style="border-top:1px solid rgba(160,140,90,.35);padding-top:10px;margin-top:6px"><div class="ben-gm-title">相关经方 · '+rel.length+' 首</div>'+rel.map(function(f){return '<div class="ben-note"><span class="src">'+f[6]+'</span><b>'+f[0]+'</b>　'+f[2].map(function(c){return c[0]+(c[1]?' '+c[1]:'');}).join('、')+'</div>';}).join('')+'</div>';
   return h;
