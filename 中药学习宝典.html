@@ -73,6 +73,32 @@ input{font-family:inherit}
 .cat-card.open .cat-body{max-height:20000px}
 .kz-more-btn{display:inline-block;margin:6px auto 0;padding:9px 22px;border:1px solid var(--border);border-radius:20px;background:var(--card);color:var(--primary);font-size:13.5px;font-weight:500;cursor:pointer}
 .kz-more-btn:active{opacity:.75}
+/* ===== 脉诊速记页 ===== */
+.pulse-header{position:sticky;top:0;z-index:30;background:rgba(245,240,230,.92);backdrop-filter:blur(10px);padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.pulse-back{border:1px solid var(--border);background:var(--card);border-radius:8px;padding:5px 12px;font-size:13px;color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.pulse-title{font-size:16px;font-weight:700;color:var(--fg)}
+.pulse-note{font-size:11.5px;color:var(--muted);margin:10px 14px 0;line-height:1.6}
+.pulse-sec{margin:12px 14px 0}
+.pulse-sec-title{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:6px}
+.pulse-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.pulse-card{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:8px 10px}
+.pulse-name{font-size:14px;font-weight:700;color:var(--fg)}
+.pulse-feel{font-size:11.5px;color:var(--fg);line-height:1.55;margin-top:3px}
+.pulse-zhu{font-size:11.5px;color:var(--primary);margin-top:3px;font-weight:500}
+.part-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px dashed var(--border)}
+.part-row:last-of-type{border-bottom:none}
+.part-label{width:96px;flex-shrink:0;font-size:13.5px;font-weight:600;color:var(--fg)}
+.part-organ{font-size:10.5px;color:var(--muted);font-weight:400}
+.part-select{flex:1;height:36px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13.5px;color:var(--fg);padding:0 8px;appearance:auto}
+.pulse-note-input{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13px;color:var(--fg);padding:9px 10px;margin-top:10px;resize:vertical;min-height:64px;line-height:1.6}
+.pulse-btn-row{display:flex;gap:8px;margin-top:12px}
+.pulse-btn{flex:1;height:42px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--primary)}
+.pulse-btn.primary{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.pulse-btn:active{opacity:.8}
+.pulse-report{margin-top:12px;border:1px solid var(--border);border-radius:10px;background:#fdfcf8;padding:12px}
+.pulse-report-title{font-size:12px;color:var(--muted);margin-bottom:6px}
+.pulse-report pre{font-size:13.5px;line-height:1.85;color:var(--fg);white-space:pre-wrap;word-break:break-all;font-family:inherit;margin:0}
+
 .to-top-ball{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:15;width:44px;height:44px;border-radius:50%;background:rgba(47,93,58,.92);color:#fff;border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 14px rgba(20,40,25,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
 .to-top-ball.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 .to-top-ball:active{transform:scale(.9)}
@@ -458,6 +484,15 @@ input{font-family:inherit}
         <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
     </div>
+
+    <div class="section-card">
+      <div class="section-card-title">学习工具</div>
+      <div class="quick-row" onclick="switchPage('pulse')">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h4l3-8 4 16 3-8h6"/></svg></div>
+        <div class="quick-info"><div class="quick-label">脉诊速记</div><div class="quick-sub">28脉手感速记 · 六部选脉生成记录</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
+    </div>
     <div class="section-card">
       <div class="section-card-title" style="display:flex;align-items:center;gap:6px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -487,6 +522,34 @@ input{font-family:inherit}
 </div>
 
 <button class="to-top-ball" id="toTopBall" aria-label="回到顶部" onclick="toTop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="18 15 12 9 6 15"/></svg></button>
+
+<div class="page" id="page-pulse">
+  <div class="pulse-header">
+    <button class="pulse-back" onclick="switchPage('mine')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>我的</button>
+    <span class="pulse-title">脉诊速记</span>
+  </div>
+  <div class="pulse-note">⚠️ 脉诊需要实操，以下是手指触觉描述，仅供学习，不能代替医师诊断。寸关尺三指：轻按（浮取）、中按（中取）、重按（沉取）。脉诊主观性强，须四诊合参，不可单凭脉象自行诊脉用药。</div>
+  <div class="pulse-sec">
+    <div class="pulse-sec-title">六部选脉 · 生成记录</div>
+    <div class="section-card" style="padding:4px 14px 12px">
+      <div id="pulseParts"></div>
+      <textarea class="pulse-note-input" id="pulseNote" placeholder="备注：症状、舌象、病史等补充信息…"></textarea>
+      <div class="pulse-btn-row">
+        <button class="pulse-btn primary" onclick="genPulseReport()">生成脉诊记录</button>
+        <button class="pulse-btn" id="pulseCopyBtn" onclick="copyPulseReport()">复制</button>
+      </div>
+      <div class="pulse-report" id="pulseReportBox" style="display:none">
+        <div class="pulse-report-title">生成结果（可直接发给医师）</div>
+        <pre id="pulseReportText"></pre>
+      </div>
+    </div>
+  </div>
+  <div class="pulse-sec" style="padding-bottom:110px">
+    <div class="pulse-sec-title">28脉手感速记</div>
+    <div id="pulseRef"></div>
+  </div>
+</div>
+
 <!-- Bottom Nav -->
 <nav class="bottom-nav">
   <div class="bottom-nav-inner">
@@ -633,10 +696,11 @@ function switchPage(page){
   currentPage=page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===page));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===(page==='pulse'?'mine':page)));
   closeSearch();
   window.scrollTo(0,0);
   if(page==='mine')renderMine();
+  if(page==='pulse')renderPulse();
 }
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>switchPage(n.dataset.page)));
 
@@ -1156,6 +1220,107 @@ document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight')reciteNext();else if(e.key==='ArrowLeft')recitePrev();else if(e.key===' '){e.preventDefault();flipCard();}
 });
 
+
+// ==================== 脉诊速记 ====================
+const PULSE_GROUPS=[
+ {name:'浮脉类（轻取即得）',list:[
+  ['浮','轻按就有，重按稍减不空。如水漂木','主表证'],
+  ['洪','浮，来盛去衰，像洪水涌来，幅度大','主热盛'],
+  ['濡','浮而细软，轻按能摸到，稍用力就按没了','主虚、湿'],
+  ['散','浮散无根，按之散乱，节律力度都乱','元气离散'],
+  ['芤','浮大中空，如按葱管，中间空两边实','大失血'],
+  ['革','浮而搏指，中空外坚，如按鼓皮','亡血失精']]},
+ {name:'沉脉类（重按始得）',list:[
+  ['沉','轻取不见，重按始得','主里证'],
+  ['伏','比沉更深，要推筋着骨才能摸到','邪闭、剧痛'],
+  ['弱','沉而细软，用力按才有，无力','气血虚'],
+  ['牢','沉实大弦长，沉在底下，但很硬有力','阴寒内积、癥瘕']]},
+ {name:'迟脉类（一息<4次）',list:[
+  ['迟','一息三至，跳动慢','主寒证'],
+  ['缓','一息四至，来去从容柔和','正常；也主湿、脾虚'],
+  ['涩','往来艰涩，如刮砂纸、刀刮竹，不流畅','气滞血瘀、精血少'],
+  ['结','迟而间歇，慢且时有停，停无规律','阴盛气结、瘀血']]},
+ {name:'数脉类（一息>5次）',list:[
+  ['数','一息五至以上，跳得快','主热证'],
+  ['疾','一息七八至，跳极快','阳极阴竭'],
+  ['促','快而间歇，快且偶尔停，停无定数','阳盛实热'],
+  ['动','滑数有力，圆转如豆，摇动感，专见于关部','疼痛、惊恐']]},
+ {name:'虚脉类（按之无力）',list:[
+  ['虚','三部举按都无力','一切虚证总脉'],
+  ['细','脉道细如丝线，清晰可摸到','主虚、湿'],
+  ['微','极细极软，似有似无','阳气大虚'],
+  ['代','有规律间歇，跳固定次数就停，停得久','脏气衰、跌打损伤']]},
+ {name:'实脉类（举按有力）',list:[
+  ['实','寸关尺轻中重按全都有力','实证'],
+  ['滑','往来流利，如盘走珠','痰饮、食积、妊娠'],
+  ['弦','挺直而长，如按琴弦','肝胆病、疼痛、痰饮'],
+  ['紧','绷急弹指，如按绷紧绳索','寒、痛'],
+  ['长','脉体超过寸、尺本位','阳热、实证'],
+  ['短','脉体短，只在关部，寸尺不足','气亏气滞']]}
+];
+const PULSE_PARTS=[['左寸','心'],['左关','肝'],['左尺','肾'],['右寸','肺'],['右关','脾'],['右尺','命门']];
+let pulseSel={};
+let pulseNote='',pulseReportText='';
+function renderPulse(){
+  // 六部选择
+  const pp=document.getElementById('pulseParts');
+  const allNames=PULSE_GROUPS.reduce(function(a,g){return a.concat(g.list.map(function(x){return x[0];}));},[]);
+  pp.innerHTML=PULSE_PARTS.map(function(p){
+    const opts=['<option value="">未记录</option>'].concat(allNames.map(function(m){return '<option'+(pulseSel[p[0]]===m?' selected':'')+'>'+m+'</option>';})).join('');
+    return '<div class="part-row"><span class="part-label">'+p[0]+'<span class="part-organ">（'+p[1]+'）</span></span><select class="part-select" data-part="'+p[0]+'" onchange="pulsePartChange(this)">'+opts+'</select></div>';
+  }).join('');
+  // 速记参考
+  const ref=document.getElementById('pulseRef');
+  ref.innerHTML=PULSE_GROUPS.map(function(g,gi){
+    const cards=g.list.map(function(x){return '<div class="pulse-card"><div class="pulse-name">'+x[0]+'脉</div><div class="pulse-feel">'+x[1]+'</div><div class="pulse-zhu">'+x[2]+'</div></div>';}).join('');
+    return '<div class="cat-card'+(gi===0?' open':'')+'"><button class="cat-head" onclick="toggleCat(this)"><span><span class="cat-name">'+g.name+'</span><span class="cat-count">('+g.list.length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner"><div class="pulse-grid">'+cards+'</div></div></div></div>';
+  }).join('');
+  // 备注
+  const note=document.getElementById('pulseNote');
+  if(note){note.value=pulseNote||'';note.oninput=noteInputHandler;}
+  // 若已有报告则刷新展示
+  if(pulseReportText)genPulseReport(true);
+}
+function pulsePartChange(sel){
+  pulseSel[sel.dataset.part]=sel.value;
+  try{localStorage.setItem('tcm_pulse_sel',JSON.stringify(pulseSel));}catch(e){}
+}
+function noteInputHandler(){
+  pulseNote=document.getElementById('pulseNote').value;
+  try{localStorage.setItem('tcm_pulse_note',pulseNote);}catch(e){}
+}
+function genPulseReport(silent){
+  const d=new Date();
+  const pad=function(x){return x<10?'0'+x:''+x;};
+  let txt='【脉诊记录】'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+'\n';
+  PULSE_PARTS.forEach(function(p){
+    txt+=p[0]+'（'+p[1]+'）：'+(pulseSel[p[0]]?pulseSel[p[0]]+'脉':'未记录')+'\n';
+  });
+  txt+='备注：'+(pulseNote&&pulseNote.trim()?pulseNote.trim():'无')+'\n';
+  txt+='（以上为脉诊记录，仅供学习交流，请结合四诊合参）';
+  pulseReportText=txt;
+  document.getElementById('pulseReportText').textContent=txt;
+  document.getElementById('pulseReportBox').style.display='block';
+  if(!silent){
+    document.getElementById('pulseCopyBtn').scrollIntoView({behavior:'smooth',block:'center'});
+  }
+}
+function copyPulseReport(){
+  if(!pulseReportText){genPulseReport(true);}
+  const txt=pulseReportText;
+  const done=function(){const b=document.getElementById('pulseCopyBtn');const old=b.textContent;b.textContent='已复制 ✓';setTimeout(function(){b.textContent=old;},1600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(done,function(){fallbackCopy(txt);done();});
+  }else{fallbackCopy(txt);done();}
+}
+function fallbackCopy(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');}catch(e){}
+  document.body.removeChild(ta);
+}
+
 // ==================== INIT ====================
 renderHerbs();
 // 右下角回到顶部浮球
@@ -1164,6 +1329,8 @@ function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
 
 renderFormulas();
 renderTaboos();
+try{pulseSel=JSON.parse(localStorage.getItem('tcm_pulse_sel')||'{}')||{};}catch(e){pulseSel={};}
+pulseNote=localStorage.getItem('tcm_pulse_note')||'';
 </script>
 </body>
 </html>
