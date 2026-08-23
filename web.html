@@ -283,6 +283,7 @@ function ftabHTML(){
 }
 function fbClassic(){S.fmode='classic';render();}
 function fbFufang(){S.fmode='fufang';render();}
+function ffOpen(el){el.parentElement.classList.toggle('open');}
 function renderFufang(){
   const FF=typeof FUFANG!=='undefined'?FUFANG:{};
   const keys=Object.keys(FF).sort();
@@ -290,7 +291,7 @@ function renderFufang(){
   const shown=filt.slice(0,320);
   let html=ftabHTML();
   if(!shown.length){$('content').innerHTML=html+'<div class="empty">未找到匹配的药材附方</div>';return;}
-  html+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(360px,1fr))">'+shown.map(k=>'<div class="ffcard"><div class="ffhead"><b>'+k+'</b><span class="ffcnt">'+FF[k].split('；').length+' 段</span></div><div class="ffbody">'+FF[k]+'</div></div>').join('')+'</div>';
+  html+='<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(360px,1fr))">'+shown.map(k=>'<div class="ffcard"><div class="ffhead" onclick="ffOpen(this)"><b>'+k+'</b><span class="ffcnt">'+FF[k].split('；').length+' 段</span></div><div class="ffbody">'+FF[k]+'</div></div>').join('')+'</div>';
   if(filt.length>320)html+='<div class="sr-more">还有 '+(filt.length-320)+' 味，输入药名缩小范围</div>';
   $('content').innerHTML=html;
 }
