@@ -31,3 +31,9 @@ dependencies {
     implementation 'androidx.webkit:webkit:1.11.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
 }
+
+// Kotlin 1.8+ 将 jdk7/jdk8 合并进 kotlin-stdlib，排除旧的拆分产物以避免重复类
+configurations.all {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+}
