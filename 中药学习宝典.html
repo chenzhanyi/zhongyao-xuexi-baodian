@@ -1470,18 +1470,46 @@ function resetPulseAll(){
 function renderWen(){
   const box=document.getElementById('wenParts');
   if(!box)return;
-  let h='<div class="wen-hint" style="margin:2px 0 8px">歌诀补：妇人尤必问经期，迟速闭崩皆可见；再添片语告儿科，天花麻疹全占验（现代天花已绝，小儿改问疫苗、惊风、积食）。</div>';
-  WEN_ITEMS.concat(WEN_ITEMS_EXT).forEach(function(it){
+  const rowHTML=function(it){
     const cur=wenSel[it[0]]||[];
     const chips=it[1].map(function(c){
       return '<button class="wen-chip'+(cur.indexOf(c)>=0?' on':'')+'" onclick="wenToggle(this)" data-group="'+it[0]+'" data-name="'+c+'">'+c+'</button>';
     }).join('');
-    h+='<div class="wen-row"><div class="wen-label">'+it[0]+'</div><div class="pulse-chip-wrap" style="margin-top:6px">'+chips+'</div>'+(it[2]?'<div class="wen-hint">'+it[2]+'</div>':'')+'</div>';
-  });
-  WEN_TEXT.concat(WEN_TEXT_EXT).forEach(function(it){
-    h+='<div class="wen-row"><div class="wen-label">'+it[0]+'</div><input class="wen-text" placeholder="'+it[1]+'…" data-group="'+it[0]+'" value="'+(wenText[it[0]]||'').replace(/"/g,'&quot;')+'" oninput="wenTextInput(this)"></div>';
-  });
+    return '<div class="wen-row"><div class="wen-label">'+it[0]+'</div><div class="pulse-chip-wrap" style="margin-top:6px">'+chips+'</div>'+(it[2]?'<div class="wen-hint">'+it[2]+'</div>':'')+'</div>';
+  };
+  const textHTML=function(it){
+    return '<div class="wen-row"><div class="wen-label">'+it[0]+'</div><input class="wen-text" placeholder="'+it[1]+'…" data-group="'+it[0]+'" value="'+(wenText[it[0]]||'').replace(/"/g,'&quot;')+'" oninput="wenTextInput(this)"></div>';
+  };
+  const groupHTML=function(title,gid,itemNames,textNames){
+    const body=itemNames.map(function(n){return rowHTML(extByName[n]);}).join('')+textNames.map(function(n){return textHTML(textByName[n]);}).join('');
+    const cnt=itemNames.reduce(function(a,n){return a+(wenSel[n]||[]).length;},0)+textNames.filter(function(n){return (wenText[n]||'').trim();}).length;
+    return '<div class="cat-card'+(cnt?' open':'')+'" data-wen="'+gid+'"><button class="cat-head" onclick="toggleCat(this)"><span><span class="cat-name">'+title+'</span><span class="cat-count">'+(cnt?(cnt+' 项已记'):'点击展开')+'</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner" style="padding-top:6px">'+body+'</div></div></div>';
+  };
+  const extByName={};WEN_ITEMS_EXT.forEach(function(it){extByName[it[0]]=it;});
+  const textByName={};WEN_TEXT.concat(WEN_TEXT_EXT).forEach(function(it){textByName[it[0]]=it;});
+  let h='<div class="wen-hint" style="margin:2px 0 8px">歌诀补：妇人尤必问经期，迟速闭崩皆可见；再添片语告儿科，天花麻疹全占验（现代天花已绝，小儿改问疫苗、惊风、积食）。</div>';
+  WEN_ITEMS.forEach(function(it){h+=rowHTML(it);});
+  WEN_TEXT.forEach(function(it){h+=textHTML(it);});
+  h+='<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">';
+  h+=groupHTML('妇女（经带胎产）','妇女',['妇女·月经','妇女·带下','妇女·胎产'],['孕产史']);
+  h+=groupHTML('小儿（惊风·积食·疫苗）','小儿',['小儿·惊风','小儿·积食','小儿·疫苗'],['小儿发育']);
+  h+='</div>';
   box.innerHTML=h;
+}
+function wenGroupOf(name){
+  if(name.indexOf('妇女')===0||name==='孕产史')return '妇女';
+  if(name.indexOf('小儿')===0||name==='小儿发育')return '小儿';
+  return '';
+}
+function wenUpdateCount(gid){
+  const card=document.querySelector('#wenParts .cat-card[data-wen=\"'+gid+'\"]');
+  if(!card)return;
+  const cc=card.querySelector('.cat-count');
+  if(!cc)return;
+  const itemNames=gid==='妇女'?['妇女·月经','妇女·带下','妇女·胎产']:['小儿·惊风','小儿·积食','小儿·疫苗'];
+  const textNames=gid==='妇女'?['孕产史']:['小儿发育'];
+  const cnt=itemNames.reduce(function(a,n){return a+(wenSel[n]||[]).length;},0)+textNames.filter(function(n){return (wenText[n]||'').trim();}).length;
+  cc.textContent=cnt?(cnt+' 项已记'):'点击展开';
 }
 function wenToggle(el){
   const g=el.dataset.group, name=el.dataset.name;
@@ -1491,10 +1519,14 @@ function wenToggle(el){
   wenSel[g]=arr;
   try{localStorage.setItem('tcm_wen_sel',JSON.stringify(wenSel));}catch(e){}
   el.classList.toggle('on',i<0);
+  const gid=wenGroupOf(g);
+  if(gid)wenUpdateCount(gid);
 }
 function wenTextInput(el){
   wenText[el.dataset.group]=el.value;
   try{localStorage.setItem('tcm_wen_text',JSON.stringify(wenText));}catch(e){}
+  const gid=wenGroupOf(el.dataset.group);
+  if(gid)wenUpdateCount(gid);
 }
 function pulsePartSummary(part){
   const card=document.querySelector('#pulseParts .cat-card[data-part=\"'+part+'\"]');
