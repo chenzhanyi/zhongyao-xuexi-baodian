@@ -1321,7 +1321,7 @@ const WEN_ITEMS=[
  ['寒热',['恶寒','畏寒','发热','潮热','寒热往来']],
  ['汗',['无汗','自汗','盗汗','战汗','绝汗']],
  ['头身',['头痛','眩晕','身痛','肢困重'],'头痛引经药：太阳羌活·阳明白芷·少阳柴胡·厥阴吴茱萸'],
- ['二便',['便秘','便溏','泄泻','小便频数','小便不利']],
+ ['二便',['便秘','便溏','泄泻','尿频(白天)','夜尿频(夜起)','小便不利']],
  ['饮食',['食欲不振','食量大','口苦','口淡','口酸','口甜']],
  ['胸腹',['胸胁胀','胸痛','脘腹胀','痞满']],
  ['耳目',['耳鸣','听力下降']],
@@ -1583,6 +1583,7 @@ try{
 try{pulseForce=JSON.parse(localStorage.getItem('tcm_pulse_force')||'{}')||{};}catch(e){pulseForce={};}
 pulseNote=localStorage.getItem('tcm_pulse_note')||'';
 try{wenSel=JSON.parse(localStorage.getItem('tcm_wen_sel')||'{}')||{};}catch(e){wenSel={};}
+if(wenSel['二便']&&wenSel['二便'].indexOf('小便频数')>=0)wenSel['二便']=wenSel['二便'].filter(function(x){return x!=='小便频数';});
 try{wenText=JSON.parse(localStorage.getItem('tcm_wen_text')||'{}')||{};}catch(e){wenText={};}
 </script>
 </body>
