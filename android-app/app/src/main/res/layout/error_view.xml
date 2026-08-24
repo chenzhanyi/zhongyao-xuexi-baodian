@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp"
+    android:background="#f5f0e6">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🌿"
+        android:textSize="48sp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="无法连接到服务器"
+        android:textColor="#2f5d3a"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:text="请检查网络连接后重试\nzhongyi.9yzs.cn"
+        android:textColor="#7a7160"
+        android:textSize="14sp" />
+
+    <Button
+        android:id="@+id/btn_retry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="#2f5d3a"
+        android:paddingHorizontal="32dp"
+        android:text="重新加载"
+        android:textColor="#ffffff" />
+</LinearLayout>
