@@ -1341,6 +1341,7 @@ const WEN_ITEMS_EXT=[
 const WEN_TEXT_EXT=[['孕产史','孕次、产次、流产次数'],['小儿发育','出生史、喂养、囟门、语迟行迟等']];
 let wenSel={},wenText={};
 let wenPerson='';   // 男/女/小儿
+let wenAge='';      // 儿童/青少年/成年/老年
 let pulseSide='';   // 左手强/右手强/两手相当
 let pulseSel={};
 let pulseForce={};
@@ -1376,8 +1377,10 @@ function renderPulseMeta(){
   const box=document.getElementById('pulseMeta');
   if(!box)return;
   const chip=function(label,val,cur){return '<button class="pulse-chip'+(cur===val?' on':'')+'" onclick="personToggle(this)" data-name="'+val+'">'+label+'</button>';};
-  let h='<div class="part-row" style="border-top:1px solid var(--border)"><span class="part-label">对象</span><div class="pulse-chip-wrap">';
+  let h='<div class="part-row" style="border-top:1px solid var(--border);flex-wrap:wrap"><span class="part-label">对象</span><div class="pulse-chip-wrap">';
   ['男','女','小儿'].forEach(function(p){h+=chip(p,p,wenPerson);});
+  h+='</div><span class="part-label" style="width:auto;margin-left:10px">年龄</span><div class="pulse-chip-wrap">';
+  ['儿童','青少年','成年','老年'].forEach(function(p){h+=chip(p,p,wenAge);});
   h+='</div></div>';
   if(wenPerson==='小儿')h+='<div class="wen-hint" style="margin:2px 0 6px">小儿（3岁以下）脉诊常用一指定三关</div>';
   h+='<div class="part-row"><span class="part-label">左右脉力</span><div class="pulse-chip-wrap">';
@@ -1392,6 +1395,10 @@ function personToggle(el){
     try{localStorage.setItem('tcm_wen_person',wenPerson);}catch(e){}
     renderPulseMeta();
     renderWen();   // 联动十问折叠: 选女展开妇女组/选小儿展开小儿组
+  }else if(['儿童','青少年','成年','老年'].indexOf(val)>=0){
+    wenAge=(wenAge===val)?'':val;
+    try{localStorage.setItem('tcm_wen_age',wenAge);}catch(e){}
+    renderPulseMeta();
   }else{
     pulseSide=(pulseSide===val)?'':val;
     try{localStorage.setItem('tcm_pulse_side',pulseSide);}catch(e){}
@@ -1485,7 +1492,7 @@ function clearPulsePick(){
 function closePulsePick(){document.getElementById('pulsePickPanel').style.display='none';pulsePick=null;}
 function resetPulseAll(){
   if(!confirm('确定清空全部选脉、力度、十问与备注吗？'))return;
-  pulseSel={};pulseForce={};pulseNote='';pulseReportText='';wenSel={};wenText={};wenPerson='';pulseSide='';
+  pulseSel={};pulseForce={};pulseNote='';pulseReportText='';wenSel={};wenText={};wenPerson='';wenAge='';pulseSide='';
   try{
     localStorage.removeItem('tcm_pulse_sel');
     localStorage.removeItem('tcm_pulse_force');
@@ -1493,6 +1500,7 @@ function resetPulseAll(){
     localStorage.removeItem('tcm_wen_sel');
     localStorage.removeItem('tcm_wen_text');
     localStorage.removeItem('tcm_wen_person');
+    localStorage.removeItem('tcm_wen_age');
     localStorage.removeItem('tcm_pulse_side');
   }catch(e){}
   renderPulse();
@@ -1598,8 +1606,11 @@ function genPulseReport(silent){
     });
     if(segs.length)txt+=p[0]+'（'+p[1]+'）：'+segs.join('；')+'\n';
   });
-  if(wenPerson||pulseSide){
-    txt+='对象：'+(wenPerson||'未记')+(pulseSide?'；左右脉力：'+pulseSide:'')+'\n';
+  if(wenPerson||wenAge||pulseSide){
+    let meta='';
+    if(wenPerson||wenAge)meta+='对象：'+(wenPerson||'未记')+(wenAge?'（'+wenAge+'）':'');
+    if(pulseSide)meta+=(meta?'；':'')+'左右脉力：'+pulseSide;
+    txt+=meta+'\n';
   }
   // 十问
   const wenLines=[];
@@ -1664,6 +1675,7 @@ try{wenSel=JSON.parse(localStorage.getItem('tcm_wen_sel')||'{}')||{};}catch(e){w
 if(wenSel['二便']&&wenSel['二便'].indexOf('小便频数')>=0)wenSel['二便']=wenSel['二便'].filter(function(x){return x!=='小便频数';});
 try{wenText=JSON.parse(localStorage.getItem('tcm_wen_text')||'{}')||{};}catch(e){wenText={};}
 wenPerson=localStorage.getItem('tcm_wen_person')||'';
+wenAge=localStorage.getItem('tcm_wen_age')||'';
 pulseSide=localStorage.getItem('tcm_pulse_side')||'';
 </script>
 </body>
