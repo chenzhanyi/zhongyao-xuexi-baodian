@@ -1377,9 +1377,10 @@ function renderPulseMeta(){
   const box=document.getElementById('pulseMeta');
   if(!box)return;
   const chip=function(label,val,cur){return '<button class="pulse-chip'+(cur===val?' on':'')+'" onclick="personToggle(this)" data-name="'+val+'">'+label+'</button>';};
-  let h='<div class="part-row" style="border-top:1px solid var(--border);flex-wrap:wrap"><span class="part-label">对象</span><div class="pulse-chip-wrap">';
+  let h='<div class="part-row" style="border-top:1px solid var(--border)"><span class="part-label">对象</span><div class="pulse-chip-wrap">';
   ['男','女','小儿'].forEach(function(p){h+=chip(p,p,wenPerson);});
-  h+='</div><span class="part-label" style="width:auto;margin-left:10px">年龄</span><div class="pulse-chip-wrap">';
+  h+='</div></div>';
+  h+='<div class="part-row"><span class="part-label">年龄</span><div class="pulse-chip-wrap">';
   h+=chip('儿童(<14岁)','儿童',wenAge)+chip('青少年(14-18)','青少年',wenAge)+chip('成年(18-59)','成年',wenAge)+chip('老年(≥60)','老年',wenAge);
   h+='</div></div>';
   if(wenAge==='儿童'||wenAge==='青少年'){
