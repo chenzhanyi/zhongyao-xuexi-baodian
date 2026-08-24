@@ -40,6 +40,13 @@ h1{font-size:28px;color:var(--primary);letter-spacing:2px;margin-bottom:4px}
 .dl a:active{transform:scale(.98)}
 .dl-meta{display:block;font-size:11px;font-weight:400;opacity:.85;margin-top:1px}
 .dl-note{margin-top:9px;font-size:11px;color:var(--muted)}
+.ios{margin:22px auto 0;max-width:380px;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:none}
+.ios.show{display:block}
+.ios-head{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--fg)}
+.ios-body{margin-top:10px;font-size:12.5px;color:var(--fg);line-height:1.7}
+.ios-step{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px}
+.ios-step .n{flex-shrink:0;width:18px;height:18px;border-radius:50%;background:#007aff;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.ios-tip{margin-top:8px;font-size:11.5px;color:var(--muted);line-height:1.6}
 @media(max-width:680px){
   .cards{grid-template-columns:1fr}
   h1{font-size:24px}
@@ -79,6 +86,19 @@ h1{font-size:28px;color:var(--primary);letter-spacing:2px;margin-bottom:4px}
     </a>
   </div>
   <div class="dl-note">直接打开即访问最新内容 · 安装时需允许"未知来源"</div>
+
+  <div class="ios" id="iosBox">
+    <div class="ios-head">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 12.04c-.03-2.73 2.23-4.04 2.33-4.1-1.27-1.86-3.25-2.12-3.95-2.15-1.68-.17-3.28.99-4.14.99-.86 0-2.18-.97-3.58-.94-1.84.03-3.54 1.07-4.49 2.72-1.92 3.33-.49 8.26 1.38 10.97.91 1.33 2 2.82 3.42 2.77 1.37-.06 1.89-.89 3.55-.89 1.66 0 2.13.89 3.58.86 1.48-.03 2.42-1.35 3.32-2.69 1.05-1.54 1.48-3.03 1.5-3.11-.03-.01-2.88-1.1-2.92-4.37zM14.2 4.23c.76-.92 1.27-2.2 1.13-3.47-1.09.04-2.41.73-3.2 1.65-.7.81-1.32 2.11-1.15 3.36 1.22.09 2.46-.62 3.22-1.54z"/></svg>
+      <span>iPhone / iPad 用户：添加到主屏幕</span>
+    </div>
+    <div class="ios-body">
+      <div class="ios-step"><span class="n">1</span>用 <b>Safari</b> 打开本页（不支持微信/其他浏览器）</div>
+      <div class="ios-step"><span class="n">2</span>点击底部 <b>分享</b> 按钮 <svg width="16" height="16" viewBox="0 0 24 24" fill="#007aff" style="vertical-align:-3px"><path d="M12 2l-5 5h3v8h4V7h3l-5-5zm-7 16v2h14v-2H5z"/></svg></div>
+      <div class="ios-step"><span class="n">3</span>选择「<b>添加到主屏幕</b>」→ 完成</div>
+      <div class="ios-tip">桌面即出现 App 图标，全屏启动、无地址栏，与原生应用体验一致，自动访问最新内容。</div>
+    </div>
+  </div>
   <div class="foot">两版共用同一份数据（<b>tcm-data.js</b>），内容自动同步，无需重复维护。
     <br>仅供学习参考，用药请遵执业中医师辨证指导。</div>
 </div>
@@ -86,6 +106,12 @@ h1{font-size:28px;color:var(--primary);letter-spacing:2px;margin-bottom:4px}
 // 按屏幕宽度提示更合适的版本（两版始终可进）
 if(window.innerWidth>820){document.getElementById('recoWeb').style.display='block';}
 else{document.getElementById('recoMob').style.display='block';}
+// iOS 设备显示"添加到主屏幕"指引、隐藏安卓 APK 下载；非 iOS 反之
+var ua=navigator.userAgent;
+var isIOS=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+document.querySelector('.dl').style.display=isIOS?'none':'block';
+document.querySelector('.dl-note').style.display=isIOS?'none':'block';
+document.getElementById('iosBox').classList.toggle('show',isIOS);
 </script>
 </body>
 </html>

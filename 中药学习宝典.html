@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>中药学习宝典</title>
+<meta name="theme-color" content="#2f5d3a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="中药宝典">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
 <style>
 :root{
   --bg:#f5f0e6;--fg:#2d2418;--card:#faf7f0;--card-fg:#2d2418;
@@ -23,7 +30,7 @@ input{font-family:inherit}
 .page{display:none;flex:1}.page.active{display:block}
 
 /* Search */
-.search-bar{position:sticky;top:0;z-index:30;background:rgba(245,240,230,.88);backdrop-filter:blur(10px);padding:10px 14px}
+.search-bar{position:sticky;top:0;z-index:30;background:rgba(245,240,230,.88);backdrop-filter:blur(10px);padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top))}
 .search-wrap{position:relative}
 .search-wrap input{width:100%;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--card);padding:0 36px 0 36px;font-size:14px;color:var(--fg);outline:none}
 .search-wrap input:focus{border-color:var(--ring);box-shadow:0 0 0 2px rgba(47,93,58,.15)}
@@ -74,7 +81,7 @@ input{font-family:inherit}
 .kz-more-btn{display:inline-block;margin:6px auto 0;padding:9px 22px;border:1px solid var(--border);border-radius:20px;background:var(--card);color:var(--primary);font-size:13.5px;font-weight:500;cursor:pointer}
 .kz-more-btn:active{opacity:.75}
 /* ===== 脉诊速记页 ===== */
-.pulse-header{position:sticky;top:0;z-index:30;background:rgba(245,240,230,.92);backdrop-filter:blur(10px);padding:10px 14px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.pulse-header{position:sticky;top:0;z-index:30;background:rgba(245,240,230,.92);backdrop-filter:blur(10px);padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
 .pulse-back{border:1px solid var(--border);background:var(--card);border-radius:8px;padding:5px 12px;font-size:13px;color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;gap:4px}
 .pulse-title{font-size:16px;font-weight:700;color:var(--fg)}
 .pulse-note{font-size:11.5px;color:var(--muted);margin:10px 14px 0;line-height:1.6}

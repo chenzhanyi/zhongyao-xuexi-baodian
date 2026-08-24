@@ -1,0 +1,17 @@
+{
+  "name": "中药学习宝典",
+  "short_name": "中药宝典",
+  "description": "中医用药速记、经方、禁忌、背诵、脉诊与时辰节气宜忌",
+  "start_url": "./中药学习宝典.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f5f0e6",
+  "theme_color": "#2f5d3a",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
