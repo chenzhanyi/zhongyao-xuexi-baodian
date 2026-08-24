@@ -104,6 +104,13 @@ input{font-family:inherit}
 .pulse-chip.on small{opacity:.85}
 .pulse-reset{border:1px solid var(--border);background:var(--card);color:var(--muted);border-radius:14px;font-size:12px;padding:4px 16px;cursor:pointer}
 .pulse-reset:active{opacity:.75}
+.wen-row{padding:8px 0;border-bottom:1px dashed var(--border)}
+.wen-row:last-of-type{border-bottom:none}
+.wen-label{font-size:13.5px;font-weight:600;color:var(--fg)}
+.wen-hint{font-size:10.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+.wen-chip{border:1px solid var(--border);background:var(--card);border-radius:13px;padding:4px 11px;font-size:12.5px;color:var(--fg);cursor:pointer}
+.wen-chip.on{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.wen-text{width:100%;height:32px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13px;color:var(--fg);padding:0 10px;margin-top:6px}
 .pulse-note-input{width:100%;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:13px;color:var(--fg);padding:9px 10px;margin-top:10px;resize:vertical;min-height:64px;line-height:1.6}
 .pulse-btn-row{display:flex;gap:8px;margin-top:12px}
 .pulse-btn{flex:1;height:42px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--card);color:var(--primary)}
@@ -539,6 +546,12 @@ input{font-family:inherit}
         <button class="pulse-reset" onclick="resetPulseAll()">复位</button>
       </div>
       <div id="pulseParts"></div>
+    </div>
+  </div>
+  <div class="pulse-sec">
+    <div class="pulse-sec-title">十问歌 · 问诊要点</div>
+    <div class="section-card" style="padding:6px 14px 12px">
+      <div id="wenParts"></div>
       <textarea class="pulse-note-input" id="pulseNote" placeholder="备注：症状、舌象、病史等补充信息…"></textarea>
       <div class="pulse-btn-row">
         <button class="pulse-btn primary" onclick="genPulseReport()">生成脉诊记录</button>
@@ -1304,6 +1317,18 @@ const PULSE_COMP=[['洪','浮+大+有力'],['芤','浮+大+中空'],['革','浮+
 const compOf={};PULSE_COMP.forEach(function(x){compOf[x[0]]=x[1];});
 const compBases={洪:['浮','大'],芤:['浮','大'],革:['浮','弦'],濡:['浮','细'],散:['浮'],弱:['沉','细'],牢:['沉','大','弦','长'],伏:['沉'],微:['细'],动:['滑','数','短']};
 const compForce={洪:'有力',芤:'',革:'',濡:'无力',散:'',弱:'无力',牢:'有力',伏:'',微:'无力',动:'有力'};
+const WEN_ITEMS=[
+ ['寒热',['恶寒','畏寒','发热','潮热','寒热往来']],
+ ['汗',['无汗','自汗','盗汗','战汗','绝汗']],
+ ['头身',['头痛','眩晕','身痛','肢困重'],'头痛引经药：太阳羌活·阳明白芷·少阳柴胡·厥阴吴茱萸'],
+ ['二便',['便秘','便溏','泄泻','小便频数','小便不利']],
+ ['饮食',['食欲不振','食量大','口苦','口淡','口酸','口甜']],
+ ['胸腹',['胸胁胀','胸痛','脘腹胀','痞满']],
+ ['耳目',['耳鸣','听力下降']],
+ ['口渴',['喜冷饮','喜热饮','口渴不欲饮']]
+];
+const WEN_TEXT=[['旧病','既往病史、旧疾'],['起因','发病原因、起病经过']];
+let wenSel={},wenText={};
 let pulseSel={};
 let pulseForce={};
 let pulseNote='',pulseReportText='';
@@ -1331,6 +1356,7 @@ function renderPulse(){
   // 若已有报告则刷新展示
   if(pulseReportText)genPulseReport(true);
   PULSE_PARTS.forEach(function(p){pulsePartSummary(p[0]);});
+  renderWen();
 }
 // ---- 选脉面板(基础脉多选组合 / 复合脉直选) ----
 let pulsePick=null;
@@ -1418,16 +1444,47 @@ function clearPulsePick(){
 }
 function closePulsePick(){document.getElementById('pulsePickPanel').style.display='none';pulsePick=null;}
 function resetPulseAll(){
-  if(!confirm('确定清空全部选脉、力度与备注吗？'))return;
-  pulseSel={};pulseForce={};pulseNote='';pulseReportText='';
+  if(!confirm('确定清空全部选脉、力度、十问与备注吗？'))return;
+  pulseSel={};pulseForce={};pulseNote='';pulseReportText='';wenSel={};wenText={};
   try{
     localStorage.removeItem('tcm_pulse_sel');
     localStorage.removeItem('tcm_pulse_force');
     localStorage.removeItem('tcm_pulse_note');
+    localStorage.removeItem('tcm_wen_sel');
+    localStorage.removeItem('tcm_wen_text');
   }catch(e){}
   renderPulse();
   const box=document.getElementById('pulseReportBox');
   if(box)box.style.display='none';
+}
+function renderWen(){
+  const box=document.getElementById('wenParts');
+  if(!box)return;
+  let h='';
+  WEN_ITEMS.forEach(function(it){
+    const cur=wenSel[it[0]]||[];
+    const chips=it[1].map(function(c){
+      return '<button class="wen-chip'+(cur.indexOf(c)>=0?' on':'')+'" onclick="wenToggle(this)" data-group="'+it[0]+'" data-name="'+c+'">'+c+'</button>';
+    }).join('');
+    h+='<div class="wen-row"><div class="wen-label">'+it[0]+'</div><div class="pulse-chip-wrap" style="margin-top:6px">'+chips+'</div>'+(it[2]?'<div class="wen-hint">'+it[2]+'</div>':'')+'</div>';
+  });
+  WEN_TEXT.forEach(function(it){
+    h+='<div class="wen-row"><div class="wen-label">'+it[0]+'</div><input class="wen-text" placeholder="'+it[1]+'…" data-group="'+it[0]+'" value="'+(wenText[it[0]]||'').replace(/"/g,'&quot;')+'" oninput="wenTextInput(this)"></div>';
+  });
+  box.innerHTML=h;
+}
+function wenToggle(el){
+  const g=el.dataset.group, name=el.dataset.name;
+  const arr=wenSel[g]||[];
+  const i=arr.indexOf(name);
+  if(i>=0)arr.splice(i,1);else arr.push(name);
+  wenSel[g]=arr;
+  try{localStorage.setItem('tcm_wen_sel',JSON.stringify(wenSel));}catch(e){}
+  el.classList.toggle('on',i<0);
+}
+function wenTextInput(el){
+  wenText[el.dataset.group]=el.value;
+  try{localStorage.setItem('tcm_wen_text',JSON.stringify(wenText));}catch(e){}
 }
 function pulsePartSummary(part){
   const card=document.querySelector('#pulseParts .cat-card[data-part=\"'+part+'\"]');
@@ -1466,6 +1523,16 @@ function genPulseReport(silent){
     });
     if(segs.length)txt+=p[0]+'（'+p[1]+'）：'+segs.join('；')+'\n';
   });
+  // 十问
+  const wenLines=[];
+  WEN_ITEMS.forEach(function(it){
+    const arr=wenSel[it[0]]||[];
+    if(arr.length)wenLines.push(it[0]+'：'+arr.join('、'));
+  });
+  WEN_TEXT.forEach(function(it){
+    if(wenText[it[0]]&&wenText[it[0]].trim())wenLines.push(it[0]+'：'+wenText[it[0]].trim());
+  });
+  if(wenLines.length){txt+='\n—— 十问 ——\n'+wenLines.join('\n')+'\n';}
   txt+='备注：'+(pulseNote&&pulseNote.trim()?pulseNote.trim():'无')+'\n';
   txt+='（以上为脉诊记录，仅供学习交流，请结合四诊合参）';
   pulseReportText=txt;
@@ -1515,6 +1582,8 @@ try{
 }catch(e){pulseSel={};}
 try{pulseForce=JSON.parse(localStorage.getItem('tcm_pulse_force')||'{}')||{};}catch(e){pulseForce={};}
 pulseNote=localStorage.getItem('tcm_pulse_note')||'';
+try{wenSel=JSON.parse(localStorage.getItem('tcm_wen_sel')||'{}')||{};}catch(e){wenSel={};}
+try{wenText=JSON.parse(localStorage.getItem('tcm_wen_text')||'{}')||{};}catch(e){wenText={};}
 </script>
 </body>
 </html>
