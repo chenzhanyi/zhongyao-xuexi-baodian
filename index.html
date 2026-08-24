@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>中药学习宝典 · 选择版本</title>
+<script>
+// 从主屏幕图标启动（PWA/standalone）时直接进手机版，跳过引导页。
+// iOS"添加到主屏幕"会用当前页 URL 作启动地址（忽略 manifest start_url），
+// 故在此检测后立即跳转，避免出现选择页。
+if(window.navigator.standalone===true||window.matchMedia('(display-mode: standalone)').matches){
+  location.replace('中药学习宝典.html');
+}
+</script>
 <style>
 :root{
   --bg:#f3eee2;--fg:#2d2418;--card:#fdfaf3;--line:#d8cdab;
