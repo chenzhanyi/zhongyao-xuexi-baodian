@@ -686,7 +686,8 @@ input{font-family:inherit}
     <div class="section-card" style="padding:12px 14px;font-size:12.5px;line-height:1.8;color:var(--fg)">
       <p style="margin:0 0 8px"><b>子午流注：</b>寅时（03–05）自手太阴肺经始，气血依次流注十二经，每时辰一经，丑时（01–03）终于足厥阴肝经，循环往复。当令时辰该经气血最盛。</p>
       <p style="margin:0 0 8px"><b>人神禁忌：</b>《千金翼方》载十二时人神各有所在（子踝丑头寅目……），其所在部位忌针灸、忌强力重按。此为古代择时避忌，非现代解剖结论。</p>
-      <p style="margin:0"><b>节气禁忌：</b>春木旺克脾土、夏火旺克肺金、秋金旺克肝木、冬水旺克心火，故八节（四立二分二至）及四季末十八日各有忌治之经，即"五脏王时避其克"。</p>
+      <p style="margin:0 0 8px"><b>节气禁忌：</b>春木旺克脾土、夏火旺克肺金、秋金旺克肝木、冬水旺克心火，故八节（四立二分二至）及四季末十八日各有忌治之经，即"五脏王时避其克"。</p>
+      <p style="margin:0;color:var(--muted-fg)"><b>时区：</b>时辰与节气均按本设备的当地时间计算（顶部已显示 GMT 偏移与时区），出国后随手机时区自动切换，无需手动设置。节气按太阳黄经这一天文瞬间确定，再以当地日历日期归位（故冬至在东八区可能是 22 日、在西时区为 21 日，均为正确）。</p>
     </div>
   </div>
 </div>
@@ -1886,8 +1887,14 @@ function tmTick(){
   document.getElementById('tmClock').textContent=
     (h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
   const wd=['日','一','二','三','四','五','六'][now.getDay()];
+  // 时区显示：用本地时间计算，出国时一眼可确认（如 GMT-4）
+  const offMin=-now.getTimezoneOffset();
+  const offH=offMin/60;
+  let gmt='GMT'+(offH>=0?'+':'')+(Number.isInteger(offH)?offH:offH.toFixed(1));
+  let tzName='';
+  try{ tzName=Intl.DateTimeFormat().resolvedOptions().timeZone||''; }catch(e){}
   document.getElementById('tmDate').textContent=
-    now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 星期'+wd;
+    now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 星期'+wd+'　'+gmt+(tzName?' · '+tzName.split('/').pop().replace(/_/g,' '):'');
 
   const sc=tmShichenAt(h);
   document.getElementById('tmShichen').textContent=sc.z+'时';
