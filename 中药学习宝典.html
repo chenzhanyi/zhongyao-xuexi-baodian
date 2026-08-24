@@ -1328,6 +1328,16 @@ const WEN_ITEMS=[
  ['口渴',['喜冷饮','喜热饮','口渴不欲饮']]
 ];
 const WEN_TEXT=[['旧病','既往病史、旧疾'],['起因','发病原因、起病经过']];
+// 十问歌补遗: 妇人尤必问经期, 迟速闭崩皆可见; 再添片语告儿科, 天花麻疹全占验(现代天花已灭, 改为疫苗/惊风/积食)
+const WEN_ITEMS_EXT=[
+ ['妇女·月经',['经期提前','经期延后','先后不定期','闭经','崩漏','痛经','经量多','经量少','有血块']],
+ ['妇女·带下',['白带量多','黄带','赤带','带下清稀','带下异味']],
+ ['妇女·胎产',['妊娠中','产后','未育','流产史']],
+ ['小儿·惊风',['高热惊厥','抽搐史','夜啼','磨牙']],
+ ['小儿·积食',['厌食','食积','腹胀','口臭','大便酸臭']],
+ ['小儿·疫苗',['按时接种','部分接种','未接种','不详']]
+];
+const WEN_TEXT_EXT=[['孕产史','孕次、产次、流产次数'],['小儿发育','出生史、喂养、囟门、语迟行迟等']];
 let wenSel={},wenText={};
 let pulseSel={};
 let pulseForce={};
@@ -1460,15 +1470,15 @@ function resetPulseAll(){
 function renderWen(){
   const box=document.getElementById('wenParts');
   if(!box)return;
-  let h='';
-  WEN_ITEMS.forEach(function(it){
+  let h='<div class="wen-hint" style="margin:2px 0 8px">歌诀补：妇人尤必问经期，迟速闭崩皆可见；再添片语告儿科，天花麻疹全占验（现代天花已绝，小儿改问疫苗、惊风、积食）。</div>';
+  WEN_ITEMS.concat(WEN_ITEMS_EXT).forEach(function(it){
     const cur=wenSel[it[0]]||[];
     const chips=it[1].map(function(c){
       return '<button class="wen-chip'+(cur.indexOf(c)>=0?' on':'')+'" onclick="wenToggle(this)" data-group="'+it[0]+'" data-name="'+c+'">'+c+'</button>';
     }).join('');
     h+='<div class="wen-row"><div class="wen-label">'+it[0]+'</div><div class="pulse-chip-wrap" style="margin-top:6px">'+chips+'</div>'+(it[2]?'<div class="wen-hint">'+it[2]+'</div>':'')+'</div>';
   });
-  WEN_TEXT.forEach(function(it){
+  WEN_TEXT.concat(WEN_TEXT_EXT).forEach(function(it){
     h+='<div class="wen-row"><div class="wen-label">'+it[0]+'</div><input class="wen-text" placeholder="'+it[1]+'…" data-group="'+it[0]+'" value="'+(wenText[it[0]]||'').replace(/"/g,'&quot;')+'" oninput="wenTextInput(this)"></div>';
   });
   box.innerHTML=h;
@@ -1525,11 +1535,11 @@ function genPulseReport(silent){
   });
   // 十问
   const wenLines=[];
-  WEN_ITEMS.forEach(function(it){
+  WEN_ITEMS.concat(WEN_ITEMS_EXT).forEach(function(it){
     const arr=wenSel[it[0]]||[];
     if(arr.length)wenLines.push(it[0]+'：'+arr.join('、'));
   });
-  WEN_TEXT.forEach(function(it){
+  WEN_TEXT.concat(WEN_TEXT_EXT).forEach(function(it){
     if(wenText[it[0]]&&wenText[it[0]].trim())wenLines.push(it[0]+'：'+wenText[it[0]].trim());
   });
   if(wenLines.length){txt+='\n—— 十问 ——\n'+wenLines.join('\n')+'\n';}
