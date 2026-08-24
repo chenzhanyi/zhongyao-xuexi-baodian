@@ -122,6 +122,30 @@ input{font-family:inherit}
 .pulse-report pre{font-size:13.5px;line-height:1.85;color:var(--fg);white-space:pre-wrap;word-break:break-all;font-family:inherit;margin:0}
 #pulseParts,#pulseRef{display:flex;flex-direction:column;gap:8px}
 
+/* ===== 时辰节气页 ===== */
+.tm-now{background:linear-gradient(135deg,rgba(47,93,58,.1),rgba(212,160,23,.08));border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin:10px 14px 0}
+.tm-clock{font-size:30px;font-weight:700;color:var(--primary);letter-spacing:1px;font-variant-numeric:tabular-nums}
+.tm-date{font-size:12.5px;color:var(--muted);margin-top:2px}
+.tm-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}
+.tm-cell{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:10px 11px}
+.tm-cell-label{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:4px}
+.tm-cell-val{font-size:15px;font-weight:700;color:var(--fg);margin-top:3px;line-height:1.4}
+.tm-cell-sub{font-size:11.5px;color:var(--muted-fg);margin-top:2px;line-height:1.5}
+.tm-cell.warn{border-color:rgba(163,48,48,.35);background:rgba(163,48,48,.04)}
+.tm-cell.warn .tm-cell-val{color:var(--destructive)}
+.tm-taboo{margin:12px 14px 0;border:1px solid rgba(163,48,48,.35);background:rgba(163,48,48,.05);border-radius:12px;padding:11px 14px}
+.tm-taboo-title{font-size:13px;font-weight:700;color:var(--destructive);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.tm-taboo-body{font-size:13px;line-height:1.7;color:var(--fg)}
+.tm-taboo-body b{color:var(--destructive)}
+.tm-taboo-src{font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+.tm-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.tm-table th{font-size:11px;color:var(--muted);font-weight:500;text-align:left;padding:7px 8px;border-bottom:1px solid var(--border)}
+.tm-table td{padding:8px;border-bottom:1px dashed var(--border);line-height:1.5}
+.tm-table tr:last-child td{border-bottom:none}
+.tm-table tr.cur td{background:rgba(47,93,58,.08);font-weight:600}
+.tm-tag{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:4px;background:rgba(47,93,58,.1);color:var(--primary);margin-left:4px}
+.tm-count{font-size:11px;color:var(--muted);font-weight:400}
+
 .to-top-ball{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:15;width:44px;height:44px;border-radius:50%;background:rgba(47,93,58,.92);color:#fff;border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 14px rgba(20,40,25,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
 .to-top-ball.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 .to-top-ball:active{transform:scale(.9)}
@@ -515,6 +539,11 @@ input{font-family:inherit}
         <div class="quick-info"><div class="quick-label">脉诊速记</div><div class="quick-sub">28脉手感速记 · 三部九候分层选脉</div></div>
         <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
+      <div class="quick-row" onclick="switchPage('time')" style="border-top:1px solid var(--border)">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
+        <div class="quick-info"><div class="quick-label">时辰节气 · 宜忌</div><div class="quick-sub">当前时辰当令经络 · 人神部位 · 节气经络禁忌</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
     </div>
     <div class="section-card">
       <div class="section-card-title" style="display:flex;align-items:center;gap:6px">
@@ -586,6 +615,71 @@ input{font-family:inherit}
       <div class="pulse-chip-wrap" id="pulseChipsComp"></div>
       <div class="pulse-pick-group-title">力度（单选，再点取消）</div>
       <div class="pulse-chip-wrap" id="pulseChipsForce"></div>
+    </div>
+  </div>
+</div>
+
+<div class="page" id="page-time">
+  <div class="pulse-header">
+    <button class="pulse-back" onclick="switchPage('mine')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>我的</button>
+    <span class="pulse-title">时辰节气 · 宜忌</span>
+  </div>
+  <div class="pulse-note">⏱ 实时显示当前时辰当令经络、所在节气，以及该时辰人神所在（针灸推拿禁忌部位）。数据据《备急千金要方》《针灸大成》等，仅供学习参考，非诊疗建议。</div>
+
+  <div class="tm-now">
+    <div class="tm-clock" id="tmClock">--:--</div>
+    <div class="tm-date" id="tmDate">--</div>
+    <div class="tm-grid">
+      <div class="tm-cell">
+        <div class="tm-cell-label">🕐 当前时辰</div>
+        <div class="tm-cell-val" id="tmShichen">--</div>
+        <div class="tm-cell-sub" id="tmShichenRange">--</div>
+      </div>
+      <div class="tm-cell">
+        <div class="tm-cell-label">🌿 当令经络</div>
+        <div class="tm-cell-val" id="tmMeridian">--</div>
+        <div class="tm-cell-sub" id="tmMeridianSub">气血流注旺盛</div>
+      </div>
+      <div class="tm-cell">
+        <div class="tm-cell-label">📅 当前节气</div>
+        <div class="tm-cell-val" id="tmTerm">--</div>
+        <div class="tm-cell-sub" id="tmTermSub">--</div>
+      </div>
+      <div class="tm-cell warn">
+        <div class="tm-cell-label">🚫 人神所在（禁针/重按）</div>
+        <div class="tm-cell-val" id="tmRenshen">--</div>
+        <div class="tm-cell-sub" id="tmRenshenArea">--</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tm-taboo" id="tmTabooBox">
+    <div class="tm-taboo-title">⚠️ 此时禁忌提示</div>
+    <div class="tm-taboo-body" id="tmTabooBody">--</div>
+    <div class="tm-taboo-src" id="tmTabooSrc"></div>
+  </div>
+
+  <div class="pulse-sec">
+    <div class="pulse-sec-title">十二时辰 · 当令经络与人神部位</div>
+    <div class="section-card" style="padding:6px 14px 4px;overflow-x:auto">
+      <table class="tm-table" id="tmShichenTable"></table>
+    </div>
+  </div>
+
+  <div class="pulse-sec">
+    <div class="pulse-sec-title">节气 · 经络禁忌（八节与四季）</div>
+    <div class="section-card" style="padding:6px 14px 4px;overflow-x:auto">
+      <table class="tm-table" id="tmTermTable"></table>
+    </div>
+    <div class="pulse-note" style="margin-top:8px">出处：《备急千金要方·针灸宜忌》"立春春分脾、立夏夏至肺、立秋秋分肝、立冬冬至心、四季十八日肾，已上并不得医治，凶"；"凡五脏王时不得治及，忌针灸其经络"。推拿亦循此避忌王时被克之经。</div>
+  </div>
+
+  <div class="pulse-sec" style="margin-bottom:18px">
+    <div class="pulse-sec-title">原理说明</div>
+    <div class="section-card" style="padding:12px 14px;font-size:12.5px;line-height:1.8;color:var(--fg)">
+      <p style="margin:0 0 8px"><b>子午流注：</b>寅时（03–05）自手太阴肺经始，气血依次流注十二经，每时辰一经，丑时（01–03）终于足厥阴肝经，循环往复。当令时辰该经气血最盛。</p>
+      <p style="margin:0 0 8px"><b>人神禁忌：</b>《千金翼方》载十二时人神各有所在（子踝丑头寅目……），其所在部位忌针灸、忌强力重按。此为古代择时避忌，非现代解剖结论。</p>
+      <p style="margin:0"><b>节气禁忌：</b>春木旺克脾土、夏火旺克肺金、秋金旺克肝木、冬水旺克心火，故八节（四立二分二至）及四季末十八日各有忌治之经，即"五脏王时避其克"。</p>
     </div>
   </div>
 </div>
@@ -754,6 +848,7 @@ function switchPage(page){
   window.scrollTo(0,0);
   if(page==='mine')renderMine();
   if(page==='pulse')renderPulse();
+  if(page==='time')startTimePage(); else stopTimePage();
 }
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>switchPage(n.dataset.page)));
 
@@ -1682,6 +1777,192 @@ try{wenText=JSON.parse(localStorage.getItem('tcm_wen_text')||'{}')||{};}catch(e)
 wenPerson=localStorage.getItem('tcm_wen_person')||'';
 wenAge=localStorage.getItem('tcm_wen_age')||'';
 pulseSide=localStorage.getItem('tcm_pulse_side')||'';
+
+// ==================== 时辰节气 · 宜忌 ====================
+const TM_SHICHEN=[
+  {z:'子',s:23,e:1, mer:'足少阳胆经',org:'胆', rs:'踝',  area:'脚踝、足底',     cat:'足部'},
+  {z:'丑',s:1,  e:3, mer:'足厥阴肝经',org:'肝', rs:'头',  area:'头部',           cat:'头部'},
+  {z:'寅',s:3,  e:5, mer:'手太阴肺经',org:'肺', rs:'目',  area:'眼目、头面',     cat:'头面'},
+  {z:'卯',s:5,  e:7, mer:'手阳明大肠经',org:'大肠', rs:'面耳', area:'面部、耳',  cat:'头面'},
+  {z:'辰',s:7,  e:9, mer:'足阳明胃经',org:'胃', rs:'项口',area:'颈项、口部',     cat:'颈项'},
+  {z:'巳',s:9,  e:11,mer:'足太阴脾经',org:'脾', rs:'肩',  area:'肩背、上肢（手）',cat:'肩臂'},
+  {z:'午',s:11, e:13,mer:'手少阴心经',org:'心', rs:'胸胁',area:'胸前、胁肋',     cat:'胸前'},
+  {z:'未',s:13, e:15,mer:'手太阳小肠经',org:'小肠', rs:'腹', area:'腹部',        cat:'腹部'},
+  {z:'申',s:15, e:17,mer:'足太阳膀胱经',org:'膀胱', rs:'心', area:'心胸部（内胸）',cat:'胸前'},
+  {z:'酉',s:17, e:19,mer:'足少阴肾经',org:'肾', rs:'背胛',area:'背部、肩胛',     cat:'背部'},
+  {z:'戌',s:19, e:21,mer:'手厥阴心包经',org:'心包', rs:'腰阴', area:'腰部、下焦、私处',cat:'腰部'},
+  {z:'亥',s:21, e:23,mer:'手少阳三焦经',org:'三焦', rs:'股', area:'大腿、下肢',  cat:'腿部'}
+];
+// 二十四节气（以太阳黄经 0°=春分 起，每 15° 一节气）
+const TM_TERMS=['春分','清明','谷雨','立夏','小满','芒种','夏至','小暑','大暑','立秋','处暑','白露','秋分','寒露','霜降','立冬','小雪','大雪','冬至','小寒','大寒','立春','雨水','惊蛰'];
+const TM_LI=['立春','立夏','立秋','立冬'];
+const TM_TERM_TABOO={立春:'脾',春分:'脾',立夏:'肺',夏至:'肺',立秋:'肝',秋分:'肝',立冬:'心',冬至:'心'};
+const TM_ORGAN_MER={脾:'足太阴脾经',肺:'手太阴肺经',肝:'足厥阴肝经',心:'手少阴心经',肾:'足少阴肾经'};
+
+function tmSolarLongitude(date){
+  const jd=date.getTime()/86400000+2440587.5;
+  const T=(jd-2451545.0)/36525;
+  let L0=280.46646+36000.76983*T+0.0003032*T*T;
+  L0=((L0%360)+360)%360;
+  const M=(357.52911+35999.05029*T-0.0001537*T*T)*Math.PI/180;
+  const C=Math.sin(M)*(1.914602-0.004817*T-0.000014*T*T)
+         +Math.sin(2*M)*(0.019993-0.000101*T)
+         +Math.sin(3*M)*0.000289;
+  let lam=L0+C;
+  const om=(125.04-1934.136*T)*Math.PI/180;
+  lam-=0.00569+0.00478*Math.sin(om);
+  return ((lam%360)+360)%360;
+}
+function tmTermIdxAt(d){return Math.floor(tmSolarLongitude(d)/15);}
+// 取当日 23:50 本地时刻采样黄经：节气交节多在下午到夜间，用日末采样可把当日交节正确归到当日（算法精度约 0.01°，留 10 分钟余量）
+function tmSample(d){const x=new Date(d);x.setHours(23,50,0,0);return x;}
+// 今天是否为某节气交节日，返回节气名或 null
+function tmTodayTerm(now){
+  const t=tmSample(now), y=new Date(t); y.setDate(y.getDate()-1);
+  const a=tmTermIdxAt(y), b=tmTermIdxAt(t);
+  return a!==b ? TM_TERMS[b] : null;
+}
+// 下一节气日期
+function tmNextTermDate(now){
+  const d=tmSample(now); const cur=tmTermIdxAt(d);
+  for(let i=0;i<16;i++){ d.setDate(d.getDate()+1); if(tmTermIdxAt(d)!==cur) return new Date(d); }
+  return null;
+}
+// 距下一个某"立"节的天数（用于四季末十八日 = 肾王时）
+function tmDaysUntilNextLi(now,liName){
+  const target=TM_TERMS.indexOf(liName);
+  const d=tmSample(now);
+  for(let i=0;i<400;i++){
+    if(tmTermIdxAt(d)===target){
+      const y=new Date(d); y.setDate(y.getDate()-1);
+      if(tmTermIdxAt(y)!==target) return i;
+    }
+    d.setDate(d.getDate()+1);
+  }
+  return 999;
+}
+// 本年每个节气的公历日期（每日 23:50 采样，确保下午/晚间交节归入当日）
+function tmAllTermDates(year){
+  const out={};
+  const d=tmSample(new Date(year,0,1));
+  let prev=tmTermIdxAt(tmSample(new Date(year-1,11,31)));
+  for(let i=0;i<366;i++){
+    const idx=tmTermIdxAt(d);
+    if(idx!==prev && !out[TM_TERMS[idx]]) out[TM_TERMS[idx]]=new Date(year,d.getMonth(),d.getDate());
+    prev=idx; d.setDate(d.getDate()+1);
+  }
+  return out;
+}
+function tmShichenAt(h){
+  // 23,0→子(0); 1,2→丑(1) ...
+  return TM_SHICHEN[Math.floor(((h+1)%24)/2)];
+}
+function tmRangeText(s){
+  const fmt=x=>(x<10?'0'+x:x);
+  if(s.z==='子') return '23:00 – 01:00';
+  return fmt(s.s)+':00 – '+fmt(s.e)+':00';
+}
+
+let tmTimer=null;
+function startTimePage(){
+  tmRenderShichenTable();
+  tmRenderTermTable();
+  tmTick();
+  if(tmTimer)clearInterval(tmTimer);
+  tmTimer=setInterval(tmTick,1000);
+}
+function stopTimePage(){ if(tmTimer){clearInterval(tmTimer);tmTimer=null;} }
+
+function tmTick(){
+  const now=new Date();
+  const h=now.getHours(), m=now.getMinutes(), s=now.getSeconds();
+  document.getElementById('tmClock').textContent=
+    (h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+  const wd=['日','一','二','三','四','五','六'][now.getDay()];
+  document.getElementById('tmDate').textContent=
+    now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 星期'+wd;
+
+  const sc=tmShichenAt(h);
+  document.getElementById('tmShichen').textContent=sc.z+'时';
+  document.getElementById('tmShichenRange').textContent=tmRangeText(sc);
+  document.getElementById('tmMeridian').textContent=sc.mer;
+  document.getElementById('tmMeridianSub').textContent='对应脏腑：'+sc.org+' · 气血当令';
+  document.getElementById('tmRenshen').textContent=sc.rs;
+  document.getElementById('tmRenshenArea').textContent=sc.area+'（'+sc.cat+'）';
+
+  // 节气
+  const tIdx=tmTermIdxAt(tmSample(now));
+  const termName=TM_TERMS[tIdx];
+  document.getElementById('tmTerm').textContent=termName;
+  const nt=tmNextTermDate(now);
+  let sub='';
+  if(nt){
+    const diff=Math.round((tmSample(nt)-tmSample(now))/86400000);
+    sub=(diff===0?'今日交节':'距下一节气「'+TM_TERMS[(tIdx+1)%24]+'」还有 '+diff+' 天');
+  }
+  document.getElementById('tmTermSub').textContent=sub;
+
+  // 禁忌提示
+  const todayTerm=tmTodayTerm(now);
+  let tabooOrgan=null, tabooReason='';
+  if(todayTerm && TM_TERM_TABOO[todayTerm]){
+    tabooOrgan=TM_TERM_TABOO[todayTerm];
+    tabooReason='今日交「'+todayTerm+'」，《千金》载其日忌针灸'+tabooOrgan+'经';
+  } else {
+    let minLi=999, liName='';
+    TM_LI.forEach(function(li){const dd=tmDaysUntilNextLi(now,li); if(dd<minLi){minLi=dd;liName=li;}});
+    if(minLi>=1 && minLi<=18){
+      tabooOrgan='肾';
+      tabooReason='四季末十八日（距「'+liName+'」还有 '+minLi+' 天），肾气王，忌针灸肾经';
+    }
+  }
+  let html='';
+  if(tabooOrgan){
+    html+='<div>📜 <b>'+tabooReason+'</b>（'+TM_ORGAN_MER[tabooOrgan]+'）</div>';
+  } else {
+    html+='<div>今日非八节/四季王日，无经络大禁；以下时辰人神部位仍需避忌。</div>';
+  }
+  html+='<div style="margin-top:6px">🕐 当前为<b>'+sc.z+'时</b>，人神在<b>'+sc.rs+'</b>，'+sc.area+'处<b>忌针刺、忌强力重按</b>；推拿宜避开此区，尤其'+sc.cat+'。</div>';
+  document.getElementById('tmTabooBody').innerHTML=html;
+  document.getElementById('tmTabooSrc').textContent=
+    '出处：《备急千金要方·针灸宜忌》《千金翼方·十二时人神》。推拿禁忌为传统宜忌延伸，非现代解剖结论。';
+
+  // 表格高亮当前时辰
+  document.querySelectorAll('#tmShichenTable tr').forEach(function(tr){
+    tr.classList.toggle('cur', tr.dataset.z===sc.z);
+  });
+  // 表格高亮当前节气
+  document.querySelectorAll('#tmTermTable tr').forEach(function(tr){
+    tr.classList.toggle('cur', tr.dataset.term===termName);
+  });
+}
+
+function tmRenderShichenTable(){
+  let h='<tr><th>时辰</th><th>时间</th><th>当令经络</th><th>人神部位（禁针/重按）</th></tr>';
+  TM_SHICHEN.forEach(function(s){
+    h+='<tr data-z="'+s.z+'"><td><b>'+s.z+'时</b></td><td>'+tmRangeText(s)+'</td>'
+      +'<td>'+s.mer+'<span class="tm-tag">'+s.org+'</span></td>'
+      +'<td>'+s.rs+'<span class="tm-tag">'+s.cat+'</span></td></tr>';
+  });
+  document.getElementById('tmShichenTable').innerHTML=h;
+}
+function tmRenderTermTable(){
+  const year=new Date().getFullYear();
+  const dates=tmAllTermDates(year);
+  let h='<tr><th>节气</th><th>'+year+' 公历</th><th>禁忌经络</th></tr>';
+  TM_TERMS.forEach(function(t){
+    const d=dates[t];
+    const ds=d?((d.getMonth()+1)+'/'+d.getDate()):'—';
+    const org=TM_TERM_TABOO[t];
+    let cell='<span style="color:var(--muted)">—</span>';
+    if(org) cell='<b style="color:var(--destructive)">'+org+'经</b>';
+    if(t==='立春'||t==='立夏'||t==='立秋'||t==='立冬'){
+      cell+='<div class="tm-count">前18日：肾经</div>';
+    }
+    h+='<tr data-term="'+t+'"><td><b>'+t+'</b></td><td>'+ds+'</td><td>'+cell+'</td></tr>';
+  });
+  document.getElementById('tmTermTable').innerHTML=h;
+}
 </script>
 </body>
 </html>
