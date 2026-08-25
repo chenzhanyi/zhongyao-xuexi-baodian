@@ -152,6 +152,18 @@ input{font-family:inherit}
 .tm-table tr.cur td{background:rgba(47,93,58,.08);font-weight:600}
 .tm-tag{display:inline-block;font-size:10.5px;padding:1px 6px;border-radius:4px;background:rgba(47,93,58,.1);color:var(--primary);margin-left:4px}
 .tm-count{font-size:11px;color:var(--muted);font-weight:400}
+.tm-personal{margin-top:12px;border:1px solid rgba(163,48,48,.3);border-radius:10px;background:rgba(163,48,48,.05);padding:10px 12px}
+.tm-personal.active{border-color:var(--destructive);background:rgba(163,48,48,.12);box-shadow:0 0 0 1px rgba(163,48,48,.2) inset}
+.tm-personal-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.tm-personal-name{font-size:13px;font-weight:700;color:var(--destructive);display:flex;align-items:center;gap:6px}
+.tm-personal-state{font-size:11px;font-weight:600;padding:2px 9px;border-radius:11px;border:1px solid rgba(163,48,48,.35);color:var(--destructive);background:#fff;white-space:nowrap}
+.tm-personal-state.on{background:var(--destructive);color:#fff;border-color:var(--destructive);animation:tmPulse 1.6s ease-in-out infinite}
+@keyframes tmPulse{0%,100%{opacity:1}50%{opacity:.65}}
+.tm-personal-body{font-size:12.5px;color:var(--fg);line-height:1.65;margin-top:7px}
+.tm-personal-body b{color:var(--destructive)}
+.tm-personal-times{display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;margin-top:7px}
+.tm-personal-times span{font-size:12px;color:var(--fg)}
+.tm-personal-times i{font-style:normal;color:var(--muted-fg);margin-right:2px}
 
 .to-top-ball{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:15;width:44px;height:44px;border-radius:50%;background:rgba(47,93,58,.92);color:#fff;border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 14px rgba(20,40,25,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
 .to-top-ball.show{opacity:1;pointer-events:auto;transform:translateY(0)}
@@ -656,6 +668,20 @@ input{font-family:inherit}
         <div class="tm-cell-label">🚫 人神所在（禁针/重按）</div>
         <div class="tm-cell-val" id="tmRenshen">--</div>
         <div class="tm-cell-sub" id="tmRenshenArea">--</div>
+      </div>
+    </div>
+
+    <div class="tm-personal" id="tmPersonal">
+      <div class="tm-personal-head">
+        <div class="tm-personal-name">🚫 陈族用 · 推拿按穴禁忌时段</div>
+        <div class="tm-personal-state" id="tmPersonalState">未在时段</div>
+      </div>
+      <div class="tm-personal-body" id="tmPersonalBody">--</div>
+      <div class="tm-personal-times">
+        <span><i>早</i>08:45–09:15</span>
+        <span><i>下午</i>14:45–15:15</span>
+        <span><i>晚</i>20:45–21:15</span>
+        <span><i>凌晨</i>02:45–03:15</span>
       </div>
     </div>
   </div>
@@ -1940,6 +1966,31 @@ function tmTick(){
   document.getElementById('tmTabooBody').innerHTML=html;
   document.getElementById('tmTabooSrc').textContent=
     '出处：《备急千金要方·针灸宜忌》《千金翼方·十二时人神》。推拿禁忌为传统宜忌延伸，非现代解剖结论。';
+
+  // 个人固定禁忌时段（陈族用）：起止均为当日本地分钟数；凌晨 02:45 跨天不影响
+  const TM_PERSONAL=[
+    {label:'早',s:8*60+45,e:9*60+15},
+    {label:'下午',s:14*60+45,e:15*60+15},
+    {label:'晚',s:20*60+45,e:21*60+15},
+    {label:'凌晨',s:2*60+45,e:3*60+15}
+  ];
+  const curMin=h*60+m;
+  const inSlot=TM_PERSONAL.find(function(t){return curMin>=t.s&&curMin<t.e;});
+  const pBox=document.getElementById('tmPersonal');
+  const pState=document.getElementById('tmPersonalState');
+  const pBody=document.getElementById('tmPersonalBody');
+  if(inSlot){
+    pBox.classList.add('active');
+    pState.classList.add('on');
+    pState.textContent='进行中';
+    const endStr=String(Math.floor(inSlot.e/60)).padStart(2,'0')+':'+String(inSlot.e%60).padStart(2,'0');
+    pBody.innerHTML='现在处于「<b>'+inSlot.label+'</b>」禁忌时段，<b>禁推拿按穴</b>，至 '+endStr+' 解除。';
+  } else {
+    pBox.classList.remove('active');
+    pState.classList.remove('on');
+    pState.textContent='未在时段';
+    pBody.innerHTML='每日以下四个时段<b>禁推拿按穴</b>，请注意避开。';
+  }
 
   // 表格高亮当前时辰
   document.querySelectorAll('#tmShichenTable tr').forEach(function(tr){
