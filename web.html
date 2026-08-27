@@ -83,6 +83,62 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .cz-item.is-cur{border-color:var(--danger);box-shadow:0 0 0 1px rgba(163,48,48,.25) inset}
 .cz-badge{font-size:10.5px;background:var(--danger);color:#fff;border-radius:8px;padding:1px 8px;margin-left:auto;font-weight:600}
 @media(max-width:900px){.tw-grid{grid-template-columns:1fr 1fr}.tw-cols{grid-template-columns:1fr}}
+/* ===== 脉诊速记（桌面宽屏） ===== */
+.wp-note{font-size:12.5px;color:var(--muted);line-height:1.7;background:rgba(47,93,58,.05);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:16px}
+.wp-cols{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start}
+@media(max-width:1000px){.wp-cols{grid-template-columns:1fr}}
+.wp-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:16px}
+.wp-card h4{font-size:14px;color:var(--primary);margin-bottom:10px}
+.wp-parts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:760px){.wp-parts{grid-template-columns:1fr}}
+.wp-part{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.wp-part-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;background:rgba(47,93,58,.05);font-size:13.5px;font-weight:600}
+.wp-part-head .arrow{transition:transform .25s;color:var(--muted)}
+.wp-part.open .wp-part-head .arrow{transform:rotate(180deg)}
+.wp-part-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.wp-part.open .wp-part-body{max-height:600px}
+.wp-layer{display:flex;align-items:center;gap:8px;padding:7px 12px;border-top:1px dashed var(--line)}
+.wp-layer .lb{width:88px;flex-shrink:0;font-size:12px;color:var(--muted)}
+.wp-layer button{flex:1;text-align:left;height:32px;border:1px dashed var(--line);border-radius:7px;background:#fff;font-size:12px;color:var(--muted);padding:0 10px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wp-layer button.has{color:var(--fg);border-style:solid;border-color:var(--primary)}
+.wp-meta{display:flex;flex-direction:column;gap:6px}
+.wp-mrow{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dashed var(--line)}
+.wp-mrow:last-child{border-bottom:none}
+.wp-mrow .lb{width:64px;flex-shrink:0;font-size:12.5px;font-weight:600}
+.wp-chipwrap{display:flex;flex-wrap:wrap;gap:6px}
+.wp-chip{border:1px solid var(--line);background:#fff;border-radius:13px;padding:4px 11px;font-size:12.5px;color:var(--fg);cursor:pointer}
+.wp-chip small{font-size:10px;opacity:.65;font-weight:400}
+.wp-chip.on{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.wp-hint{font-size:11px;color:var(--muted);line-height:1.5;margin-top:5px}
+.wp-wenrow{padding:7px 0;border-bottom:1px dashed var(--line)}
+.wp-wenrow:last-child{border-bottom:none}
+.wp-wenlabel{font-size:12.5px;font-weight:600}
+.wp-text{width:100%;height:32px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:12.5px;padding:0 10px;margin-top:5px}
+.wp-note-input{width:100%;border:1px solid var(--line);border-radius:8px;background:#fff;font-size:13px;padding:9px 10px;margin-top:8px;resize:vertical;min-height:56px;line-height:1.6}
+.wp-btnrow{display:flex;gap:8px;margin-top:12px}
+.wp-btn{flex:1;height:40px;border-radius:9px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--primary)}
+.wp-btn.primary{background:var(--primary);color:var(--primary-fg);border-color:var(--primary)}
+.wp-btn.reset{flex:0 0 auto;padding:0 16px;color:var(--muted);font-weight:500}
+.wp-report{margin-top:12px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px}
+.wp-report pre{font-size:13px;line-height:1.85;white-space:pre-wrap;word-break:break-word;font-family:inherit;margin:0}
+.wp-ref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.wp-refcard{border:1px solid var(--line);border-radius:9px;background:#fff;padding:8px 10px}
+.wp-refcard .nm{font-size:13.5px;font-weight:700}
+.wp-refcard .fl{font-size:11.5px;line-height:1.5;margin-top:2px}
+.wp-refcard .zhu{font-size:11.5px;color:var(--primary);margin-top:2px;font-weight:500}
+/* 选脉弹层 */
+.wp-modal{position:fixed;inset:0;z-index:300;background:rgba(20,16,8,.46);display:none;align-items:center;justify-content:center;padding:24px}
+.wp-modal-box{background:var(--bg);border-radius:14px;width:100%;max-width:620px;max-height:82vh;overflow-y:auto;padding:18px 20px}
+.wp-modal-title{font-size:15px;font-weight:700;color:var(--primary);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.wp-modal-title .x{width:28px;height:28px;border-radius:50%;background:rgba(47,93,58,.08);color:var(--primary);border:none;cursor:pointer;font-size:14px}
+.wp-grouptitle{font-size:12px;font-weight:600;color:var(--primary);margin:12px 0 6px}
+.wp-tip{font-size:11px;color:var(--muted);line-height:1.55;margin-bottom:8px}
+.wp-modal-foot{display:flex;gap:8px;margin-top:16px}
+.wp-collapsible-head{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:2px 0;font-size:13px;font-weight:600}
+.wp-collapsible-head .arrow{transition:transform .25s;color:var(--muted)}
+.wp-collapsible.open .wp-collapsible-head .arrow{transform:rotate(180deg)}
+.wp-collapsible-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.wp-collapsible.open .wp-collapsible-body{max-height:1200px}
 /* ---------- 主区 ---------- */
 .main{flex:1;min-width:0;padding:22px 28px}
 .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
@@ -181,6 +237,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
     <nav class="cats" id="cats"></nav>
     <div class="tools-title">学习工具</div>
     <nav class="tools-nav">
+      <button class="tool-btn" data-m="pulse">🩺 脉诊速记</button>
       <button class="tool-btn" data-m="time">🕐 时辰节气 · 宜忌</button>
       <button class="tool-btn" data-m="crisis">⚠️ 危急推断</button>
     </nav>
@@ -307,7 +364,7 @@ function renderCats(){
   el.innerHTML=html;
 }
 function setCat(c){S.cat=c;renderCats();render();}
-const TOOL_MODS=['time','crisis'];
+const TOOL_MODS=['pulse','time','crisis'];
 function setModule(m){S.m=m;S.q='';$('q').value='';
   document.querySelectorAll('.mod,.tool-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   const isTool=TOOL_MODS.includes(m);
@@ -464,7 +521,7 @@ function renderTaboos(){
 }
 function render(){
   renderCats();
-  const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌',time:'时辰节气 · 宜忌',crisis:'危急推断'};
+  const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌',pulse:'脉诊速记',time:'时辰节气 · 宜忌',crisis:'危急推断'};
   $('mTitle').textContent=titles[S.m]||'中药速记';
   const shenN=HERBS.filter(isShen).length;
   $('shenCnt').textContent=shenN+'味';
@@ -479,7 +536,9 @@ function render(){
 }
 // ========== 学习工具：时辰节气 / 危急推断 ==========
 function renderTool(){
-  if(S.m==='time')renderWebTime(); else renderWebCrisis();
+  if(S.m==='time')renderWebTime();
+  else if(S.m==='crisis')renderWebCrisis();
+  else if(S.m==='pulse')renderWebPulse();
 }
 let webToolTimer=null;
 function stopToolTimer(){ if(webToolTimer){clearInterval(webToolTimer);webToolTimer=null;} }
@@ -669,6 +728,305 @@ function renderWebCrisis(){
 // 右下角回到顶部浮球
 function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
 (function(){const b=document.getElementById('toTopBall');if(!b)return;window.addEventListener('scroll',function(){b.classList.toggle('show',(window.scrollY||document.documentElement.scrollTop)>300);},{passive:true});})();
+
+// ========== 学习工具：脉诊速记 ==========
+const WP_GROUPS=[
+ {name:'浮脉类（轻取即得）',list:[
+  ['浮','轻按就有，重按稍减不空。如水漂木','主表证'],
+  ['洪','浮，来盛去衰，像洪水涌来，幅度大','主热盛'],
+  ['濡','浮而细软，轻按能摸到，稍用力就按没了','主虚、湿'],
+  ['散','浮散无根，按之散乱，节律力度都乱','元气离散'],
+  ['芤','浮大中空，如按葱管，中间空两边实','大失血'],
+  ['革','浮而搏指，中空外坚，如按鼓皮','亡血失精']]},
+ {name:'沉脉类（重按始得）',list:[
+  ['沉','轻取不见，重按始得','主里证'],
+  ['伏','比沉更深，要推筋着骨才能摸到','邪闭、剧痛'],
+  ['弱','沉而细软，用力按才有，无力','气血虚'],
+  ['牢','沉实大弦长，沉在底下，但很硬有力','阴寒内积、癥瘕']]},
+ {name:'迟脉类（一息<4次）',list:[
+  ['迟','一息三至，跳动慢','主寒证'],
+  ['缓','一息四至，来去从容柔和','正常；也主湿、脾虚'],
+  ['涩','往来艰涩，如刮砂纸、刀刮竹，不流畅','气滞血瘀、精血少'],
+  ['结','迟而间歇，慢且时有停，停无规律','阴盛气结、瘀血']]},
+ {name:'数脉类（一息>5次）',list:[
+  ['数','一息五至以上，跳得快','主热证'],
+  ['疾','一息七八至，跳极快','阳极阴竭'],
+  ['促','快而间歇，快且偶尔停，停无定数','阳盛实热'],
+  ['动','滑数有力，圆转如豆，摇动感，专见于关部','疼痛、惊恐']]},
+ {name:'虚脉类（按之无力）',list:[
+  ['虚','三部举按都无力','一切虚证总脉'],
+  ['细','脉道细如丝线，清晰可摸到','主虚、湿'],
+  ['微','极细极软，似有似无','阳气大虚'],
+  ['代','有规律间歇，跳固定次数就停，停得久','脏气衰、跌打损伤']]},
+ {name:'实脉类（举按有力）',list:[
+  ['实','寸关尺轻中重按全都有力','实证'],
+  ['滑','往来流利，如盘走珠','痰饮、食积、妊娠'],
+  ['弦','挺直而长，如按琴弦','肝胆病、疼痛、痰饮'],
+  ['紧','绷急弹指，如按绷紧绳索','寒、痛'],
+  ['长','脉体超过寸、尺本位','阳热、实证'],
+  ['短','脉体短，只在关部，寸尺不足','气亏气滞']]}
+];
+const WP_PARTS=[['左寸','心'],['左关','肝'],['左尺','肾'],['右寸','肺'],['右关','脾'],['右尺','命门']];
+const WP_LAYERS=[['浮','浮取（轻按）'],['中','中取（中按）'],['沉','沉取（重按）']];
+const WP_FORCES=['','有力','中等','无力（不足）'];
+const WP_BASE=[['浮','脉位居表'],['沉','脉位居里'],['迟','至数慢'],['数','至数快'],['疾','至数极快'],['缓','从容和缓'],['大','脉宽大'],['细','脉窄如线'],['长','脉体过长'],['短','脉体不及'],['滑','流利如珠'],['涩','艰涩不畅'],['弦','端直紧张'],['紧','绷急弹指'],['结','迟而时止'],['代','止有定数'],['促','数而时止']];
+const WP_COMP=[['洪','浮+大+有力'],['芤','浮+大+中空'],['革','浮+弦+外坚中空'],['濡','浮+细+软'],['散','浮+散乱无根'],['弱','沉+细+软'],['牢','沉+实+大+弦+长'],['伏','沉极推筋着骨'],['微','极细+极软+无力'],['动','滑+数+有力(关部)']];
+const wpCompOf={};WP_COMP.forEach(x=>wpCompOf[x[0]]=x[1]);
+const wpCompBases={洪:['浮','大'],芤:['浮','大'],革:['浮','弦'],濡:['浮','细'],散:['浮'],弱:['沉','细'],牢:['沉','大','弦','长'],伏:['沉'],微:['细'],动:['滑','数','短']};
+const wpCompForce={洪:'有力',芤:'',革:'',濡:'无力',散:'',弱:'无力',牢:'有力',伏:'',微:'无力',动:'有力'};
+const WP_WEN=[
+ ['寒热',['恶寒','畏寒','发热','潮热','寒热往来']],
+ ['汗',['无汗','自汗','盗汗','战汗','绝汗']],
+ ['头身',['头痛','眩晕','身痛','肢困重'],'头痛引经药：太阳羌活·阳明白芷·少阳柴胡·厥阴吴茱萸'],
+ ['二便',['便秘','便溏','泄泻','尿频(白天)','夜尿频(夜起)','小便不利']],
+ ['饮食',['食欲不振','食量大','口苦','口淡','口酸','口甜']],
+ ['胸腹',['胸胁胀','胸痛','脘腹胀','痞满'],'痞满：心下(胃脘)痞塞满闷、按之柔软不痛，与胀痛拒按的实证有别'],
+ ['耳目',['耳鸣','听力下降']],
+ ['口渴',['喜冷饮','喜热饮','口渴不欲饮']]
+];
+const WP_WENTEXT=[['旧病','既往病史、旧疾'],['起因','发病原因、起病经过']];
+const WP_WENEXT=[
+ ['妇女·月经',['经期提前','经期延后','先后不定期','闭经','崩漏','痛经','经量多','经量少','有血块']],
+ ['妇女·带下',['白带量多','黄带','赤带','带下清稀','带下异味']],
+ ['妇女·胎产',['妊娠中','产后','未育','流产史']],
+ ['小儿·惊风',['高热惊厥','抽搐史','夜啼','磨牙']],
+ ['小儿·积食',['厌食','食积','腹胀','口臭','大便酸臭']],
+ ['小儿·疫苗',['按时接种','部分接种','未接种','不详']]
+];
+const WP_WENTEXTEXT=[['孕产史','孕次、产次、流产次数'],['小儿发育','出生史、喂养、囟门、语迟行迟等']];
+
+let wpSel={},wpForce={},wpWen={},wpWenText={},wpPerson='',wpAge='',wpSide='',wpNote='',wpReport='',wpPick=null;
+function wpLoad(){
+  try{
+    const old=JSON.parse(localStorage.getItem('tcm_pulse_sel')||'{}')||{};
+    wpSel={};
+    WP_PARTS.forEach(p=>{const v=old[p[0]];
+      if(typeof v==='string'&&v)wpSel[p[0]]={中:[v]};
+      else if(v&&typeof v==='object'){wpSel[p[0]]={};Object.keys(v).forEach(k=>{wpSel[p[0]][k]=Array.isArray(v[k])?v[k]:(v[k]?[v[k]]:[]);});}
+    });
+  }catch(e){wpSel={};}
+  try{wpForce=JSON.parse(localStorage.getItem('tcm_pulse_force')||'{}')||{};}catch(e){wpForce={};}
+  wpNote=localStorage.getItem('tcm_pulse_note')||'';
+  try{wpWen=JSON.parse(localStorage.getItem('tcm_wen_sel')||'{}')||{};}catch(e){wpWen={};}
+  if(wpWen['二便']&&wpWen['二便'].indexOf('小便频数')>=0)wpWen['二便']=wpWen['二便'].filter(x=>x!=='小便频数');
+  try{wpWenText=JSON.parse(localStorage.getItem('tcm_wen_text')||'{}')||{};}catch(e){wpWenText={};}
+  wpPerson=localStorage.getItem('tcm_wen_person')||'';
+  wpAge=localStorage.getItem('tcm_wen_age')||'';
+  wpSide=localStorage.getItem('tcm_pulse_side')||'';
+}
+const wpSet=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+function wpOrgan(part){for(const p of WP_PARTS)if(p[0]===part)return p[1];return '';}
+function wpLayerLabel(part,layer){
+  const arr=(wpSel[part]&&wpSel[part][layer])||[];
+  const comps=arr.filter(m=>wpCompOf[m]);
+  const covered={};
+  comps.forEach(c=>(wpCompBases[c]||[]).forEach(b=>covered[b]=true));
+  const extra=arr.filter(m=>!wpCompOf[m]&&!covered[m]);
+  return comps.concat(extra).join('、');
+}
+function wpToggleColl(el){el.parentElement.classList.toggle('open');}
+
+function renderWebPulse(){
+  wpLoad();
+  const c=$('content');
+  c.innerHTML=
+   '<div class="tool-wrap">'
+   +'<div class="wp-note">⚠️ 脉诊需实操，以下为手指触觉描述，仅供学习，不能代替医师诊断。寸关尺三指轻按(浮)、中按(中)、重按(沉)；主观性强，须四诊合参。数据与手机版共用本地存储。</div>'
+   +'<div class="wp-cols">'
+   +'<div>'
+   +  '<div class="wp-card"><h4>六部选脉 · 三部九候 <button class="wp-btn reset" style="float:right;height:28px" onclick="wpReset()">复位</button></h4><div class="wp-parts" id="wpParts"></div></div>'
+   +  '<div class="wp-card"><h4>脉象速记参考</h4><div id="wpRef"></div></div>'
+   +'</div>'
+   +'<div>'
+   +  '<div class="wp-card"><h4>对象 · 年龄 · 左右脉力</h4><div class="wp-meta" id="wpMeta"></div></div>'
+   +  '<div class="wp-card"><h4>十问歌 · 问诊要点</h4><div id="wpWen"></div></div>'
+   +  '<div class="wp-card"><h4>生成记录</h4>'
+   +    '<textarea class="wp-note-input" id="wpNote" placeholder="备注：症状、舌象、病史等补充信息…"></textarea>'
+   +    '<div class="wp-btnrow"><button class="wp-btn primary" onclick="wpGenReport()">生成脉诊记录</button><button class="wp-btn" id="wpCopyBtn" onclick="wpCopy()">复制</button></div>'
+   +    '<div class="wp-report" id="wpReportBox" style="display:none"><pre id="wpReportText"></pre></div>'
+   +  '</div>'
+   +'</div>'
+   +'</div></div>'
+   +'<div class="wp-modal" id="wpModal" onclick="if(event.target===this)wpClosePick()"><div class="wp-modal-box">'
+   +  '<div class="wp-modal-title"><span id="wpPickTitle">选脉</span><button class="x" onclick="wpClosePick()">✕</button></div>'
+   +  '<div class="wp-tip">基础脉可多选组合成相兼脉（如弦+滑）；点复合脉自动勾选其构成基础脉并带出力度。</div>'
+   +  '<div class="wp-grouptitle">基础脉（可多选）</div><div class="wp-chipwrap" id="wpChipsBase"></div>'
+   +  '<div class="wp-grouptitle">复合脉（括号内为构成）</div><div class="wp-chipwrap" id="wpChipsComp"></div>'
+   +  '<div class="wp-grouptitle">力度（单选，再点取消）</div><div class="wp-chipwrap" id="wpChipsForce"></div>'
+   +  '<div class="wp-modal-foot"><button class="wp-btn" onclick="wpClearLayer()">清空本层</button><button class="wp-btn primary" onclick="wpClosePick()">完成</button></div>'
+   +'</div></div>';
+
+  // 六部（每部折叠卡，内三层）
+  $('wpParts').innerHTML=WP_PARTS.map(p=>{
+    const rows=WP_LAYERS.map(l=>{
+      const arr=(wpSel[p[0]]&&wpSel[p[0]][l[0]])||[];
+      const f=(wpForce[p[0]]&&wpForce[p[0]][l[0]])||'';
+      const label=arr.length?arr.map(m=>m+(wpCompOf[m]?'脉('+wpCompOf[m]+')':'脉')).join(' · '):'点击选脉';
+      return '<div class="wp-layer"><span class="lb">'+l[1]+'</span><button class="'+(arr.length||f?'has':'')+'" data-part="'+p[0]+'" data-layer="'+l[0]+'" onclick="wpOpenPick(this)">'+label+'</button></div>';
+    }).join('');
+    return '<div class="wp-part open" data-part="'+p[0]+'"><div class="wp-part-head" onclick="wpTogglePart(this)"><span>'+p[0]+'（'+p[1]+'）<span class="wp-part-sum" data-sum="'+p[0]+'"></span></span><svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="wp-part-body">'+rows+'</div></div>';
+  }).join('');
+
+  // 速记参考（六组折叠）
+  $('wpRef').innerHTML=WP_GROUPS.map((g,i)=>{
+    const cards=g.list.map(x=>'<div class="wp-refcard"><div class="nm">'+x[0]+'脉</div><div class="fl">'+x[1]+'</div><div class="zhu">'+x[2]+'</div></div>').join('');
+    return '<div class="wp-collapsible'+(i===0?' open':'')+'"><div class="wp-collapsible-head" onclick="wpToggleColl(this)"><span>'+g.name+'</span><svg class="arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div><div class="wp-collapsible-body"><div class="wp-ref-grid" style="padding:8px 0 4px">'+cards+'</div></div></div>';
+  }).join('');
+
+  $('wpNote').value=wpNote||'';
+  $('wpNote').oninput=function(){wpNote=this.value;wpSet('tcm_pulse_note',wpNote);};
+  wpRenderMeta();wpRenderWen();WP_PARTS.forEach(p=>wpPartSummary(p[0]));
+}
+function wpTogglePart(headEl){headEl.parentElement.classList.toggle('open');}
+function wpPartSummary(part){
+  const card=document.querySelector('#wpParts .wp-part[data-part="'+part+'"]');
+  if(!card)return;
+  const sum=WP_LAYERS.map(l=>{
+    const arr=(wpSel[part]&&wpSel[part][l[0]])||[];
+    if(!arr.length)return '';
+    const f=(wpForce[part]&&wpForce[part][l[0]])||'';
+    return l[0]+wpLayerLabel(part,l[0])+(f?'·'+f:'');
+  }).filter(Boolean).join(' ');
+  const el=card.querySelector('.wp-part-sum');
+  if(el)el.textContent=sum?'　'+sum:'';
+}
+function wpRenderMeta(){
+  const chip=(label,val,cur)=>'<button class="wp-chip'+(cur===val?' on':'')+'" data-name="'+val+'" onclick="wpPersonToggle(this)">'+label+'</button>';
+  let h='<div class="wp-mrow"><span class="lb">对象</span><div class="wp-chipwrap">';
+  ['男','女','小儿'].forEach(p=>h+=chip(p,p,wpPerson));
+  h+='</div></div><div class="wp-mrow"><span class="lb">年龄</span><div class="wp-chipwrap">';
+  h+=chip('儿童(<14)','儿童',wpAge)+chip('青少年(14-18)','青少年',wpAge)+chip('成年(18-59)','成年',wpAge)+chip('老年(≥60)','老年',wpAge);
+  h+='</div></div>';
+  if(wpAge==='儿童'||wpAge==='青少年')h+='<div class="wp-hint">小儿中药量按年龄折算（成人量）：1-2岁约1/5-1/4，2-4岁约1/4-1/3，4-6岁约1/3-2/5，6-9岁约2/5-1/2，9-14岁约1/2-2/3，仅供参考</div>';
+  if(wpPerson==='小儿')h+='<div class="wp-hint">小儿（3岁以下）脉诊常用一指定三关</div>';
+  h+='<div class="wp-mrow"><span class="lb">左右脉力</span><div class="wp-chipwrap">';
+  ['左手强','右手强','两手相当'].forEach(p=>h+=chip(p,p,wpSide));
+  h+='</div></div>';
+  $('wpMeta').innerHTML=h;
+}
+function wpPersonToggle(el){
+  const val=el.dataset.name;
+  if(['男','女','小儿'].includes(val)){wpPerson=(wpPerson===val)?'':val;wpSet('tcm_wen_person',wpPerson);wpRenderMeta();wpRenderWen();}
+  else if(['儿童','青少年','成年','老年'].includes(val)){wpAge=(wpAge===val)?'':val;wpSet('tcm_wen_age',wpAge);wpRenderMeta();}
+  else{wpSide=(wpSide===val)?'':val;wpSet('tcm_pulse_side',wpSide);wpRenderMeta();}
+}
+function wpRenderWen(){
+  const row=it=>{
+    const cur=wpWen[it[0]]||[];
+    const chips=it[1].map(c=>'<button class="wp-chip'+(cur.indexOf(c)>=0?' on':'')+'" data-group="'+it[0]+'" data-name="'+c+'" onclick="wpWenToggle(this)">'+c+'</button>').join('');
+    return '<div class="wp-wenrow"><div class="wp-wenlabel">'+it[0]+'</div><div class="wp-chipwrap" style="margin-top:5px">'+chips+'</div>'+(it[2]?'<div class="wp-hint">'+it[2]+'</div>':'')+'</div>';
+  };
+  const text=it=>'<div class="wp-wenrow"><div class="wp-wenlabel">'+it[0]+'</div><input class="wp-text" placeholder="'+it[1]+'…" data-group="'+it[0]+'" value="'+(wpWenText[it[0]]||'').replace(/"/g,'&quot;')+'" oninput="wpWenTextInput(this)"></div>';
+  const extByName={};WP_WENEXT.forEach(it=>extByName[it[0]]=it);
+  const textByName={};WP_WENTEXT.concat(WP_WENTEXTEXT).forEach(it=>textByName[it[0]]=it);
+  const group=(title,gid,names,tnames)=>{
+    const body=names.map(n=>row(extByName[n])).join('')+tnames.map(n=>text(textByName[n])).join('');
+    const cnt=names.reduce((a,n)=>a+(wpWen[n]||[]).length,0)+tnames.filter(n=>(wpWenText[n]||'').trim()).length;
+    const open=(wpPerson==='女'&&gid==='妇女')||(wpPerson==='小儿'&&gid==='小儿')||cnt>0;
+    return '<div class="wp-collapsible'+(open?' open':'')+'" data-wen="'+gid+'"><div class="wp-collapsible-head" onclick="wpToggleColl(this)"><span>'+title+'</span><span style="font-size:11px;color:var(--muted);font-weight:400">'+(cnt?cnt+' 项已记':'点击展开')+'</span></div><div class="wp-collapsible-body"><div style="padding:6px 0">'+body+'</div></div></div>';
+  };
+  let h='<div class="wp-hint" style="margin-bottom:8px">歌诀补：妇人尤必问经期，迟速闭崩皆可见；再添片语告儿科，天花麻疹全占验（小儿改问疫苗、惊风、积食）。</div>';
+  WP_WEN.forEach(it=>h+=row(it));
+  WP_WENTEXT.forEach(it=>h+=text(it));
+  h+=group('妇女（经带胎产）','妇女',['妇女·月经','妇女·带下','妇女·胎产'],['孕产史']);
+  h+=group('小儿（惊风·积食·疫苗）','小儿',['小儿·惊风','小儿·积食','小儿·疫苗'],['小儿发育']);
+  $('wpWen').innerHTML=h;
+}
+function wpWenGroupOf(n){if(n.indexOf('妇女')===0||n==='孕产史')return'妇女';if(n.indexOf('小儿')===0||n==='小儿发育')return'小儿';return'';}
+function wpWenToggle(el){
+  const g=el.dataset.group,name=el.dataset.name,arr=wpWen[g]||[],i=arr.indexOf(name);
+  if(i>=0)arr.splice(i,1);else arr.push(name);
+  wpWen[g]=arr;wpSet('tcm_wen_sel',JSON.stringify(wpWen));
+  el.classList.toggle('on',i<0);
+}
+function wpWenTextInput(el){wpWenText[el.dataset.group]=el.value;wpSet('tcm_wen_text',JSON.stringify(wpWenText));}
+
+function wpOpenPick(btn){
+  wpPick={part:btn.dataset.part,layer:btn.dataset.layer};
+  const lname=(WP_LAYERS.filter(l=>l[0]===wpPick.layer)[0]||[])[1];
+  $('wpPickTitle').textContent=wpPick.part+'（'+wpOrgan(wpPick.part)+'）· '+lname;
+  wpRenderPick();
+  $('wpModal').style.display='flex';
+}
+function wpRenderPick(){
+  const cur=new Set(((wpSel[wpPick.part]&&wpSel[wpPick.part][wpPick.layer])||[]));
+  const chip=(name,hint)=>'<button class="wp-chip'+(cur.has(name)?' on':'')+'" data-name="'+name+'" onclick="wpPickToggle(this)">'+name+(hint?' <small>'+hint+'</small>':'')+'</button>';
+  $('wpChipsBase').innerHTML=WP_BASE.map(x=>chip(x[0],x[1])).join('');
+  $('wpChipsComp').innerHTML=WP_COMP.map(x=>chip(x[0],x[1])).join('');
+  const fcur=(wpForce[wpPick.part]&&wpForce[wpPick.part][wpPick.layer])||'';
+  $('wpChipsForce').innerHTML=WP_FORCES.slice(1).map(f=>'<button class="wp-chip'+(fcur===f?' on':'')+'" data-name="'+f+'" onclick="wpForceToggle(this)">'+f+'</button>').join('');
+}
+function wpForceToggle(el){
+  const val=el.dataset.name;
+  if(!wpForce[wpPick.part])wpForce[wpPick.part]={};
+  wpForce[wpPick.part][wpPick.layer]=(wpForce[wpPick.part][wpPick.layer]===val)?'':val;
+  wpSet('tcm_pulse_force',JSON.stringify(wpForce));
+  wpRenderPick();wpUpdateRow();wpPartSummary(wpPick.part);
+}
+function wpPickToggle(el){
+  const name=el.dataset.name;
+  if(!wpSel[wpPick.part])wpSel[wpPick.part]={};
+  const arr=wpSel[wpPick.part][wpPick.layer]||[],i=arr.indexOf(name);
+  if(i>=0)arr.splice(i,1);
+  else{arr.push(name);
+    if(wpCompBases[name]){wpCompBases[name].forEach(b=>{if(arr.indexOf(b)<0)arr.push(b);});if(wpCompForce[name])wpSetForce(wpPick.part,wpPick.layer,wpCompForce[name]);}
+  }
+  wpSel[wpPick.part][wpPick.layer]=arr;
+  wpSet('tcm_pulse_sel',JSON.stringify(wpSel));
+  wpRenderPick();wpUpdateRow();wpPartSummary(wpPick.part);
+}
+function wpSetForce(part,layer,val){if(!wpForce[part])wpForce[part]={};wpForce[part][layer]=val;wpSet('tcm_pulse_force',JSON.stringify(wpForce));if(wpPick&&wpPick.part===part&&wpPick.layer===layer)wpRenderPick();}
+function wpUpdateRow(){
+  const btn=document.querySelector('#wpParts button[data-part="'+wpPick.part+'"][data-layer="'+wpPick.layer+'"]');
+  if(!btn)return;
+  const label=wpLayerLabel(wpPick.part,wpPick.layer);
+  const f=(wpForce[wpPick.part]&&wpForce[wpPick.part][wpPick.layer])||'';
+  btn.textContent=(label?label+'（'+f+'）':(f?'未选脉（'+f+'）':'点击选脉'));
+  btn.classList.toggle('has',!!(label||f));
+}
+function wpClearLayer(){
+  if(!wpPick)return;
+  if(!wpSel[wpPick.part])wpSel[wpPick.part]={};
+  wpSel[wpPick.part][wpPick.layer]=[];
+  if(!wpForce[wpPick.part])wpForce[wpPick.part]={};
+  wpForce[wpPick.part][wpPick.layer]='';
+  wpSet('tcm_pulse_sel',JSON.stringify(wpSel));wpSet('tcm_pulse_force',JSON.stringify(wpForce));
+  wpRenderPick();wpUpdateRow();wpPartSummary(wpPick.part);
+}
+function wpClosePick(){$('wpModal').style.display='none';wpPick=null;}
+function wpReset(){
+  if(!confirm('确定清空全部选脉、力度、十问与备注吗？'))return;
+  wpSel={};wpForce={};wpNote='';wpReport='';wpWen={};wpWenText={};wpPerson='';wpAge='';wpSide='';
+  ['tcm_pulse_sel','tcm_pulse_force','tcm_pulse_note','tcm_wen_sel','tcm_wen_text','tcm_wen_person','tcm_wen_age','tcm_pulse_side'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+  renderWebPulse();
+}
+function wpGenReport(silent){
+  const d=new Date(),pad=x=>x<10?'0'+x:''+x;
+  let txt='【脉诊记录】'+d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes())+'\n';
+  WP_PARTS.forEach(p=>{
+    const sel=wpSel[p[0]]||{},force=wpForce[p[0]]||{},segs=[];
+    WP_LAYERS.forEach(l=>{const arr=sel[l[0]]||[];if(!arr.length)return;const f=force[l[0]];segs.push(l[0]+'取：'+wpLayerLabel(p[0],l[0])+(f?'（'+f+'）':''));});
+    if(segs.length)txt+=p[0]+'（'+p[1]+'）：'+segs.join('；')+'\n';
+  });
+  if(wpPerson||wpAge||wpSide){let meta='';if(wpPerson||wpAge)meta+='对象：'+(wpPerson||'未记')+(wpAge?'（'+wpAge+'）':'');if(wpSide)meta+=(meta?'；':'')+'左右脉力：'+wpSide;txt+=meta+'\n';}
+  const lines=[];
+  WP_WEN.concat(WP_WENEXT).forEach(it=>{const arr=wpWen[it[0]]||[];if(arr.length)lines.push(it[0]+'：'+arr.join('、'));});
+  WP_WENTEXT.concat(WP_WENTEXTEXT).forEach(it=>{if(wpWenText[it[0]]&&wpWenText[it[0]].trim())lines.push(it[0]+'：'+wpWenText[it[0]].trim());});
+  if(lines.length)txt+='\n—— 十问 ——\n'+lines.join('\n')+'\n';
+  txt+='备注：'+(wpNote&&wpNote.trim()?wpNote.trim():'无')+'\n';
+  txt+='（以上为脉诊记录，仅供学习交流，请结合四诊合参）';
+  wpReport=txt;
+  $('wpReportText').textContent=txt;
+  $('wpReportBox').style.display='block';
+  if(!silent)$('wpReportBox').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function wpCopy(){
+  if(!wpReport)wpGenReport(true);
+  const done=()=>{const b=$('wpCopyBtn');const old=b.textContent;b.textContent='已复制 ✓';setTimeout(()=>b.textContent=old,1600);};
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(wpReport).then(done,()=>{wpFallbackCopy(wpReport);done();});
+  else{wpFallbackCopy(wpReport);done();}
+}
+function wpFallbackCopy(txt){const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
 
 // init
 renderCats();render();
