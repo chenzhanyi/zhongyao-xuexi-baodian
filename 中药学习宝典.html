@@ -2160,17 +2160,17 @@ function renderCrisis(){
       ? ('「'+nearest.name+'」属《千金》八节禁忌，'+termOrgan+'经受克；当日尤以「'+hlEl+'时」为'+termOrgan+'病危笃之候。')
       : '五行时每日轮转：金时克木应肝、木时克土应脾、水时克火应心、火时克金应肺、土时克水应肾。';
 
-  // —— 最快到来的五行日 + 该日五行时 ——
+  // —— 最快到来的五行日 + 该日五行时（按离今天远近排序）——
   const found={};
   for(let off=0;off<20 && Object.keys(found).length<5;off++){
     const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+off);
     const el=czDayElement(d);
-    if(!found[el]) found[el]={off:off,date:d,gz:czDayGanzhi(d)};
+    if(!found[el]) found[el]={el:el,off:off,date:d,gz:czDayGanzhi(d)};
   }
+  const sorted=Object.keys(found).map(function(k){return found[k];}).sort(function(a,b){return a.off-b.off;});
   let gh='';
-  ['金','木','水','火','土'].forEach(function(el){
-    const f=found[el];
-    if(!f) return;
+  sorted.forEach(function(f){
+    const el=f.el;
     const organ=CZ_EL_CRISIS[el];
     const scs=elShichen[el].map(function(z){return z+'时';}).join('、');
     const isToday=(f.off===0);
