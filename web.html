@@ -40,6 +40,49 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .sidebar-foot{margin-top:16px;padding-top:12px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);line-height:1.7}
 .legend{display:flex;align-items:center;gap:5px;margin-top:4px}
 .dot-gold{width:8px;height:8px;border-radius:2px;background:var(--gold)}
+/* 学习工具入口 */
+.tools-title{font-size:12px;color:var(--muted);margin:16px 2px 8px}
+.tools-nav{display:flex;flex-direction:column;gap:5px}
+.tool-btn{display:block;width:100%;text-align:left;padding:9px 12px;border:1px solid var(--line);background:#fff;border-radius:9px;font-size:13px;color:var(--fg);cursor:pointer;transition:all .15s}
+.tool-btn:hover{background:rgba(47,93,58,.06)}
+.tool-btn.on{background:rgba(47,93,58,.1);border-color:rgba(47,93,58,.35);color:var(--primary);font-weight:600}
+/* 工具页宽屏排版 */
+.tool-wrap{font-size:14px}
+.tool-note{font-size:12.5px;color:var(--muted);line-height:1.7;background:rgba(47,93,58,.05);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-bottom:16px}
+.tw-clock{background:linear-gradient(135deg,rgba(47,93,58,.09),rgba(212,160,23,.08));border:1px solid var(--line);border-radius:14px;padding:18px 22px;margin-bottom:16px}
+.tw-clock .clk{font-size:34px;font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;letter-spacing:1px}
+.tw-clock .dt{font-size:13px;color:var(--muted);margin-top:2px}
+.tw-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+.tw-cell{border:1px solid var(--line);border-radius:11px;background:var(--card);padding:12px 14px}
+.tw-cell .lab{font-size:12px;color:var(--muted)}
+.tw-cell .val{font-size:17px;font-weight:700;margin-top:4px}
+.tw-cell .sub{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.5}
+.tw-cell.warn{border-color:rgba(163,48,48,.35);background:rgba(163,48,48,.04)}
+.tw-cell.warn .val{color:var(--danger)}
+.tw-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.tw-card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.tw-card h4{font-size:14px;color:var(--primary);margin-bottom:10px}
+.tw-taboo{border:1px solid rgba(163,48,48,.35);background:rgba(163,48,48,.05);border-radius:12px;padding:12px 16px;margin-bottom:16px}
+.tw-taboo .tt{font-size:14px;font-weight:700;color:var(--danger);margin-bottom:6px}
+.tw-taboo .bd{font-size:13.5px;line-height:1.8}
+.tw-taboo .bd b{color:var(--danger)}
+.tw-taboo .src{font-size:11px;color:var(--muted);margin-top:8px}
+.tw-table{width:100%;border-collapse:collapse;font-size:13px}
+.tw-table th{font-size:12px;color:var(--muted);font-weight:500;text-align:left;padding:8px;border-bottom:1px solid var(--line)}
+.tw-table td{padding:9px 8px;border-bottom:1px dashed var(--line);line-height:1.5}
+.tw-table tr:last-child td{border-bottom:none}
+.tw-table tr.cur td{background:rgba(47,93,58,.08);font-weight:600}
+.tw-tag{display:inline-block;font-size:11px;padding:1px 7px;border-radius:5px;background:rgba(47,93,58,.1);color:var(--primary);margin-left:5px}
+.tw-count{font-size:11px;color:var(--muted);font-weight:400}
+.tw-crisis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:12px}
+.cz-item{border:1px solid var(--line);border-radius:11px;background:var(--card);padding:11px 13px}
+.cz-item .el{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.cz-item .when{font-size:12.5px;margin-top:4px;font-weight:600}
+.cz-item .organ{font-size:12px;color:var(--danger);margin-top:3px}
+.cz-item .rel{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5}
+.cz-item.is-cur{border-color:var(--danger);box-shadow:0 0 0 1px rgba(163,48,48,.25) inset}
+.cz-badge{font-size:10.5px;background:var(--danger);color:#fff;border-radius:8px;padding:1px 8px;margin-left:auto;font-weight:600}
+@media(max-width:900px){.tw-grid{grid-template-columns:1fr 1fr}.tw-cols{grid-template-columns:1fr}}
 /* ---------- 主区 ---------- */
 .main{flex:1;min-width:0;padding:22px 28px}
 .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
@@ -136,6 +179,11 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
     <div class="shen-toggle"><button id="shenBtn">⭐ 沈常用 <span id="shenCnt"></span></button></div>
     <div class="cats-title" id="catsTitle">全部类别</div>
     <nav class="cats" id="cats"></nav>
+    <div class="tools-title">学习工具</div>
+    <nav class="tools-nav">
+      <button class="tool-btn" data-m="time">🕐 时辰节气 · 宜忌</button>
+      <button class="tool-btn" data-m="crisis">⚠️ 危急推断</button>
+    </nav>
     <div class="sidebar-foot">
       <div style="margin-bottom:8px"><a href="index.html" style="font-size:12px;color:var(--primary);text-decoration:none">← 版本选择首页</a></div>
       <div class="legend"><span class="dot-gold"></span> 沈常用（采购买入，见去重表）</div>
@@ -259,10 +307,16 @@ function renderCats(){
   el.innerHTML=html;
 }
 function setCat(c){S.cat=c;renderCats();render();}
-function setModule(m){S.m=m;S.q='';$('q').value='';document.querySelectorAll('.mod').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
-  $('catsTitle').style.display=(m==='herbs')?'block':'none';$('cats').style.display=(m==='herbs')?'flex':'none';
-  $('shenBtn').style.display=(m==='herbs')?'':'none';render();}
-document.querySelectorAll('.mod').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.m)));
+const TOOL_MODS=['time','crisis'];
+function setModule(m){S.m=m;S.q='';$('q').value='';
+  document.querySelectorAll('.mod,.tool-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  const isTool=TOOL_MODS.includes(m);
+  $('catsTitle').style.display=(m==='herbs')?'block':'none';
+  $('cats').style.display=(m==='herbs')?'flex':'none';
+  $('shenBtn').style.display=(m==='herbs')?'':'none';
+  $('q').parentElement.style.display=isTool?'none':'block';
+  stopToolTimer();render();}
+document.querySelectorAll('.mod,.tool-btn').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.m)));
 $('shenBtn').addEventListener('click',()=>{S.shen=!S.shen;$('shenBtn').classList.toggle('on',S.shen);render();});
 $('q').addEventListener('input',e=>{S.q=e.target.value;if(S.q.trim()!=='')S.cat=null;render();});
 
@@ -410,15 +464,207 @@ function renderTaboos(){
 }
 function render(){
   renderCats();
-  const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌'};
-  $('mTitle').textContent=titles[S.m];
+  const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌',time:'时辰节气 · 宜忌',crisis:'危急推断'};
+  $('mTitle').textContent=titles[S.m]||'中药速记';
   const shenN=HERBS.filter(isShen).length;
   $('shenCnt').textContent=shenN+'味';
-  if(S.m==='herbs')renderHerbs();else if(S.m==='formulas')renderFormulas();else renderTaboos();
+  if(TOOL_MODS.includes(S.m)){ renderTool(); }
+  else if(S.m==='herbs')renderHerbs();else if(S.m==='formulas')renderFormulas();else renderTaboos();
   let showFiltered = S.m==='herbs';
-  $('statBar').innerHTML = (S.m==='herbs'
+  $('statBar').innerHTML = (TOOL_MODS.includes(S.m))
+    ? `<span class="stat">按设备当地时间</span>`
+    : (S.m==='herbs'
     ? `<span class="stat">中药 <b>${HERBS.length+(typeof KZ!=='undefined'?Object.keys(KZ).length:0)}</b> 味</span><span class="stat">沈常用 <b>${shenN}</b></span>${S.shen?'<span class="stat">已筛选 <b>沈常用</b></span>':''}`
     : S.m==='formulas'? `<span class="stat">经方 <b>${FORMULAS.length}</b> 首</span>`:`<span class="stat">十八反/十九畏/妊娠禁忌</span>`);
+}
+// ========== 学习工具：时辰节气 / 危急推断 ==========
+function renderTool(){
+  if(S.m==='time')renderWebTime(); else renderWebCrisis();
+}
+let webToolTimer=null;
+function stopToolTimer(){ if(webToolTimer){clearInterval(webToolTimer);webToolTimer=null;} }
+// ---- 共用数据（与手机版一致）----
+const W_SHICHEN=[
+  {z:'子',s:23,e:1,mer:'足少阳胆经',org:'胆',rs:'踝',area:'脚踝、足底',cat:'足部'},
+  {z:'丑',s:1,e:3,mer:'足厥阴肝经',org:'肝',rs:'头',area:'头部',cat:'头部'},
+  {z:'寅',s:3,e:5,mer:'手太阴肺经',org:'肺',rs:'目',area:'眼目、头面',cat:'头面'},
+  {z:'卯',s:5,e:7,mer:'手阳明大肠经',org:'大肠',rs:'面耳',area:'面部、耳',cat:'头面'},
+  {z:'辰',s:7,e:9,mer:'足阳明胃经',org:'胃',rs:'项口',area:'颈项、口部',cat:'颈项'},
+  {z:'巳',s:9,e:11,mer:'足太阴脾经',org:'脾',rs:'肩',area:'肩背、上肢（手）',cat:'肩臂'},
+  {z:'午',s:11,e:13,mer:'手少阴心经',org:'心',rs:'胸胁',area:'胸前、胁肋',cat:'胸前'},
+  {z:'未',s:13,e:15,mer:'手太阳小肠经',org:'小肠',rs:'腹',area:'腹部',cat:'腹部'},
+  {z:'申',s:15,e:17,mer:'足太阳膀胱经',org:'膀胱',rs:'心',area:'心胸部',cat:'胸前'},
+  {z:'酉',s:17,e:19,mer:'足少阴肾经',org:'肾',rs:'背胛',area:'背部、肩胛',cat:'背部'},
+  {z:'戌',s:19,e:21,mer:'手厥阴心包经',org:'心包',rs:'腰阴',area:'腰部、下焦',cat:'腰部'},
+  {z:'亥',s:21,e:23,mer:'手少阳三焦经',org:'三焦',rs:'股',area:'大腿、下肢',cat:'腿部'}
+];
+const W_TERMS=['春分','清明','谷雨','立夏','小满','芒种','夏至','小暑','大暑','立秋','处暑','白露','秋分','寒露','霜降','立冬','小雪','大雪','冬至','小寒','大寒','立春','雨水','惊蛰'];
+const W_LI=['立春','立夏','立秋','立冬'];
+const W_TERM_TABOO={立春:'脾',春分:'脾',立夏:'肺',夏至:'肺',立秋:'肝',秋分:'肝',立冬:'心',冬至:'心'};
+const W_PERSONAL=[{label:'早',s:8*60+45,e:9*60+15},{label:'下午',s:14*60+45,e:15*60+15},{label:'晚',s:20*60+45,e:21*60+15},{label:'凌晨',s:2*60+45,e:3*60+15}];
+// 五行
+const W_GAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const W_ZHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const W_GAN_EL={甲:'木',乙:'木',丙:'火',丁:'火',戊:'土',己:'土',庚:'金',辛:'金',壬:'水',癸:'水'};
+const W_ZHI_EL={子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+const W_EL_COLOR={金:'#b8860b',木:'#2f5d3a',水:'#1f5f8b',火:'#a33030',土:'#8a6d2f'};
+const W_EL_CRISIS={金:'肝',木:'脾',水:'心',火:'肺',土:'肾'};
+const W_CRISIS_EL={肝:'金',脾:'木',心:'水',肺:'火',肾:'土'};
+const W_ORGAN_EL={肝:'木',脾:'土',心:'火',肺:'金',肾:'水'};
+function wSolarLongitude(date){
+  const jd=date.getTime()/86400000+2440587.5;
+  const T=(jd-2451545.0)/36525;
+  let L0=((280.46646+36000.76983*T+0.0003032*T*T)%360+360)%360;
+  const M=(357.52911+35999.05029*T-0.0001537*T*T)*Math.PI/180;
+  const C=Math.sin(M)*(1.914602-0.004817*T-0.000014*T*T)+Math.sin(2*M)*(0.019993-0.000101*T)+Math.sin(3*M)*0.000289;
+  const om=(125.04-1934.136*T)*Math.PI/180;
+  return ((L0+C-0.00569-0.00478*Math.sin(om))%360+360)%360;
+}
+function wTermIdxAt(d){return Math.floor(wSolarLongitude(d)/15);}
+function wSample(d){const x=new Date(d);x.setHours(23,50,0,0);return x;}
+function wTodayTerm(now){const t=wSample(now),y=new Date(t);y.setDate(y.getDate()-1);const a=wTermIdxAt(y),b=wTermIdxAt(t);return a!==b?W_TERMS[b]:null;}
+function wNextTermDate(now){const d=wSample(now);const cur=wTermIdxAt(d);for(let i=0;i<16;i++){d.setDate(d.getDate()+1);if(wTermIdxAt(d)!==cur)return new Date(d);}return null;}
+function wDaysUntilNextLi(now,li){const target=W_TERMS.indexOf(li);const d=wSample(now);for(let i=0;i<400;i++){if(wTermIdxAt(d)===target){const y=new Date(d);y.setDate(y.getDate()-1);if(wTermIdxAt(y)!==target)return i;}d.setDate(d.getDate()+1);}return 999;}
+function wAllTermDates(year){const out={};const d=wSample(new Date(year,0,1));let prev=wTermIdxAt(wSample(new Date(year-1,11,31)));for(let i=0;i<366;i++){const idx=wTermIdxAt(d);if(idx!==prev&&!out[W_TERMS[idx]])out[W_TERMS[idx]]=new Date(year,d.getMonth(),d.getDate());prev=idx;d.setDate(d.getDate()+1);}return out;}
+function wShichenAt(h){return W_SHICHEN[Math.floor(((h+1)%24)/2)];}
+function wRange(s){const f=x=>x<10?'0'+x:x;if(s.z==='子')return'23:00–01:00';return f(s.s)+':00–'+f(s.e)+':00';}
+function wDayGZ(d){const days=Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(1900,0,1))/86400000);return{gan:W_GAN[((days%10)+10)%10],zhi:W_ZHI[((10+days)%12+12)%12]};}
+function wDayEl(d){return W_GAN_EL[wDayGZ(d).gan];}
+function fmtMD(d){return(d.getMonth()+1)+'月'+d.getDate()+'日';}
+const wEsc=x=>String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+// ---- 时辰节气页（桌面宽屏）----
+function renderWebTime(){
+  const c=$('content');
+  c.innerHTML=
+   '<div class="tool-wrap">'
+   +'<div class="tool-note">⏱ 实时显示当前时辰当令经络、所在节气与人神所在（针灸推拿禁忌部位）。数据据《备急千金要方》《千金翼方》，按设备当地时间计算，仅供学习参考。</div>'
+   +'<div class="tw-clock"><div class="clk" id="wClk">--:--</div><div class="dt" id="wDt"></div>'
+   +  '<div class="tw-grid">'
+   +  cell('🕐 当前时辰','wSc','','')+cell('🌿 当令经络','wMer','','')
+   +  cell('📅 当前节气','wTerm','','')+cell('🚫 人神所在','wRs','','',true)
+   +  '</div></div>'
+   +'<div id="wPers"></div>'
+   +'<div class="tw-taboo" id="wTaboo"></div>'
+   +'<div class="tw-cols">'
+   +'<div class="tw-card"><h4>十二时辰 · 当令经络与人神部位</h4><table class="tw-table" id="wShichenTbl"></table></div>'
+   +'<div class="tw-card"><h4>节气 · 经络禁忌（八节与四季）</h4><table class="tw-table" id="wTermTbl"></table></div>'
+   +'</div>'
+   +'<div class="tw-card" style="margin-top:16px"><h4>原理说明</h4>'
+   +'<div style="font-size:13px;line-height:1.9;color:var(--fg)">'
+   +'<p style="margin:0 0 8px"><b>子午流注：</b>寅时（03–05）自手太阴肺经始，气血依次流注十二经，丑时（01–03）终于足厥阴肝经。</p>'
+   +'<p style="margin:0 0 8px"><b>人神禁忌：</b>《千金翼方》十二时人神各有所在，其部位忌针灸、忌强力重按。</p>'
+   +'<p style="margin:0 0 8px"><b>节气禁忌：</b>《备急千金要方》"立春春分脾、立夏夏至肺、立秋秋分肝、立冬冬至心、四季十八日肾"，五脏王时忌针灸其经络。</p>'
+   +'<p style="margin:0;color:var(--muted)">时区：时辰与节气均按设备当地时间计算（顶部显示 GMT 偏移），出国随手机时区自动切换。</p>'
+   +'</div></div></div>';
+  // 时辰表
+  let sh='<tr><th>时辰</th><th>时间</th><th>当令经络</th><th>人神部位</th></tr>';
+  W_SHICHEN.forEach(s=>{sh+='<tr data-z="'+s.z+'"><td><b>'+s.z+'时</b></td><td>'+wRange(s)+'</td><td>'+s.mer+'<span class="tw-tag">'+s.org+'</span></td><td>'+s.rs+'<span class="tw-tag">'+s.cat+'</span></td></tr>';});
+  $('wShichenTbl').innerHTML=sh;
+  // 节气表
+  const year=new Date().getFullYear(),dates=wAllTermDates(year);
+  let th='<tr><th>节气</th><th>'+year+'</th><th>禁忌经络</th></tr>';
+  W_TERMS.forEach(t=>{const d=dates[t];const ds=d?fmtMD(d):'—';const org=W_TERM_TABOO[t];let cellx='<span style="color:var(--muted)">—</span>';
+    if(org)cellx='<b style="color:var(--danger)">'+org+'经</b>';
+    if(W_LI.includes(t))cellx+='<div class="tw-count">前18日：肾经</div>';
+    th+='<tr data-term="'+t+'"><td><b>'+t+'</b></td><td>'+ds+'</td><td>'+cellx+'</td></tr>';});
+  $('wTermTbl').innerHTML=th;
+  // 个人禁忌卡
+  const pers='<div class="tw-taboo" style="margin:0 0 16px" id="wPersBox"></div>';
+  $('wPers').outerHTML=pers;
+  // 计时
+  stopToolTimer();
+  wTick();
+  webToolTimer=setInterval(wTick,1000);
+}
+function cell(lab,id,val,sub,warn){
+  return '<div class="tw-cell'+(warn?' warn':'')+'"><div class="lab">'+lab+'</div><div class="val" id="'+id+'">'+(val||'--')+'</div><div class="sub" id="'+id+'Sub">'+(sub||'')+'</div></div>';
+}
+function wTick(){
+  const now=new Date();
+  const h=now.getHours(),m=now.getMinutes(),s=now.getSeconds();
+  $('wClk').textContent=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m)+':'+(s<10?'0'+s:s);
+  const wd=['日','一','二','三','四','五','六'][now.getDay()];
+  const offMin=-now.getTimezoneOffset(),offH=offMin/60;
+  let gmt='GMT'+(offH>=0?'+':'')+(Number.isInteger(offH)?offH:offH.toFixed(1));
+  let tzName='';try{tzName=Intl.DateTimeFormat().resolvedOptions().timeZone||'';}catch(e){}
+  $('wDt').textContent=now.getFullYear()+'年'+(now.getMonth()+1)+'月'+now.getDate()+'日 星期'+wd+'　'+gmt+(tzName?' · '+tzName.split('/').pop().replace(/_/g,' '):'');
+  const sc=wShichenAt(h);
+  $('wSc').textContent=sc.z+'时';$('wScSub').textContent=wRange(sc);
+  $('wMer').textContent=sc.mer;$('wMerSub').textContent='对应脏腑：'+sc.org+' · 气血当令';
+  const tIdx=wTermIdxAt(wSample(now));const termName=W_TERMS[tIdx];
+  $('wTerm').textContent=termName;
+  const nt=wNextTermDate(now);let sub='';
+  if(nt){const diff=Math.round((wSample(nt)-wSample(now))/86400000);sub=(diff===0?'今日交节':'距下一节气「'+W_TERMS[(tIdx+1)%24]+'」还有 '+diff+' 天');}
+  $('wTermSub').textContent=sub;
+  $('wRs').textContent=sc.rs;$('wRsSub').textContent=sc.area+'（'+sc.cat+'）';
+  // 禁忌
+  const todayTerm=wTodayTerm(now);let tabooOrgan=null,reason='';
+  if(todayTerm&&W_TERM_TABOO[todayTerm]){tabooOrgan=W_TERM_TABOO[todayTerm];reason='今日交「'+todayTerm+'」，《千金》载其日忌针灸'+tabooOrgan+'经（'+W_ORGAN_EL[tabooOrgan]+'）';}
+  else{let minLi=999,liN='';W_LI.forEach(li=>{const dd=wDaysUntilNextLi(now,li);if(dd<minLi){minLi=dd;liN=li;}});if(minLi>=1&&minLi<=18){tabooOrgan='肾';reason='四季末十八日（距「'+liN+'」还有 '+minLi+' 天），肾气王，忌针灸肾经';}}
+  let html='<div class="tt">⚠️ 此时禁忌提示</div><div class="bd">';
+  html+=tabooOrgan?('📜 <b>'+reason+'</b>'):'今日非八节/四季王日，无经络大禁；以下时辰人神部位仍需避忌。';
+  html+='<div style="margin-top:6px">🕐 当前为<b>'+sc.z+'时</b>，人神在<b>'+sc.rs+'</b>，'+sc.area+'处<b>忌针刺、忌强力重按</b>；推拿宜避开此区（'+sc.cat+'）。</div></div>'
+       +'<div class="src">出处：《备急千金要方·针灸宜忌》《千金翼方·十二时人神》。推拿禁忌为传统宜忌延伸，非现代解剖结论。</div>';
+  $('wTaboo').innerHTML=html;
+  // 个人时段
+  const curMin=h*60+m;const slot=W_PERSONAL.find(t=>curMin>=t.s&&curMin<t.e);
+  const box=$('wPersBox');
+  if(box){box.style.borderColor=slot?'var(--danger)':'rgba(163,48,48,.3)';box.style.background=slot?'rgba(163,48,48,.1)':'rgba(163,48,48,.05)';
+    const end=t=>String(Math.floor(t.e/60)).padStart(2,'0')+':'+String(t.e%60).padStart(2,'0');
+    box.innerHTML='<div class="tt">🚫 陈族用 · 推拿按穴禁忌时段 <span style="float:right;font-size:11px;padding:2px 10px;border-radius:11px;border:1px solid rgba(163,48,48,.4);color:var(--danger);background:#fff">'+(slot?('进行中 · 至 '+end(slot)):'未在时段')+'</span></div>'
+      +'<div class="bd">'+(slot?('现在处于「<b>'+slot.label+'</b>」禁忌时段，<b>禁推拿按穴</b>。'):'每日以下四个时段<b>禁推拿按穴</b>：')
+      +' 早 08:45–09:15 · 下午 14:45–15:15 · 晚 20:45–21:15 · 凌晨 02:45–03:15</div></div>';}
+  // 高亮
+  document.querySelectorAll('#wShichenTbl tr').forEach(tr=>tr.classList.toggle('cur',tr.dataset.z===sc.z));
+  document.querySelectorAll('#wTermTbl tr').forEach(tr=>tr.classList.toggle('cur',tr.dataset.term===termName));
+}
+
+// ---- 危急推断页（桌面宽屏）----
+function renderWebCrisis(){
+  const c=$('content');
+  c.innerHTML='<div class="tool-wrap">'
+   +'<div class="tool-note">⚠️ 依据《黄帝内经》五行传变推算病情危急之"日""时"：五脏受气于其所生，死于其所不胜（克我者）。金日金时克木→肝病危、木日木时克土→脾病危、水日水时克火→心病危、火日火时克金→肺病危、土日土时克水→肾病危。此为危重预后推算，仅供学习，危重症请立即就医。</div>'
+   +'<div class="tw-clock" style="background:linear-gradient(135deg,rgba(163,48,48,.06),rgba(212,160,23,.08))"><div class="lab" style="font-size:12px;color:var(--muted);margin-bottom:6px">📅 离今天最近的节气</div>'
+   +'<div style="font-size:22px;font-weight:700" id="wCzTerm">--</div><div style="font-size:13px;color:var(--muted);margin-top:3px" id="wCzTermSub"></div>'
+   +'<div style="margin-top:10px"><span style="font-size:13px;font-weight:700;color:var(--danger);background:rgba(163,48,48,.08);border:1px solid rgba(163,48,48,.3);border-radius:8px;padding:4px 12px" id="wCzWarn"></span></div></div>'
+   +'<div class="tw-cols">'
+   +'<div class="tw-card"><h4>该节气当天 · 金木水火土五行时</h4><table class="tw-table" id="wCzTimes"></table>'
+   +'<div style="font-size:11.5px;color:var(--muted);margin-top:8px;line-height:1.6" id="wCzTimesNote"></div></div>'
+   +'<div class="tw-card"><h4>最快到来的 · 五行日 / 五行时</h4><div class="tw-crisis-grid" id="wCzGrid"></div>'
+   +'<div style="font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.7">金日金时克木→<b style="color:var(--danger)">肝病危</b>；木日木时克土→<b style="color:var(--danger)">脾病危</b>；水日水时克火→<b style="color:var(--danger)">心病危</b>；火日火时克金→<b style="color:var(--danger)">肺病危</b>；土日土时克水→<b style="color:var(--danger)">肾病危</b>。</div></div>'
+   +'</div></div>';
+  stopToolTimer();
+  const now=new Date();const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  let dates=wAllTermDates(today.getFullYear());let nearest=null;
+  for(const t of W_TERMS){const d=dates[t];if(d){const dd=new Date(today.getFullYear(),d.getMonth(),d.getDate());if(dd>=today&&(!nearest||dd<nearest.date))nearest={name:t,date:dd};}}
+  if(!nearest){dates=wAllTermDates(today.getFullYear()+1);for(const t of W_TERMS){const d=dates[t];if(d){nearest={name:t,date:new Date(today.getFullYear()+1,d.getMonth(),d.getDate())};break;}}}
+  const nd=nearest.date,gz=wDayGZ(nd);const termOrgan=W_TERM_TABOO[nearest.name];
+  $('wCzTerm').textContent=nearest.name+'（'+fmtMD(nd)+'）';
+  $('wCzTermSub').textContent='当日干支：'+gz.gan+gz.zhi+'日（'+W_GAN_EL[gz.gan]+'日）';
+  const hlEl=termOrgan?W_CRISIS_EL[termOrgan]:null;
+  $('wCzWarn').textContent=termOrgan?('《千金》忌'+termOrgan+'经 · '+hlEl+'气克'+termOrgan+'（'+W_ORGAN_EL[termOrgan]+'）→ '+termOrgan+'病者逢「'+hlEl+'时」最危'):'非八节，无特定所克之脏；按当日干支与发病脏腑参详。';
+  const elShichen={金:[],木:[],水:[],火:[],土:[]};
+  W_SHICHEN.forEach(s=>(elShichen[W_ZHI_EL[s.z]]=elShichen[W_ZHI_EL[s.z]]||[]).push(s.z));
+  const elRange={金:'15:00–19:00',木:'03:00–07:00',水:'21:00–次日01:00',火:'09:00–13:00',土:'丑辰未戌四时'};
+  const kk={金:'木',木:'土',水:'火',火:'金',土:'水'};
+  let th='<tr><th>五行时</th><th>时辰</th><th>受克（危急）</th></tr>';
+  ['金','木','水','火','土'].forEach(el=>{const organ=W_EL_CRISIS[el];const isHl=(hlEl===el);
+    th+='<tr'+(isHl?' style="background:rgba(163,48,48,.08);font-weight:600"':'')+'><td><b style="color:'+W_EL_COLOR[el]+'">'+el+'时</b>'+(isHl?'<span class="tw-tag" style="background:var(--danger);color:#fff">本日最危</span>':'')+'</td>'
+      +'<td>'+elShichen[el].map(z=>z+'时').join('、')+'<div class="tw-count">'+elRange[el]+'</div></td>'
+      +'<td style="color:var(--danger)">'+organ+'病者危<div class="tw-count">'+el+'克'+kk[el]+'</div></td></tr>';});
+  $('wCzTimes').innerHTML=th;
+  $('wCzTimesNote').textContent=termOrgan?('「'+nearest.name+'」属《千金》八节禁忌，'+termOrgan+'经受克；当日尤以「'+hlEl+'时」为'+termOrgan+'病危笃之候。'):'五行时每日轮转：金时克木应肝、木时克土应脾、水时克火应心、火时克金应肺、土时克水应肾。';
+  const found={};
+  for(let off=0;off<20&&Object.keys(found).length<5;off++){const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+off);const el=wDayEl(d);if(!found[el])found[el]={el:el,off:off,date:d,gz:wDayGZ(d)};}
+  Object.keys(found).map(k=>found[k]).sort((a,b)=>a.off-b.off).forEach(f=>{const el=f.el;const organ=W_EL_CRISIS[el];const isToday=f.off===0;
+    const item=document.createElement('div');item.className='cz-item'+(isToday?' is-cur':'');
+    item.innerHTML='<div class="el" style="color:'+W_EL_COLOR[el]+'">'+el+'日 · '+el+'时'+(isToday?'<span class="cz-badge">今日</span>':'')+'</div>'
+      +'<div class="when">'+(isToday?'今天':f.off===1?'明天':f.off+'天后')+'（'+fmtMD(f.date)+'）'+f.gz.gan+f.gz.zhi+'日</div>'
+      +'<div class="organ">'+organ+'病者危 · '+el+'时：'+elShichen[el].map(z=>z+'时').join('、')+'</div>'
+      +'<div class="rel">'+el+'日'+el+'时，'+el+'气最旺，克'+kk[el]+'→'+organ+'病危</div>';
+    $('wCzGrid').appendChild(item);
+  });
 }
 // 右下角回到顶部浮球
 function toTop(){window.scrollTo({top:0,behavior:'smooth'});}
