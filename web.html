@@ -31,7 +31,11 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .shen-toggle button{flex:1;height:34px;border:1px solid rgba(212,160,23,.55);background:var(--gold-bg);color:var(--gold);border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s}
 .shen-toggle button.on{background:var(--gold);color:#fff}
 .cats-title{font-size:12px;color:var(--muted);margin:0 2px 8px}
-.cats{display:flex;flex-direction:column;gap:2px;max-height:52vh;overflow-y:auto;padding-right:2px}
+.cats{display:flex;flex-direction:column;gap:2px;padding-right:2px}
+.cat-toggle{display:flex;align-items:center;justify-content:center;gap:4px;padding:6px 10px;border-radius:7px;cursor:pointer;font-size:12px;color:var(--primary);background:rgba(47,93,58,.05);border:1px dashed rgba(47,93,58,.3);margin-top:2px}
+.cat-toggle:hover{background:rgba(47,93,58,.1)}
+.cat.collapsed-item{display:none}
+.cats.expanded .cat.collapsed-item{display:flex}
 .cat{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:7px;cursor:pointer;font-size:13px;color:var(--fg);border:1px solid transparent}
 .cat:hover{background:rgba(47,93,58,.07)}
 .cat.on{background:rgba(47,93,58,.12);border-color:rgba(47,93,58,.25);color:var(--primary);font-weight:600}
@@ -356,13 +360,20 @@ function renderCats(){
   const base=baseList();
   const kzN=typeof KZ!=='undefined'?Object.keys(KZ).filter(k=>!S.q||k.toLowerCase().includes(S.q.toLowerCase())).length:0;
   html+=`<div class="cat ${S.cat===null?'on':''}" onclick="setCat(null)"><span>全部</span><span class="n">${base.length+kzN}</span></div>`;
-  CATEGORIES.forEach(c=>{
+  const VISIBLE=8; // 始终显示的常用分类数，其余折叠
+  let hiddenN=0;
+  CATEGORIES.forEach((c,i)=>{
     const n=base.filter(h=>h[7]===c.name).length;
-    html+=`<div class="cat ${S.cat===c.name?'on':''}${n===0?' dim':''}" onclick="setCat('${c.name}')"><span>${c.name}</span><span class="n">${n}</span></div>`;
+    const hidden=i>=VISIBLE && !S.catsExpanded && S.cat!==c.name;
+    if(i>=VISIBLE)hiddenN++;
+    html+=`<div class="cat ${S.cat===c.name?'on':''}${n===0?' dim':''}${hidden?' collapsed-item':''}" onclick="setCat('${c.name}')"><span>${c.name}</span><span class="n">${n}</span></div>`;
   });
   html+=`<div class="cat ${S.cat==='__kz__'?'on':''}" onclick="setCat('__kz__')"><span>拓展典籍药（本草纲目·备要）</span><span class="n">${kzN}</span></div>`;
+  html+=`<div class="cat-toggle" onclick="toggleCats()"><span>${S.catsExpanded?'▲ 收起分类':'▼ 展开全部分类（'+hiddenN+'）'}</span></div>`;
+  el.classList.toggle('expanded',!!S.catsExpanded);
   el.innerHTML=html;
 }
+function toggleCats(){S.catsExpanded=!S.catsExpanded;renderCats();}
 function setCat(c){S.cat=c;renderCats();render();}
 const TOOL_MODS=['pulse','time','crisis'];
 function setModule(m){S.m=m;S.q='';$('q').value='';
