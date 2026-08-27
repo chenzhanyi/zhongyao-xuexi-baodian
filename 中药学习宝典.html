@@ -165,6 +165,23 @@ input{font-family:inherit}
 .tm-personal-times span{font-size:12px;color:var(--fg)}
 .tm-personal-times i{font-style:normal;color:var(--muted-fg);margin-right:2px}
 
+/* ===== 危急推断页 ===== */
+.cz-now{background:linear-gradient(135deg,rgba(163,48,48,.07),rgba(212,160,23,.08));border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin:10px 14px 0}
+.cz-now-title{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:8px}
+.cz-term{font-size:18px;font-weight:700;color:var(--fg)}
+.cz-term-sub{font-size:12px;color:var(--muted-fg);margin-top:2px}
+.cz-organ{display:inline-block;font-size:13px;font-weight:700;color:var(--destructive);background:rgba(163,48,48,.08);border:1px solid rgba(163,48,48,.3);border-radius:8px;padding:3px 10px;margin-top:8px}
+.cz-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.cz-item{border:1px solid var(--border);border-radius:10px;background:var(--card);padding:9px 11px}
+.cz-item .el{font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px}
+.cz-item .when{font-size:11.5px;color:var(--fg);margin-top:3px;font-weight:600}
+.cz-item .organ{font-size:11px;color:var(--destructive);margin-top:2px}
+.cz-item .rel{font-size:10.5px;color:var(--muted);margin-top:2px;line-height:1.5}
+.cz-item.is-cur{border-color:var(--destructive);box-shadow:0 0 0 1px rgba(163,48,48,.25) inset}
+.cz-badge{font-size:10px;background:var(--destructive);color:#fff;border-radius:8px;padding:1px 7px;margin-left:auto;font-weight:600}
+.cz-warn{margin:12px 14px 0;border:1px solid rgba(196,122,26,.4);background:rgba(196,122,26,.06);border-radius:12px;padding:10px 14px;font-size:11.5px;line-height:1.7;color:var(--fg)}
+.cz-warn b{color:var(--warning)}
+
 .to-top-ball{position:fixed;right:14px;bottom:calc(72px + env(safe-area-inset-bottom));z-index:15;width:44px;height:44px;border-radius:50%;background:rgba(47,93,58,.92);color:#fff;border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 14px rgba(20,40,25,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .25s ease,transform .25s ease}
 .to-top-ball.show{opacity:1;pointer-events:auto;transform:translateY(0)}
 .to-top-ball:active{transform:scale(.9)}
@@ -563,6 +580,11 @@ input{font-family:inherit}
         <div class="quick-info"><div class="quick-label">时辰节气 · 宜忌</div><div class="quick-sub">当前时辰当令经络 · 人神部位 · 节气经络禁忌</div></div>
         <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
+      <div class="quick-row" onclick="switchPage('crisis')" style="border-top:1px solid var(--border)">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div>
+        <div class="quick-info"><div class="quick-label">危急推断</div><div class="quick-sub">内经五行传变 · 节气五行时 · 金木水火土日时推算</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
     </div>
     <div class="section-card">
       <div class="section-card-title" style="display:flex;align-items:center;gap:6px">
@@ -716,6 +738,42 @@ input{font-family:inherit}
       <p style="margin:0;color:var(--muted-fg)"><b>时区：</b>时辰与节气均按本设备的当地时间计算（顶部已显示 GMT 偏移与时区），出国后随手机时区自动切换，无需手动设置。节气按太阳黄经这一天文瞬间确定，再以当地日历日期归位（故冬至在东八区可能是 22 日、在西时区为 21 日，均为正确）。</p>
     </div>
   </div>
+</div>
+
+<div class="page" id="page-crisis">
+  <div class="pulse-header">
+    <button class="pulse-back" onclick="switchPage('mine')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>我的</button>
+    <span class="pulse-title">危急推断</span>
+  </div>
+  <div class="pulse-note">⚠️ 依据《黄帝内经》五行传变推算病情危急之"日""时"：五脏受气于其所生，死于其所不胜（克我者）。故病在某脏，逢克它的那一行"日""时"为危急时刻。此为中医易学化的危重预后推算法，仅供学习参考，不能代替医师对危重症的判断与救治。</div>
+
+  <div class="cz-now">
+    <div class="cz-now-title">📅 离今天最近的节气</div>
+    <div class="cz-term" id="czTerm">--</div>
+    <div class="cz-term-sub" id="czTermSub">--</div>
+    <div class="cz-organ" id="czTermWarn">--</div>
+  </div>
+
+  <div class="pulse-sec">
+    <div class="pulse-sec-title">该节气当天 · 金木水火土五行时</div>
+    <div class="section-card" style="padding:6px 14px;overflow-x:auto">
+      <table class="tm-table" id="czTermTimes"></table>
+    </div>
+    <div class="pulse-note" style="margin-top:8px" id="czTermTimesNote"></div>
+  </div>
+
+  <div class="pulse-sec">
+    <div class="pulse-sec-title">最快到来的 · 五行日 / 五行时</div>
+    <div class="section-card" style="padding:10px 14px">
+      <div class="cz-grid" id="czDailyGrid"></div>
+    </div>
+    <div class="pulse-note" style="margin-top:8px">金日金时克木→<b style="color:var(--destructive)">肝病危</b>；木日木时克土→<b style="color:var(--destructive)">脾病危</b>；水日水时克火→<b style="color:var(--destructive)">心病危</b>；火日火时克金→<b style="color:var(--destructive)">肺病危</b>；土日土时克水→<b style="color:var(--destructive)">肾病危</b>（《素问·玉机真脏论》）。</div>
+  </div>
+
+  <div class="cz-warn">
+    <b>说明：</b>① 日干支按真实历法计算（用于定"金/木/水/火/土日"），时支按十二时辰定"金/木/水/火/土时"，均取设备当地时间；② 此为《内经》"死于所不胜"的传统推算，属五运六气/脏气法时学说的预后参考，<b>危重病情请立即就医，切勿据此延误救治</b>。
+  </div>
+  <div style="height:18px"></div>
 </div>
 
 <!-- Footer -->
@@ -877,12 +935,13 @@ function switchPage(page){
   currentPage=page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===(page==='pulse'?'mine':page)));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===((page==='pulse'||page==='time'||page==='crisis')?'mine':page)));
   closeSearch();
   window.scrollTo(0,0);
   if(page==='mine')renderMine();
   if(page==='pulse')renderPulse();
   if(page==='time')startTimePage(); else stopTimePage();
+  if(page==='crisis')renderCrisis();
 }
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>switchPage(n.dataset.page)));
 
@@ -2027,6 +2086,104 @@ function tmRenderTermTable(){
     h+='<tr data-term="'+t+'"><td><b>'+t+'</b></td><td>'+ds+'</td><td>'+cell+'</td></tr>';
   });
   document.getElementById('tmTermTable').innerHTML=h;
+}
+
+// ==================== 危急推断（内经五行传变） ====================
+const CZ_GAN=['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const CZ_ZHI=['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const CZ_GAN_EL={甲:'木',乙:'木',丙:'火',丁:'火',戊:'土',己:'土',庚:'金',辛:'金',壬:'水',癸:'水'};
+// 时支五行
+const CZ_ZHI_EL={子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+// 五行色
+const CZ_EL_COLOR={金:'#b8860b',木:'#2f5d3a',水:'#1f5f8b',火:'#a33030',土:'#8a6d2f'};
+// 某行当令 → 受克（危急）之脏
+const CZ_EL_CRISIS={金:'肝',木:'脾',水:'心',火:'肺',土:'肾'};
+const CZ_CRISIS_EL={肝:'金',脾:'木',心:'水',肺:'火',肾:'土'}; // 某脏危急 → 由哪行克
+const CZ_ORGAN_EL={肝:'木',脾:'土',心:'火',肺:'金',肾:'水'};  // 脏所属五行
+
+// 日干支（1900-01-01 为甲戌日，gan=甲 idx0、zhi=戌 idx10）
+function czDayGanzhi(d){
+  const days=Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(1900,0,1))/86400000);
+  return {gan:CZ_GAN[((days%10)+10)%10], zhi:CZ_ZHI[((10+days)%12+12)%12]};
+}
+function czDayElement(d){ return CZ_GAN_EL[czDayGanzhi(d).gan]; }
+function fmtMD(d){return (d.getMonth()+1)+'月'+d.getDate()+'日';}
+
+function renderCrisis(){
+  const now=new Date();
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+
+  // —— 离今天最近的节气（本年表，跨年兜底下一年）——
+  let dates=tmAllTermDates(today.getFullYear());
+  let nearest=null;
+  for(const t of TM_TERMS){
+    const d=dates[t];
+    if(d){ const dd=new Date(today.getFullYear(),d.getMonth(),d.getDate());
+      if(dd>=today && (!nearest || dd<nearest.date)) nearest={name:t,date:dd}; }
+  }
+  if(!nearest){ // 跨年
+    dates=tmAllTermDates(today.getFullYear()+1);
+    for(const t of TM_TERMS){ const d=dates[t]; if(d){ nearest={name:t,date:new Date(today.getFullYear()+1,d.getMonth(),d.getDate())}; break; } }
+  }
+  const nd=nearest.date;
+  const ndGZ=czDayGanzhi(nd);
+  document.getElementById('czTerm').textContent=nearest.name+'（'+fmtMD(nd)+'）';
+  const termOrgan=TM_TERM_TABOO[nearest.name];
+  let warnTxt='';
+  if(termOrgan){
+    const crisisEl=CZ_CRISIS_EL[termOrgan]; // 克该脏的行
+    warnTxt='《千金》载该日忌'+termOrgan+'经 · '+crisisEl+'气克'+termOrgan+'（'+CZ_ORGAN_EL[termOrgan]+'）→ '+termOrgan+'病者逢「'+crisisEl+'时」最危';
+  } else {
+    warnTxt='非八节（四立二分二至），无特定所克之脏；下方五行时仍可按当日干支与发病脏腑参详。';
+  }
+  document.getElementById('czTermSub').textContent='当日干支：'+ndGZ.gan+ndGZ.zhi+'日（'+CZ_GAN_EL[ndGZ.gan]+'日）';
+  document.getElementById('czTermWarn').textContent=warnTxt;
+
+  // —— 节气当天五行时表 ——
+  const elShichen={金:[],木:[],水:[],火:[],土:[]};
+  TM_SHICHEN.forEach(function(s){ (elShichen[CZ_ZHI_EL[s.z]]=elShichen[CZ_ZHI_EL[s.z]]||[]).push(s.z); });
+  const elRange={金:'15:00–19:00',木:'03:00–07:00',水:'21:00–次日01:00',火:'09:00–13:00',土:'丑辰未戌四时'};
+  const hlEl=termOrgan?CZ_CRISIS_EL[termOrgan]:null;
+  let th='<tr><th>五行时</th><th>时辰</th><th>当值受克（危急）</th></tr>';
+  ['金','木','水','火','土'].forEach(function(el){
+    const organ=CZ_EL_CRISIS[el];
+    const zhiStr=elShichen[el].map(function(z){return z+'时';}).join('、');
+    const isHl=(hlEl===el);
+    th+='<tr'+(isHl?' style="background:rgba(163,48,48,.08);font-weight:600"':'')+'>'
+      +'<td><b style="color:'+CZ_EL_COLOR[el]+'">'+el+'时</b>'+(isHl?'<span class="tm-tag" style="background:var(--destructive);color:#fff;border:none">本日最危</span>':'')+'</td>'
+      +'<td>'+zhiStr+'<div class="tm-count">'+elRange[el]+'</div></td>'
+      +'<td style="color:var(--destructive)">'+organ+'病者危<br><span class="tm-count">'+el+'克'+({金:'木',木:'土',水:'火',火:'金',土:'水'}[el])+'</span></td></tr>';
+  });
+  document.getElementById('czTermTimes').innerHTML=th;
+  document.getElementById('czTermTimesNote').textContent=
+    termOrgan
+      ? ('「'+nearest.name+'」属《千金》八节禁忌，'+termOrgan+'经受克；当日尤以「'+hlEl+'时」为'+termOrgan+'病危笃之候。')
+      : '五行时每日轮转：金时克木应肝、木时克土应脾、水时克火应心、火时克金应肺、土时克水应肾。';
+
+  // —— 最快到来的五行日 + 该日五行时 ——
+  const found={};
+  for(let off=0;off<20 && Object.keys(found).length<5;off++){
+    const d=new Date(today.getFullYear(),today.getMonth(),today.getDate()+off);
+    const el=czDayElement(d);
+    if(!found[el]) found[el]={off:off,date:d,gz:czDayGanzhi(d)};
+  }
+  let gh='';
+  ['金','木','水','火','土'].forEach(function(el){
+    const f=found[el];
+    if(!f) return;
+    const organ=CZ_EL_CRISIS[el];
+    const scs=elShichen[el].map(function(z){return z+'时';}).join('、');
+    const isToday=(f.off===0);
+    const dayLabel=isToday?'今天':(f.off===1?'明天':f.off+'天后');
+    gh+='<div class="cz-item'+(isToday?' is-cur':'')+'">'
+      +'<div class="el" style="color:'+CZ_EL_COLOR[el]+'">'+el+'日 · '+el+'时'
+        +(isToday?'<span class="cz-badge">今日</span>':'')+'</div>'
+      +'<div class="when">'+dayLabel+'（'+fmtMD(f.date)+'）'+f.gz.gan+f.gz.zhi+'日</div>'
+      +'<div class="organ">'+organ+'病者危 · '+el+'时：'+scs+'</div>'
+      +'<div class="rel">'+el+'日'+el+'时，'+el+'气最旺，克'+({金:'木',木:'土',水:'火',火:'金',土:'水'}[el])+'→'+organ+'病危</div>'
+      +'</div>';
+  });
+  document.getElementById('czDailyGrid').innerHTML=gh;
 }
 </script>
 </body>
