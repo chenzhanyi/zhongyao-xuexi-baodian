@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -83,6 +84,9 @@ public class MainActivity extends AppCompatActivity {
         });
         webView.setWebChromeClient(new WebChromeClient());
 
+        // 网页弹层开关回调：弹层打开时禁用下拉刷新，否则 WebView 会拦截弹层内滑动
+        webView.addJavascriptInterface(new NativeBridge(), "NativeBridge");
+
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -109,6 +113,13 @@ public class MainActivity extends AppCompatActivity {
     private void showError() {
         refresh.setRefreshing(false);
         errorView.setVisibility(View.VISIBLE);
+    }
+
+    private class NativeBridge {
+        @JavascriptInterface
+        public void setOverlayOpen(boolean open) {
+            runOnUiThread(() -> refresh.setEnabled(!open));
+        }
     }
 
     private boolean isNetworkAvailable() {

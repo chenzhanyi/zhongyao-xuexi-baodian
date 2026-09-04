@@ -2322,6 +2322,8 @@ function scrollLock(){
     ||document.getElementById('zoomBox').style.display==='flex';
   document.documentElement.classList[on?'add':'remove']('scroll-lock');
   document.body.classList[on?'add':'remove']('scroll-lock');
+  /* 安卓 App：弹层打开时禁用下拉刷新，否则 WebView 会拦截弹层内滑动 */
+  try{if(window.NativeBridge)NativeBridge.setOverlayOpen(on);}catch(e){}
 }
 function openZoom(src,alt){
   document.getElementById('zoomImg').src=src;
