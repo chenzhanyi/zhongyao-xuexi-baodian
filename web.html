@@ -143,6 +143,39 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .wp-collapsible.open .wp-collapsible-head .arrow{transform:rotate(180deg)}
 .wp-collapsible-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
 .wp-collapsible.open .wp-collapsible-body{max-height:1200px}
+/* ===== 针灸穴位（桌面） ===== */
+.wx-wrap{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
+@media(max-width:900px){.wx-wrap{grid-template-columns:1fr}}
+.wx-side{position:sticky;top:0}
+.wx-search{position:relative;margin-bottom:12px}
+.wx-search input{width:100%;height:38px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:0 12px 0 34px;font-size:13px;outline:none}
+.wx-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted)}
+.wx-mer{border:1px solid var(--line);border-radius:9px;background:var(--card);margin-bottom:6px;overflow:hidden}
+.wx-mer-head{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;cursor:pointer;font-size:13px;font-weight:600;color:var(--fg)}
+.wx-mer-head:hover{background:rgba(47,93,58,.05)}
+.wx-mer-head .c{font-size:11px;color:var(--muted);font-weight:400}
+.wx-mer-head .ar{transition:transform .2s;color:var(--muted)}
+.wx-mer.open .wx-mer-head .ar{transform:rotate(180deg)}
+.wx-mer-body{max-height:0;overflow:hidden;transition:max-height .25s ease}
+.wx-mer.open .wx-mer-body{max-height:none}
+.wx-pt{padding:7px 12px;border-top:1px dashed var(--line);cursor:pointer;font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.wx-pt:hover{background:rgba(47,93,58,.05)}
+.wx-pt small{color:var(--muted);font-size:11px;font-weight:400;margin-left:5px}
+.wx-detail{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 22px;min-height:300px}
+.wx-detail .ph{color:var(--muted);text-align:center;padding:60px 0}
+.wx-detail h3{font-size:20px;color:var(--primary);margin-bottom:2px}
+.wx-detail .sub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
+.wx-detail img{max-width:280px;width:100%;display:block;margin:0 auto 4px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:zoom-in}
+.wx-detail .cap{text-align:center;font-size:11.5px;color:var(--muted);margin-bottom:14px}
+.wx-field{margin-bottom:11px}
+.wx-field .k{font-size:12.5px;font-weight:700;color:var(--primary);margin-bottom:2px}
+.wx-field .v{font-size:13.5px;line-height:1.75;white-space:pre-line}
+.wx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.wx-card{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:11px 13px;cursor:pointer}
+.wx-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.wx-card .nm{font-size:14px;font-weight:700}
+.wx-card .nm small{font-size:11px;color:var(--muted);font-weight:400;margin-left:5px}
+.wx-card .zz{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 /* ---------- 主区 ---------- */
 .main{flex:1;min-width:0;padding:22px 28px}
 .head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px;flex-wrap:wrap}
@@ -242,6 +275,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
     <div class="tools-title">学习工具</div>
     <nav class="tools-nav">
       <button class="tool-btn" data-m="pulse">🩺 脉诊速记</button>
+      <button class="tool-btn" data-m="xuewei">📍 针灸穴位</button>
       <button class="tool-btn" data-m="time">🕐 时辰节气 · 宜忌</button>
       <button class="tool-btn" data-m="crisis">⚠️ 危急推断</button>
     </nav>
@@ -273,6 +307,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 <script src="fufang_bencao.js"></script>
 <script src="benbei.js"></script>
 <script src="kuozhan.js"></script>
+<script src="xuewei/xuewei.js"></script>
 <div class="ben-modal" id="ffModal" style="display:none" onclick="ffClose()">
   <div class="ben-box" onclick="event.stopPropagation()">
     <div class="ben-head"><span class="ben-title" id="ffTitle">本草纲目 · 附方</span><button class="ben-close" onclick="ffClose()">✕</button></div>
@@ -375,7 +410,7 @@ function renderCats(){
 }
 function toggleCats(){S.catsExpanded=!S.catsExpanded;renderCats();}
 function setCat(c){S.cat=c;renderCats();render();}
-const TOOL_MODS=['pulse','time','crisis'];
+const TOOL_MODS=['pulse','xuewei','time','crisis'];
 function setModule(m){S.m=m;S.q='';$('q').value='';
   document.querySelectorAll('.mod,.tool-btn').forEach(b=>b.classList.toggle('on',b.dataset.m===m));
   const isTool=TOOL_MODS.includes(m);
@@ -532,7 +567,7 @@ function renderTaboos(){
 }
 function render(){
   renderCats();
-  const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌',pulse:'脉诊速记',time:'时辰节气 · 宜忌',crisis:'危急推断'};
+  const titles={herbs:'中药速记',formulas:'经典经方',taboos:'配伍禁忌',pulse:'脉诊速记',xuewei:'针灸穴位',time:'时辰节气 · 宜忌',crisis:'危急推断'};
   $('mTitle').textContent=titles[S.m]||'中药速记';
   const shenN=HERBS.filter(isShen).length;
   $('shenCnt').textContent=shenN+'味';
@@ -550,6 +585,7 @@ function renderTool(){
   if(S.m==='time')renderWebTime();
   else if(S.m==='crisis')renderWebCrisis();
   else if(S.m==='pulse')renderWebPulse();
+  else if(S.m==='xuewei')renderWebXuewei();
 }
 let webToolTimer=null;
 function stopToolTimer(){ if(webToolTimer){clearInterval(webToolTimer);webToolTimer=null;} }
@@ -1038,6 +1074,50 @@ function wpCopy(){
   else{wpFallbackCopy(wpReport);done();}
 }
 function wpFallbackCopy(txt){const ta=document.createElement('textarea');ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+
+// ========== 学习工具：针灸穴位 ==========
+const WX=(typeof XUEWEI!=='undefined')?XUEWEI:[];
+const WX_MERS=(()=>{const o=[];WX.forEach(x=>{if(!o.includes(x.m))o.push(x.m);});return o;})();
+let wxState={mer:null,q:''};
+function wxNorm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');}
+function wxMatch(x,q){if(!q)return true;if(x.n.includes(q))return true;const nq=wxNorm(q);if(nq&&wxNorm(x.py).includes(nq))return true;return (x.zz||'').includes(q)||(x.dw||'').includes(q);}
+function renderWebXuewei(){
+  const c=$('content');
+  c.innerHTML='<div class="tool-wrap"><div class="tool-note">🩺 十四经 <b>'+WX.length+'</b> 穴：定位、解剖、主治、操作（刺灸法）、配伍与体表定位图。左侧按经脉浏览，或搜索穴名/拼音/主治。内容仅供学习，针刺须由执业医师操作。</div>'
+   +'<div class="wx-wrap"><div class="wx-side"><div class="wx-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input id="wxQ" type="search" placeholder="搜索穴名/拼音/主治…"></div><div id="wxMers"></div></div>'
+   +'<div class="wx-detail" id="wxDetail"><div class="ph">← 选择左侧穴位查看详情</div></div></div></div>';
+  $('wxQ').oninput=e=>{wxState.q=e.target.value.trim();wxState.mer=null;wxRenderMers();};
+  wxRenderMers();
+}
+function wxRenderMers(){
+  const q=wxState.q;
+  const box=$('wxMers'),det=$('wxDetail');
+  if(q){
+    const res=WX.map((x,i)=>({x,i})).filter(o=>wxMatch(o.x,q));
+    box.innerHTML='<div style="font-size:12px;color:var(--muted);padding:4px 4px 8px">搜索结果 '+res.length+' 穴</div><div class="wx-grid">'+res.map(o=>'<div class="wx-card" onclick="wxShow('+o.i+')"><div class="nm">'+esc(o.x.n)+'</div><div class="zz">'+esc(o.x.zz||o.x.dw||'')+'</div></div>').join('')+'</div>';
+    if(det&&det.querySelector('.ph'))det.innerHTML='';
+    if(res.length)wxShow(res[0].i);else det.innerHTML='<div class="ph">未找到相关穴位</div>';
+    return;
+  }
+  let h='';
+  WX_MERS.forEach((mer,mi)=>{
+    const pts=WX.map((x,i)=>({x,i})).filter(o=>o.x.m===mer);
+    const open=wxState.mer===mi;
+    h+='<div class="wx-mer'+(open?' open':'')+'"><div class="wx-mer-head" onclick="wxToggleMer('+mi+')"><span>'+esc(mer)+' <span class="c">'+pts.length+'</span></span><svg class="ar" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>'
+      +'<div class="wx-mer-body">'+pts.map(o=>'<div class="wx-pt" onclick="wxShow('+o.i+')"><span>'+esc(o.x.n)+'<small>'+(o.x.py||'')+'</small></span></div>').join('')+'</div></div>';
+  });
+  box.innerHTML=h;
+  if(det&&det.querySelector('.ph'))det.innerHTML='<div class="ph">← 选择左侧穴位查看详情</div>';
+}
+function wxToggleMer(mi){wxState.mer=(wxState.mer===mi)?null:mi;wxRenderMers();const box=$('wxMers').querySelectorAll('.wx-mer')[mi];if(box)box.scrollIntoView({block:'nearest'});}
+function wxShow(i){
+  const x=WX[i];if(!x)return;
+  let h='<h3>'+esc(x.n)+(x.py?' <small style="font-size:13px;color:var(--muted);font-weight:400">'+esc(x.py)+'</small>':'')+'</h3>'
+    +'<div class="sub">'+esc(x.m)+(x.src?'　出处：《'+esc(x.src)+'》':'')+'</div>';
+  if(x.img){h+='<img src="'+esc(x.img)+'" alt="'+esc(x.n)+'" onclick="window.open(this.src)" loading="lazy">';if(x.cap)h+='<div class="cap">'+esc(x.cap)+'（点击放大）</div>';}
+  [['定位','dw'],['解剖','jp'],['主治','zz'],['操作（刺灸法）','cz'],['配伍','pw'],['附注','bz']].forEach(f=>{if(x[f[1]])h+='<div class="wx-field"><div class="k">'+f[0]+'</div><div class="v">'+esc(x[f[1]])+'</div></div>';});
+  $('wxDetail').innerHTML=h;
+}
 
 // init
 renderCats();render();

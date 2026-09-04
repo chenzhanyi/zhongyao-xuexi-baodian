@@ -165,6 +165,31 @@ input{font-family:inherit}
 .tm-personal-times span{font-size:12px;color:var(--fg)}
 .tm-personal-times i{font-style:normal;color:var(--muted-fg);margin-right:2px}
 
+/* ===== 针灸穴位页 ===== */
+.xw-search{margin:10px 14px 0;position:relative}
+.xw-search input{width:100%;height:40px;border:1px solid var(--border);border-radius:9px;background:var(--card);padding:0 12px 0 34px;font-size:14px;color:var(--fg);outline:none}
+.xw-search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted)}
+.xw-sec{margin:14px 14px 0}
+.xw-mer-card{border:1px solid var(--border);border-radius:11px;background:var(--card);margin-bottom:10px;overflow:hidden}
+.xw-mer-head{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer;background:var(--card)}
+.xw-mer-head .tt{font-size:14.5px;font-weight:700;color:var(--primary)}
+.xw-mer-head .cnt{font-size:11px;color:var(--muted);margin-left:6px;font-weight:400}
+.xw-mer-arrow{transition:transform .25s;color:var(--muted);flex-shrink:0}
+.xw-mer-card.open .xw-mer-arrow{transform:rotate(180deg)}
+.xw-mer-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+.xw-mer-card.open .xw-mer-body{max-height:none;overflow:visible}
+.xw-pt{padding:10px 14px;border-top:1px dashed var(--border);cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.xw-pt:active{background:rgba(47,93,58,.05)}
+.xw-pt-name{font-size:14.5px;font-weight:600}
+.xw-pt-name small{font-size:11px;color:var(--muted);font-weight:400;margin-left:6px}
+.xw-pt-zz{font-size:11.5px;color:var(--muted-fg);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:78vw}
+.xw-modal-img{width:100%;max-width:300px;display:block;margin:0 auto 6px;border-radius:8px;background:#fff;border:1px solid var(--border)}
+.xw-modal-cap{text-align:center;font-size:12px;color:var(--muted);margin-bottom:12px}
+.xw-field{margin-bottom:10px}
+.xw-field .k{font-size:12.5px;font-weight:700;color:var(--primary);margin-bottom:2px}
+.xw-field .v{font-size:13.5px;line-height:1.7;color:var(--fg);white-space:pre-line}
+.xw-field.src .v{color:var(--muted-fg);font-size:12.5px}
+
 /* ===== 危急推断页 ===== */
 .cz-now{background:linear-gradient(135deg,rgba(163,48,48,.07),rgba(212,160,23,.08));border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin:10px 14px 0}
 .cz-now-title{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;margin-bottom:8px}
@@ -585,6 +610,11 @@ input{font-family:inherit}
         <div class="quick-info"><div class="quick-label">危急推断</div><div class="quick-sub">内经五行传变 · 节气五行时 · 金木水火土日时推算</div></div>
         <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
       </div>
+      <div class="quick-row" onclick="switchPage('xuewei')" style="border-top:1px solid var(--border)">
+        <div class="quick-icon-wrap"><svg class="quick-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="10" r="2.5"/></svg></div>
+        <div class="quick-info"><div class="quick-label">针灸穴位</div><div class="quick-sub">十四经 358 穴 · 定位/主治/操作 · 体表图</div></div>
+        <svg class="quick-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </div>
     </div>
     <div class="section-card">
       <div class="section-card-title" style="display:flex;align-items:center;gap:6px">
@@ -776,6 +806,27 @@ input{font-family:inherit}
   <div style="height:18px"></div>
 </div>
 
+<div class="page" id="page-xuewei">
+  <div class="pulse-header">
+    <button class="pulse-back" onclick="switchPage('mine')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>我的</button>
+    <span class="pulse-title">针灸穴位</span>
+  </div>
+  <div class="pulse-note">🩺 十四经 358 穴，收录定位、解剖、主治、操作（刺灸法）、配伍与体表定位图。按经脉分组浏览，或搜索穴名/拼音/主治。内容整理自公开中医资料，仅供学习，针刺须由执业医师操作。</div>
+  <div class="xw-search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="xwSearchInput" type="search" placeholder="搜索穴名 / 拼音 / 主治…" autocomplete="off">
+  </div>
+  <div class="xw-sec" id="xwList"></div>
+  <div style="height:18px"></div>
+</div>
+
+<div class="ben-modal" id="xwModal" style="display:none" onclick="closeXw()">
+  <div class="ben-box" onclick="event.stopPropagation()">
+    <div class="ben-head"><span class="ben-title" id="xwTitle">穴位</span><button class="ben-close" onclick="closeXw()">✕</button></div>
+    <div class="ben-body" id="xwBody"></div>
+  </div>
+</div>
+
 <!-- Footer -->
 <div style="text-align:center;padding:8px 0 0"><a href="index.html" style="font-size:12px;color:var(--muted)">← 版本选择首页</a></div>
 <div class="app-footer">
@@ -883,6 +934,7 @@ input{font-family:inherit}
 <script src="fufang_bencao.js"></script>
 <script src="benbei.js"></script>
 <script src="kuozhan.js"></script>
+<script src="xuewei/xuewei.js"></script>
 <script src="tcm-data.js"></script>
 <script>
 function esc(x){return String(x==null?'x':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -935,13 +987,14 @@ function switchPage(page){
   currentPage=page;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===((page==='pulse'||page==='time'||page==='crisis')?'mine':page)));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===((page==='pulse'||page==='time'||page==='crisis'||page==='xuewei')?'mine':page)));
   closeSearch();
   window.scrollTo(0,0);
   if(page==='mine')renderMine();
   if(page==='pulse')renderPulse();
   if(page==='time')startTimePage(); else stopTimePage();
   if(page==='crisis')renderCrisis();
+  if(page==='xuewei')initXuewei();
 }
 document.querySelectorAll('.nav-item').forEach(n=>n.addEventListener('click',()=>switchPage(n.dataset.page)));
 
@@ -2185,6 +2238,69 @@ function renderCrisis(){
   });
   document.getElementById('czDailyGrid').innerHTML=gh;
 }
+
+// ==================== 针灸穴位 ====================
+const XW_DATA=(typeof XUEWEI!=='undefined')?XUEWEI:[];
+const XW_MERIDIANS=(function(){const o=[];XW_DATA.forEach(function(x){if(o.indexOf(x.m)<0)o.push(x.m);});return o;})();
+let xwInitDone=false;
+function initXuewei(){
+  if(!xwInitDone){
+    xwInitDone=true;
+    document.getElementById('xwSearchInput').addEventListener('input',function(){renderXueweiList(this.value.trim());});
+  }
+  renderXueweiList('');
+}
+function xwNorm(s){return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');}
+function xwMatch(x,q){
+  if(!q)return true;
+  if(x.n.indexOf(q)>=0)return true;
+  const nq=xwNorm(q);
+  if(nq&&xwNorm(x.py).indexOf(nq)>=0)return true;
+  return (x.zz||'').indexOf(q)>=0||(x.dw||'').indexOf(q)>=0;
+}
+function xwPointRow(x,i){
+  return '<div class="xw-pt" onclick="openXw('+i+')">'
+    +'<div style="min-width:0"><div class="xw-pt-name">'+esc(x.n)+(x.src?'<small>《'+esc(x.src)+'》</small>':'')+'</div>'
+    +'<div class="xw-pt-zz">'+esc(x.zz||x.dw||'')+'</div></div>'
+    +'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></div>';
+}
+function renderXueweiList(q){
+  const list=document.getElementById('xwList');
+  let h='';
+  if(q){
+    const res=XW_DATA.map(function(x,i){return {x:i,m:x};}).filter(function(o){return xwMatch(o.m,q);});
+    if(!res.length){h='<div style="text-align:center;color:var(--muted);padding:40px 0;font-size:13px">未找到相关穴位</div>';}
+    else{
+      h+='<div style="font-size:12px;color:var(--muted);margin:0 2px 8px">找到 '+res.length+' 个相关穴位</div>';
+      h+='<div class="xw-mer-card open"><div style="max-height:none">'+res.map(function(o){return xwPointRow(o.m,o.x);}).join('')+'</div></div>';
+    }
+  }else{
+    XW_MERIDIANS.forEach(function(mer,mi){
+      const pts=XW_DATA.map(function(x,i){return {x:i,m:x};}).filter(function(o){return o.m.m===mer;});
+      h+='<div class="xw-mer-card'+(mi===0?' open':'')+'" data-mer="'+mi+'">'
+        +'<div class="xw-mer-head" onclick="xwToggleMer(this)"><span class="tt">'+esc(mer)+'<span class="cnt">'+pts.length+' 穴</span></span>'
+        +'<svg class="xw-mer-arrow" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></div>'
+        +'<div class="xw-mer-body">'+pts.map(function(o){return xwPointRow(o.m,o.x);}).join('')+'</div></div>';
+    });
+  }
+  list.innerHTML=h;
+}
+function xwToggleMer(head){head.parentElement.classList.toggle('open');}
+function openXw(i){
+  const x=XW_DATA[i];if(!x)return;
+  document.getElementById('xwTitle').textContent=x.n+(x.py?' '+x.py:'');
+  let h='';
+  if(x.img){
+    h+='<img class="xw-modal-img" src="'+esc(x.img)+'" alt="'+esc(x.n)+'" onclick="window.open(this.src)" loading="lazy">';
+    if(x.cap)h+='<div class="xw-modal-cap">'+esc(x.cap)+'（点击图片放大）</div>';
+  }
+  h+='<div style="text-align:center;font-size:12px;color:var(--muted);margin-bottom:10px">'+esc(x.m)+(x.src?'　出处：《'+esc(x.src)+'》':'')+'</div>';
+  const fields=[['定位','dw'],['解剖','jp'],['主治','zz'],['操作（刺灸法）','cz'],['配伍','pw'],['附注','bz']];
+  fields.forEach(function(f){if(x[f[1]])h+='<div class="xw-field"><div class="k">'+f[0]+'</div><div class="v">'+esc(x[f[1]])+'</div></div>';});
+  document.getElementById('xwBody').innerHTML=h;
+  document.getElementById('xwModal').style.display='flex';
+}
+function closeXw(){document.getElementById('xwModal').style.display='none';}
 </script>
 </body>
 </html>
