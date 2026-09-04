@@ -167,6 +167,10 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .wx-detail .sub{font-size:12.5px;color:var(--muted);margin-bottom:12px}
 .wx-detail img{max-width:280px;width:100%;display:block;margin:0 auto 4px;border:1px solid var(--line);border-radius:8px;background:#fff;cursor:zoom-in}
 .wx-detail .cap{text-align:center;font-size:11.5px;color:var(--muted);margin-bottom:14px}
+.img-zoom{position:fixed;inset:0;z-index:400;background:rgba(12,9,5,.9);display:none;align-items:center;justify-content:center;padding:16px;cursor:zoom-out}
+.img-zoom img{max-width:100%;max-height:100%;border-radius:6px;background:#fff;box-shadow:0 8px 40px rgba(0,0,0,.5)}
+.img-zoom-tip{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:rgba(255,255,255,.7);font-size:12px;pointer-events:none}
+.scroll-lock{overflow:hidden!important}
 .wx-field{margin-bottom:11px}
 .wx-field .k{font-size:12.5px;font-weight:700;color:var(--primary);margin-bottom:2px}
 .wx-field .v{font-size:13.5px;line-height:1.75;white-space:pre-line}
@@ -1114,14 +1118,30 @@ function wxShow(i){
   const x=WX[i];if(!x)return;
   let h='<h3>'+esc(x.n)+(x.py?' <small style="font-size:13px;color:var(--muted);font-weight:400">'+esc(x.py)+'</small>':'')+'</h3>'
     +'<div class="sub">'+esc(x.m)+(x.src?'　出处：《'+esc(x.src)+'》':'')+'</div>';
-  if(x.img){h+='<img src="'+esc(x.img)+'" alt="'+esc(x.n)+'" onclick="window.open(this.src)" loading="lazy">';if(x.cap)h+='<div class="cap">'+esc(x.cap)+'（点击放大）</div>';}
+  if(x.img){h+='<img src="'+esc(x.img)+'" alt="'+esc(x.n)+'" onclick="openZoom(this.src,this.alt)" loading="lazy">';if(x.cap)h+='<div class="cap">'+esc(x.cap)+'（点击放大）</div>';}
   [['定位','dw'],['解剖','jp'],['主治','zz'],['操作（刺灸法）','cz'],['配伍','pw'],['附注','bz']].forEach(f=>{if(x[f[1]])h+='<div class="wx-field"><div class="k">'+f[0]+'</div><div class="v">'+esc(x[f[1]])+'</div></div>';});
   $('wxDetail').innerHTML=h;
+}
+function openZoom(src,alt){
+  $('zoomImg').src=src;
+  $('zoomImg').alt=alt||'';
+  $('zoomBox').style.display='flex';
+  document.documentElement.classList.add('scroll-lock');
+  document.body.classList.add('scroll-lock');
+}
+function closeZoom(){
+  $('zoomBox').style.display='none';
+  document.documentElement.classList.remove('scroll-lock');
+  document.body.classList.remove('scroll-lock');
 }
 
 // init
 renderCats();render();
 </script>
+<div class="img-zoom" id="zoomBox" onclick="closeZoom()">
+  <img id="zoomImg" alt="">
+  <div class="img-zoom-tip">点击任意处返回</div>
+</div>
 <button class="to-top-ball" id="toTopBall" aria-label="回到顶部" onclick="toTop()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="18 15 12 9 6 15"/></svg></button>
 </body>
 </html>
