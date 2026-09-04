@@ -14,3 +14,5 @@ node_modules/
 # 穴位采集中间产物（最终 xuewei.js 入库，原始缓存不入库）
 xuewei_list.html
 xuewei_raw.json
+xuewei-img.tgz
+xuewei/img/
