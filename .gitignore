@@ -10,3 +10,7 @@ node_modules/
 第二批中药*.xls
 第三批中药*.xlsx
 中药三批合并去重表.xlsx
+
+# 穴位采集中间产物（最终 xuewei.js 入库，原始缓存不入库）
+xuewei_list.html
+xuewei_raw.json
