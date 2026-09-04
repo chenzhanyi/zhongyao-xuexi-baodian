@@ -1,3 +1,19 @@
 # 全站禁止抓取与索引（家族内部学习工具，不希望被搜索引擎/爬虫收录）
 User-agent: *
 Disallow: /
+
+# 明确禁止主流搜索引擎（CF 托管段会注入 Allow: /，逐家点名兜底）
+User-agent: Googlebot
+Disallow: /
+User-agent: Googlebot-Image
+Disallow: /
+User-agent: Baiduspider
+Disallow: /
+User-agent: Bingbot
+Disallow: /
+User-agent: Sogou web spider
+Disallow: /
+User-agent: 360Spider
+Disallow: /
+User-agent: YisouSpider
+Disallow: /
