@@ -84,10 +84,12 @@ def main():
         f.write('// ============================================================\n'
                 '// 中药鉴别·索引 jianbie_idx.js：药名→1（该药有鉴别数据）\n'
                 '// 键与 jianbie.js 的 JBI 一一对应（键=站点标准名）\n'
+                '// JBI_EXTRA_IDX：附加分类全部药名（仅名字，供全局搜索覆盖，无需加载正文）\n'
                 '// 2026-09 由 gen_jianbie.py 从《中药世家·开源数据集》生成（Apache-2.0）\n'
                 '// 体积小，随页面同步加载；正文 jianbie.js 点击时才懒加载\n'
                 '// ============================================================\n'
-                'const JBI_IDX = ' + dump(idx) + ';\n')
+                'const JBI_IDX = ' + dump(idx) + ';\n'
+                'const JBI_EXTRA_IDX = ' + dump(list(extra.keys())) + ';\n')
 
     with open(OUT_JBI, 'w', encoding='utf-8') as f:
         f.write('// ============================================================\n'

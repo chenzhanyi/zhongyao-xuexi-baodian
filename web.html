@@ -409,7 +409,7 @@ function renderCats(){
     html+=`<div class="cat ${S.cat===c.name?'on':''}${n===0?' dim':''}${hidden?' collapsed-item':''}" onclick="setCat('${c.name}')"><span>${c.name}</span><span class="n">${n}</span></div>`;
   });
   html+=`<div class="cat ${S.cat==='__kz__'?'on':''}" onclick="setCat('__kz__')"><span>拓展典籍药（本草纲目·备要）</span><span class="n">${kzN}</span></div>`;
-  const jbN=typeof JBI_EXTRA!=='undefined'?Object.keys(JBI_EXTRA).length:'…';
+  const jbN=typeof JBI_EXTRA_IDX!=='undefined'?JBI_EXTRA_IDX.length:'…';
   html+=`<div class="cat ${S.cat==='__jb__'?'on':''}" onclick="setCat('__jb__')"><span>其他文献附加分类</span><span class="n">${jbN}</span></div>`;
   html+=`<div class="cat-toggle" onclick="toggleCats()"><span>${S.catsExpanded?'▲ 收起分类':'▼ 展开全部分类（'+hiddenN+'）'}</span></div>`;
   el.classList.toggle('expanded',!!S.catsExpanded);
@@ -477,8 +477,23 @@ function renderHerbs(){
     });
     html+='</div>';
   });
-  html+=kzh;
+  html+=kzh+jbExtraSearchHTML();
   $('content').innerHTML=html;
+}
+function jbExtraSearchHTML(){
+  // 全局搜索时展示文献附加药的命中（只用同步索引，无需加载正文）
+  if(typeof JBI_EXTRA_IDX==='undefined'||!S.q)return '';
+  const q=S.q.toLowerCase();
+  const all=JBI_EXTRA_IDX.filter(k=>k.toLowerCase().includes(q));
+  const n=all.slice(0,60); if(!n.length)return '';
+  let h='<h3 style="color:var(--primary);margin:16px 0 8px;font-size:15px">其他文献附加分类 <span style="color:var(--muted);font-size:12px">'+all.length+'</span></h3><div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">';
+  n.forEach(function(k){h+='<div class="ffcard"><div class="ffhead" onclick="jbSearchOpen(this)" data-n="'+htmlAttr(k)+'"><b>'+k+'</b><span class="ffcnt">文献</span></div></div>';});
+  h+='</div>'; return h;
+}
+function jbSearchOpen(el){
+  const k=el.getAttribute('data-n');
+  if(typeof JBI_EXTRA!=='undefined'&&JBI_EXTRA[k]){jbShow(el);return;}
+  loadScript('jianbie_extra.js',function(){jbShow(el);});
 }
 function kzGridHTML(){
   if(typeof KZ==='undefined'||!Object.keys(KZ).length)return '';
