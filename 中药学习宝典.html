@@ -1034,7 +1034,7 @@ function tabooDetail(t){
 
 function renderHerbs(){
   const src=shenFilter?HERBS.filter(h=>SHEN_COMMON.has(h[0])):HERBS;
-  document.getElementById('herbCount').textContent=(shenFilter?'沈常用 ':'共 ')+(src.length+(typeof KZ!=='undefined'&&!shenFilter?Object.keys(KZ).length:0))+' 味 · 按功效分类（拓展典籍药置底部）';
+  document.getElementById('herbCount').textContent=(shenFilter?'沈常用 ':'共 ')+(src.length+(typeof KZ!=='undefined'&&!shenFilter?Object.keys(KZ).length:0)+(typeof JBI_EXTRA_IDX!=='undefined'&&!shenFilter?JBI_EXTRA_IDX.length:0))+' 味 · 按功效分类'+(shenFilter?'':'（拓展典籍药、文献附加药置底部）');
   const shenNumEl=document.getElementById('shenNum');
   if(shenNumEl)shenNumEl.textContent=HERBS.filter(h=>SHEN_COMMON.has(h[0])).length+'味';
   const list=document.getElementById('catList');
