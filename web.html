@@ -399,7 +399,8 @@ function renderCats(){
   const el=$('cats');let html='';
   const base=baseList();
   const kzN=typeof KZ!=='undefined'?Object.keys(KZ).filter(k=>!S.q||k.toLowerCase().includes(S.q.toLowerCase())).length:0;
-  html+=`<div class="cat ${S.cat===null?'on':''}" onclick="setCat(null)"><span>全部</span><span class="n">${base.length+kzN}</span></div>`;
+  const jbN=typeof JBI_EXTRA_IDX!=='undefined'?JBI_EXTRA_IDX.filter(k=>!S.q||k.toLowerCase().includes(S.q.toLowerCase())).length:'…';
+  html+=`<div class="cat ${S.cat===null?'on':''}" onclick="setCat(null)"><span>全部</span><span class="n">${base.length+kzN+(typeof jbN==='number'?jbN:0)}</span></div>`;
   const VISIBLE=8; // 始终显示的常用分类数，其余折叠
   let hiddenN=0;
   CATEGORIES.forEach((c,i)=>{
@@ -409,7 +410,6 @@ function renderCats(){
     html+=`<div class="cat ${S.cat===c.name?'on':''}${n===0?' dim':''}${hidden?' collapsed-item':''}" onclick="setCat('${c.name}')"><span>${c.name}</span><span class="n">${n}</span></div>`;
   });
   html+=`<div class="cat ${S.cat==='__kz__'?'on':''}" onclick="setCat('__kz__')"><span>拓展典籍药（本草纲目·备要）</span><span class="n">${kzN}</span></div>`;
-  const jbN=typeof JBI_EXTRA_IDX!=='undefined'?JBI_EXTRA_IDX.length:'…';
   html+=`<div class="cat ${S.cat==='__jb__'?'on':''}" onclick="setCat('__jb__')"><span>其他文献附加分类</span><span class="n">${jbN}</span></div>`;
   html+=`<div class="cat-toggle" onclick="toggleCats()"><span>${S.catsExpanded?'▲ 收起分类':'▼ 展开全部分类（'+hiddenN+'）'}</span></div>`;
   el.classList.toggle('expanded',!!S.catsExpanded);
