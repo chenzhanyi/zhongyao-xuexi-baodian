@@ -265,6 +265,7 @@ input{font-family:inherit}
 
 .btn-sm{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--secondary);color:var(--secondary-fg)}
 .btn-sm.mastered{border-color:rgba(58,125,58,.4);background:rgba(58,125,58,.1);color:var(--success)}
+.btn-sm.jb-btn{border-color:rgba(98,114,164,.35);background:rgba(98,114,164,.08);color:#5a6ca8}
 .btn-fav{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted-fg);flex-shrink:0}
 .btn-fav.active{color:#d4a017}
 
@@ -945,6 +946,7 @@ input{font-family:inherit}
 <script src="kuozhan.js"></script>
 <script src="xuewei/xuewei.js"></script>
 <script src="tcm-data.js"></script>
+<script src="jianbie_idx.js"></script>
 <script>
 function esc(x){return String(x==null?'x':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 // ==================== STATE ====================
@@ -1057,7 +1059,7 @@ function renderHerbs(){
         html+='<div class="herb-meta">'+o.nature+' · '+o.meridians+'</div>';
         html+='<div class="herb-effects">'+o.effects+'</div>';
         html+='<div class="herb-bottom"><span class="herb-dosage">用量：'+o.dosage+'</span>';
-        html+='<div class="herb-actions">'+(typeof BENCAO!=='undefined'&&BENCAO[id]?'<button class="btn-sm ben-btn" onclick="openBencao(\''+id+'\')">📖 本草</button>':'')+'<button class="btn-fav'+(isFav?' active':'')+'" onclick="toggleFavHerb(\''+id+'\',this)">';
+        html+='<div class="herb-actions">'+(typeof BENCAO!=='undefined'&&BENCAO[id]?'<button class="btn-sm ben-btn" onclick="openBencao(\''+id+'\')">📖 本草</button>':'')+(typeof JBI_IDX!=='undefined'&&JBI_IDX[id]?'<button class="btn-sm jb-btn" onclick="openJianbie(\''+id+'\')">🔍 鉴别</button>':'')+'<button class="btn-fav'+(isFav?' active':'')+'" onclick="toggleFavHerb(\''+id+'\',this)">';
         html+='<svg width="14" height="14" viewBox="0 0 24 24" fill="'+(isFav?'currentColor':'none')+'" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></button></div></div>';
         html+='<div class="herb-keyword"><div class="herb-keyword-label">速记关键词</div><div class="herb-keyword-text">'+o.keyword+'</div></div>';
         html+='<div class="herb-alias">别名：'+(typeof ALIAS!=='undefined'&&ALIAS[id]?ALIAS[id].join('、'):'-')+'</div>';
@@ -1077,6 +1079,9 @@ function renderHerbs(){
       html+='<div class="cat-card"><button class="cat-head" onclick="toggleCat(this)"><span><span class="cat-name">拓展典籍药（本草纲目·本草备要）</span><span class="cat-count">('+kznn.length+')</span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner"><div class="herb-grid" id="kzGrid"></div><div id="kzMore" style="text-align:center;padding:2px 0 6px"></div></div></div></div>';
     }
   }
+  // 其他文献附加分类（鉴别数据集的站点未收药，展开时懒加载）
+  jbExtraList=null;jbExtraLoaded=0;
+  html+='<div class="cat-card"><button class="cat-head" onclick="toggleCat(this);ensureJbExtra()"><span><span class="cat-name">其他文献附加分类</span><span class="cat-count" id="jbExtraCnt"></span></span><svg class="cat-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></button><div class="cat-body"><div class="cat-body-inner"><div class="herb-grid" id="jbExtraGrid"></div><div id="jbExtraMore" style="text-align:center;padding:2px 0 6px"></div></div></div></div>';
   list.innerHTML=html;
   if(kzList&&kzList.length)kzLoadMore(true);
 }
@@ -1091,7 +1096,7 @@ function kzLoadMore(init){
   for(let i=kzLoaded;i<end;i++){
     const k=kzList[i];
     const e=KZ[k];
-    h+='<div class="herb-card" onclick="kzShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+(e.o&&e.o[0]?('原书：'+esc(e.o[0])):'')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+esc((e.d||'').slice(0,50))+'…</div></div>';
+    h+='<div class="herb-card" onclick="kzShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">'+(e.src.indexOf('本草纲目')>-1&&e.src.indexOf('本草备要')>-1?'纲目·备要':e.src[0])+'</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+(e.o&&e.o[0]?('原书：'+esc(e.o[0])):'')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+esc((e.d||'').slice(0,50))+'…</div>'+(typeof JBI_IDX!=='undefined'&&JBI_IDX[k]?'<div class="herb-actions"><button class="btn-sm jb-btn" onclick="event.stopPropagation();openJianbie(\''+k+'\')">🔍 鉴别</button></div>':'')+'</div>';
   }
   grid.insertAdjacentHTML('beforeend',h);
   kzLoaded=end;
@@ -1106,6 +1111,88 @@ function kzShow(k){
   var e=KZ[k];
   document.getElementById('benTitle').textContent='拓展典籍 · '+k;
   document.getElementById('benBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">来源：'+e.src.join('、')+(e.o&&e.o[0]?('　原书药名：'+e.o[0]):'')+'</div><div class="ben-note">'+esc(e.d)+'</div>';
+  document.getElementById('benModal').style.display='flex';
+  scrollLock();
+}
+
+// ==================== 中药鉴别（懒加载） ====================
+const _jbLoader={};
+function loadScript(src,cb){
+  cb=cb||function(){};
+  const st=_jbLoader[src];
+  if(st===true){cb();return;}
+  if(st&&st.que){st.que.push(cb);return;}
+  _jbLoader[src]={que:[cb]};
+  const s=document.createElement('script');
+  s.src=src;
+  s.onload=function(){const q=_jbLoader[src].que;_jbLoader[src]=true;q.forEach(function(f){f();});};
+  s.onerror=function(){_jbLoader[src]=null;alert('鉴别数据加载失败，请检查网络后重试');};
+  document.head.appendChild(s);
+}
+function openJianbie(id){
+  if(typeof JBI_IDX==='undefined'||!JBI_IDX[id])return;
+  const show=function(){
+    const e=JBI&&JBI[id];if(!e)return;
+    document.getElementById('benTitle').textContent=id+' · 鉴别';
+    document.getElementById('benBody').innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">出处：中药世家 · 开源数据（Apache-2.0）'+(e.o&&e.o!==id?'　数据集原药名：'+esc(e.o):'')+'</div><div class="ben-note">'+esc(e.d)+'</div>';
+    document.getElementById('benModal').style.display='flex';
+    scrollLock();
+  };
+  if(typeof JBI==='undefined'||!JBI[id])loadScript('jianbie.js',show);else show();
+}
+let jbExtraList=null,jbExtraLoaded=0;
+function ensureJbExtra(){
+  if(typeof JBI_EXTRA!=='undefined'){jbExtraFill();return;}
+  const grid=document.getElementById('jbExtraGrid');
+  if(grid)grid.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px 0;font-size:13px">鉴别数据加载中…</div>';
+  loadScript('jianbie_extra.js',jbExtraFill);
+}
+function jbExtraFill(){
+  if(typeof JBI_EXTRA==='undefined')return;
+  if(!jbExtraList){
+    const q=document.getElementById('searchInput')&&document.getElementById('searchInput').value?document.getElementById('searchInput').value.trim().toLowerCase():'';
+    jbExtraList=Object.keys(JBI_EXTRA).filter(function(k){return !q||k.toLowerCase().indexOf(q)>-1;});
+    const cnt=document.getElementById('jbExtraCnt');
+    if(cnt)cnt.textContent='('+Object.keys(JBI_EXTRA).length+')';
+    jbExtraLoaded=0;
+  }
+  jbExtraLoadMore();
+}
+function jbExtraLoadMore(){
+  const grid=document.getElementById('jbExtraGrid');
+  const more=document.getElementById('jbExtraMore');
+  if(!grid||!more||!jbExtraList||jbExtraLoaded>=jbExtraList.length)return;
+  if(!jbExtraList.length){
+    grid.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px 0;font-size:13px">未找到匹配的药材</div>';
+    more.innerHTML='';
+    return;
+  }
+  const end=Math.min(jbExtraLoaded+60,jbExtraList.length);
+  let h='';
+  for(let i=jbExtraLoaded;i<end;i++){
+    const k=jbExtraList[i];
+    const e=JBI_EXTRA[k];
+    h+='<div class="herb-card" onclick="jbShow(\''+k+'\')" style="cursor:pointer"><div class="herb-top"><div class="herb-name">'+k+'<span class="badge badge-shen">文献</span></div><div class="herb-badges"></div></div><div class="herb-meta" style="font-size:11px">'+esc((e.s||'').slice(0,30)||'性味未载')+'</div><div class="herb-effects" style="font-size:12px;color:var(--muted)">'+esc((e.f||'').slice(0,50))+'…</div></div>';
+  }
+  grid.insertAdjacentHTML('beforeend',h);
+  jbExtraLoaded=end;
+  if(jbExtraLoaded>=jbExtraList.length){
+    more.innerHTML='<div style="font-size:12px;color:var(--muted-fg);padding:4px 0">已显示全部 '+jbExtraList.length+' 味</div>';
+  }else{
+    more.innerHTML='<button class="kz-more-btn" onclick="jbExtraLoadMore()">加载更多（已显示 '+jbExtraLoaded+' / '+jbExtraList.length+'）</button>';
+  }
+}
+function jbShow(k){
+  if(typeof JBI_EXTRA==='undefined'||!JBI_EXTRA[k])return;
+  const e=JBI_EXTRA[k];
+  let h='<div style="font-size:12px;color:var(--muted);margin-bottom:6px">出处：中药世家 · 开源数据（Apache-2.0）</div>';
+  if(e.a)h+='<div class="xw-field"><div class="k">别名</div><div class="v">'+esc(e.a)+'</div></div>';
+  if(e.s)h+='<div class="xw-field"><div class="k">性味</div><div class="v">'+esc(e.s)+'</div></div>';
+  if(e.f)h+='<div class="xw-field"><div class="k">功效</div><div class="v">'+esc(e.f)+'</div></div>';
+  if(e.y)h+='<div class="xw-field"><div class="k">用法</div><div class="v">'+esc(e.y)+'</div></div>';
+  if(e.d)h+='<div class="xw-field"><div class="k">鉴别</div><div class="v">'+esc(e.d)+'</div></div>';
+  document.getElementById('benTitle').textContent=k+' · 文献鉴别';
+  document.getElementById('benBody').innerHTML=h;
   document.getElementById('benModal').style.display='flex';
   scrollLock();
 }
