@@ -266,6 +266,8 @@ input{font-family:inherit}
 .btn-sm{padding:4px 10px;border-radius:6px;font-size:11px;font-weight:500;border:1px solid var(--border);background:var(--secondary);color:var(--secondary-fg)}
 .btn-sm.mastered{border-color:rgba(58,125,58,.4);background:rgba(58,125,58,.1);color:var(--success)}
 .btn-sm.jb-btn{border-color:rgba(98,114,164,.35);background:rgba(98,114,164,.08);color:#5a6ca8}
+.warn-box{border:1px solid rgba(198,63,63,.5);background:rgba(198,63,63,.07);color:#8c2b2b;border-radius:8px;padding:9px 12px;font-size:12.5px;line-height:1.75;margin-bottom:12px}
+.warn-box b{color:#b3261e}
 .btn-fav{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted-fg);flex-shrink:0}
 .btn-fav.active{color:#d4a017}
 
@@ -476,6 +478,7 @@ input{font-family:inherit}
 
 <!-- Herbs Page -->
 <div class="page active" id="page-herbs">
+  <div class="warn-box">⚠️ <b>古今药名提醒：</b>古籍与现代药典因同名异物、品种变迁可能存在记载冲突——如《本草纲目》载“番木鳖无毒”实指木鳖子，而现代“马钱子”（马钱科，含士的宁）有大毒，过量可致惊厥甚至死亡。用药请以现行《中国药典》为准，切勿据古籍自行服用。</div>
   <div class="page-header">
     <div>
       <div class="page-title">中药速记</div>

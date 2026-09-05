@@ -251,6 +251,8 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
 .ben-gm-title{font-size:15px;font-weight:700;color:var(--gold);margin-bottom:9px}
 .ben-link{margin-left:6px;font-size:12px;font-weight:600;color:var(--gold);cursor:pointer;border:1px solid rgba(212,160,23,.5);background:var(--gold-bg);border-radius:5px;padding:0 6px}
 .jb-link{margin-left:6px;font-size:12px;font-weight:600;color:#5a6ca8;cursor:pointer;border:1px solid rgba(98,114,164,.5);background:rgba(98,114,164,.08);border-radius:5px;padding:0 6px}
+.warn-box{border:1px solid rgba(198,63,63,.5);background:rgba(198,63,63,.07);color:#8c2b2b;border-radius:8px;padding:9px 12px;font-size:12.5px;line-height:1.75;margin-bottom:12px}
+.warn-box b{color:#b3261e}
 @media(max-width:820px){
   .layout{flex-direction:column}
   .sidebar{width:100%;height:auto;position:static;max-height:none}
@@ -290,6 +292,7 @@ body{font-family:-apple-system,"PingFang SC","Microsoft Yahei","Segoe UI",sans-s
   </aside>
 
   <main class="main">
+    <div class="warn-box" id="jbWarnBox">⚠️ <b>古今药名提醒：</b>古籍与现代药典因同名异物、品种变迁可能存在记载冲突——如《本草纲目》载“番木鳖无毒”实指木鳖子，而现代“马钱子”（马钱科，含士的宁）有大毒，过量可致惊厥甚至死亡。用药请以现行《中国药典》为准，切勿据古籍自行服用。</div>
     <div class="head">
       <h2 id="mTitle">中药速记</h2>
       <div class="stats" id="statBar"></div>
@@ -424,6 +427,7 @@ function setModule(m){S.m=m;S.q='';$('q').value='';
   $('catsTitle').style.display=(m==='herbs')?'block':'none';
   $('cats').style.display=(m==='herbs')?'flex':'none';
   $('shenBtn').style.display=(m==='herbs')?'':'none';
+  $('jbWarnBox').style.display=(m==='herbs')?'block':'none';
   $('q').parentElement.style.display=isTool?'none':'block';
   stopToolTimer();render();}
 document.querySelectorAll('.mod,.tool-btn').forEach(b=>b.addEventListener('click',()=>setModule(b.dataset.m)));
