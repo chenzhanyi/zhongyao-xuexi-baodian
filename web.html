@@ -462,7 +462,8 @@ function renderHerbs(){
   list.forEach(h=>{(byCat[h.cat]=byCat[h.cat]||[]).push(h);});
   let html='';
   const kzh=(S.cat===null?kzGridHTML():'');
-  if(list.length===0&&!kzh){$('content').innerHTML='<div class="empty">未找到匹配的中药</div>';return;}
+  const jbh=(S.cat===null?jbExtraSearchHTML():'');
+  if(list.length===0&&!kzh&&!jbh){$('content').innerHTML='<div class="empty">未找到匹配的中药</div>';return;}
   const order=CATEGORIES.map(c=>c.name);
   Object.keys(byCat).sort((a,b)=>order.indexOf(a)-order.indexOf(b)).forEach(cat=>{
     html+=`<h3 style="color:var(--primary);margin:16px 0 8px;font-size:15px">${cat} <span style="color:var(--muted);font-size:12px">${byCat[cat].length}</span></h3><div class="grid">`;
@@ -477,7 +478,7 @@ function renderHerbs(){
     });
     html+='</div>';
   });
-  html+=kzh+jbExtraSearchHTML();
+  html+=kzh+jbh;
   $('content').innerHTML=html;
 }
 function jbExtraSearchHTML(){
